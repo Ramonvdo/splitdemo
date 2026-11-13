@@ -1,7 +1,9 @@
 import type { Tone } from "../tones.ts";
 import type { PanelLogic } from "../types.ts";
 import type { Action, Config } from "./schema.ts";
-import { DAY_MAX } from "./schema.ts";
+
+/** A day shows this many bookings, each with a title of up to two lines. More and the bottom ones fall off the monitor. */
+export const DAY_MAX = 3;
 
 export interface Booking {
   id: string;

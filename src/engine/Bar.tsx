@@ -20,8 +20,9 @@ function Control({ icon, label, onClick, primary, disabled }: { icon: keyof type
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "grid size-[2.6rem] shrink-0 place-items-center rounded-full transition-opacity duration-200 disabled:opacity-30",
-        primary ? "bg-tally text-on-tally" : "text-stage-muted hover:bg-stage-raise hover:text-stage-ink",
+        "grid size-[2.6rem] shrink-0 place-items-center rounded-full transition-[opacity,transform,background-color,color] duration-200 ease-settle active:scale-[0.92] disabled:opacity-30",
+        // The one filled control answers the pointer by growing; the quiet ones by lighting up.
+        primary ? "bg-tally text-on-tally hover:scale-[1.1]" : "text-stage-muted hover:bg-stage-raise hover:text-stage-ink",
       )}
     >
       <svg viewBox="0 0 24 24" className="size-[1.25rem]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

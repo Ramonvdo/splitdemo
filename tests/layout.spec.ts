@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { settle, spills } from "./spills.ts";
+import { READY, settle, spills } from "./spills.ts";
 
 const DEMOS = ["speed-to-lead", "cold-outreach", "intake-to-booking"];
 const SIZES = [
@@ -17,7 +17,7 @@ for (const demo of DEMOS) {
       await page.setViewportSize(size);
       for (const at of ["0", "3", "end"]) {
         await page.goto(`/${demo}/?at=${at}`);
-        await page.locator("main.stage").waitFor();
+        await page.locator(READY).waitFor();
         expect(await spills(page), `at=${at}`).toEqual([]);
       }
     });
@@ -25,7 +25,7 @@ for (const demo of DEMOS) {
 
   test(`${demo}: every panel still fits when it is enlarged`, async ({ page }) => {
     await page.goto(`/${demo}/?at=end`);
-    await page.locator("main.stage").waitFor();
+    await page.locator(READY).waitFor();
     const panels = page.locator("[data-panel]");
     for (let n = 1; n <= (await panels.count()); n++) {
       await page.keyboard.press(String(n));
@@ -37,7 +37,7 @@ for (const demo of DEMOS) {
   test(`${demo}: no serious accessibility problems, waiting or finished`, async ({ page }) => {
     for (const query of ["", "?at=end"]) {
       await page.goto(`/${demo}/${query}`);
-      await page.locator("main.stage").waitFor();
+      await page.locator(READY).waitFor();
       await settle(page);
       const { violations } = await new AxeBuilder({ page }).analyze();
       const serious = violations.filter((v) => v.impact === "serious" || v.impact === "critical");
@@ -48,7 +48,7 @@ for (const demo of DEMOS) {
 
 test("every control is reachable and named from the keyboard", async ({ page }) => {
   await page.goto("/speed-to-lead/");
-  await page.locator("main.stage").waitFor();
+  await page.locator(READY).waitFor();
   const names: string[] = [];
   // Four panel labels, the phone's send button and the three transport buttons.
   for (let i = 0; i < 8; i++) {
@@ -60,7 +60,7 @@ test("every control is reachable and named from the keyboard", async ({ page }) 
 
 test("a click on a label enlarges that panel, and the same click or Escape brings the wall back", async ({ page }) => {
   await page.goto("/speed-to-lead/?at=end");
-  await page.locator("main.stage").waitFor();
+  await page.locator(READY).waitFor();
   const crm = page.locator('[data-panel="crm"]');
   const phone = page.locator('[data-panel="phone"]');
   const wall = await page.locator(".wall").boundingBox();
@@ -85,7 +85,7 @@ test("a click on a label enlarges that panel, and the same click or Escape bring
 test("on a phone one panel shows at a time, and the tabs follow the action", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/speed-to-lead/");
-  await page.locator("main.stage").waitFor();
+  await page.locator(READY).waitFor();
   const tabs = page.getByRole("tab");
   const shown = page.locator("[data-zoom]");
   await expect(tabs).toHaveCount(4);

@@ -1,14 +1,12 @@
 import { z } from "zod";
 import { TONE_NAMES } from "../tones.ts";
+import { DAY_MAX } from "./reduce.ts";
 
 const id = z.string().regex(/^[a-z][a-z0-9-]*$/, "use lowercase letters, digits and dashes, starting with a letter");
 const tone = z.enum(TONE_NAMES);
 const time = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "use a time like 09:30");
 /** What the booking is, e.g. "Inspection, Birch Lane". */
 const title = z.string().min(1).max(22);
-
-/** A day shows this many bookings, each with a title of up to two lines. More and the bottom ones fall off the monitor. */
-export const DAY_MAX = 3;
 
 export const config = z
   .strictObject({

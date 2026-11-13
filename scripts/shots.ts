@@ -39,7 +39,8 @@ try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1.5 });
   const shoot = async (query: string, name: string) => {
     await page.goto(`${server.url}/${ref.slug}/?record=1${query}`);
-    await page.locator("main.stage").waitFor();
+    // A part that loads on its own, like the chart, marks itself until it has arrived.
+    await page.locator("main.stage:not(:has([data-loading]))").waitFor();
     await page.evaluate(() => document.fonts.ready);
     const file = join(out, name);
     await page.screenshot({ path: file });

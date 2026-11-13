@@ -21,6 +21,15 @@ it.each(names)("%s: its example is a config the panel takes and actions it can d
   example.actions.reduce((state: unknown, raw: unknown) => logic.reduce(state, action.parse(raw), cfg), logic.initial(cfg));
 });
 
+it.each(names)("%s: what the browser loads takes only types from its schema", (name) => {
+  // schema.ts brings the validation library with it. The scripts need that; a demo on a phone does not.
+  for (const file of ["reduce.ts", "Panel.tsx"]) {
+    const source = readFileSync(join(presets[name].dir, file), "utf8");
+    const imports = source.match(/^import (?!type )[^;]*from "\.\/schema\.ts";/gm) ?? [];
+    expect(imports, file).toEqual([]);
+  }
+});
+
 it("INDEX.md is what the panel folders say today (npm run panels writes it)", async () => {
   const onDisk = readFileSync(join(PANELS_DIR, "INDEX.md"), "utf8").replaceAll("\r\n", "\n");
   expect(onDisk).toBe(await panelIndex());

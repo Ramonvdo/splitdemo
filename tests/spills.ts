@@ -1,5 +1,8 @@
 import type { Page } from "@playwright/test";
 
+/** The stage, once every part of it that loads on its own has arrived. Wait for this before judging a picture. */
+export const READY = "main.stage:not(:has([data-loading]))";
+
 /**
  * Everything under `root` that does not fit where it is, each with the panel it is in.
  * Hidden monitors count too: they are laid out, only not painted.
