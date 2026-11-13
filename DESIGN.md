@@ -43,20 +43,25 @@ Two surfaces: the stage (the wall) and the windows (the monitors, which imitate 
 
 Status colours live only inside monitors and never stand in for the tally: `good #0f7b54`, `wait #a15c00`, `info #2457d6`, `idle #5d626e`, each with a 10% tint as its background.
 
-Components use the tokens, never a hex value. Charts use `--chart-1` to `--chart-5`.
+Components use the tokens, never a hex value.
+
+Inside a monitor the tally is a fill, a border or a tint, never the colour of text: an accent picked by a demo's author has no promised contrast on white. Text that sits on a tally fill uses `on-tally`, which the stage works out from the accent (ink or white, whichever reads better).
+
+Charts have one series and it takes the tally (`--chart-1`). Their grid, labels and tooltip use the monitor's own neutrals. The mapping is on `.stage` in `src/index.css`.
 
 ## Type
 
 - **Schibsted Grotesk** (variable, 400 to 700) for everything. A newsroom grotesk, which suits a lower third.
 - **JetBrains Mono** only where the text is data: the timecode and spreadsheet cells.
-- Inside a monitor: 13 px base, 12 px floor for meta, tabular figures for every number.
-- Monitor labels: 12 px, weight 500.
-- Caption: `clamp(1.05rem, 0.7rem + 1vw, 1.6rem)`, weight 600, tracking -0.01em. It is the largest text on the stage.
-- Outcome value: 1.4 times the caption size, weight 700, tabular.
+- The stage scales as one picture. The root font size follows the viewport (`clamp(13px, min(1.016vw, 1.806vh), 20px)`), so 1rem is 13 px at 1280x720 and every size is in rem. A recording at 1920x1080 is the same frame, larger.
+- Inside a monitor: `body` 1rem, `meta` 0.923rem as the floor, tabular figures for every number.
+- Monitor labels: `meta`, weight 500.
+- Caption: 1.7rem, weight 600, tracking -0.01em. It is the largest running text on the stage.
+- Outcome value: 2.38rem (1.4 times the caption), weight 700, tabular.
 
 ## Shape
 
-One radius rule: monitors 10 px, controls inside a monitor 6 px, pills fully round. Hairlines are 1 px. No shadows on the stage: monitors are flat.
+One radius rule: monitors 10 px, controls inside a monitor 6 px, pills fully round (at 1280 wide; they scale with the rest). Hairlines are 1 px. No shadows on the stage: monitors are flat.
 
 ## Motion
 
@@ -64,10 +69,10 @@ One radius rule: monitors 10 px, controls inside a monitor 6 px, pills fully rou
 - `land` 420 ms: up from 10 px with opacity. Rows, cards, bubbles, mail.
 - `pop` 320 ms: scale from 0.96. Chips, notes, the tap dot.
 - `flash` 1100 ms: a tally-tinted wash that fades. A value that changed.
-- Tally: on is an instant cut, off fades over 240 ms. Waiting monitors dim to 78% brightness over 240 ms.
+- Tally: on is an instant cut, off fades over 240 ms. Waiting monitors dim to 88% brightness over 200 ms.
 - Only `transform`, `opacity` and `filter` animate.
-- The timeline is the one clock. A seek, a step back and reduced motion set `data-still` on the stage, which removes every animation and transition.
-- Charts follow the Bklit motion policy as decorative: the library's reveal on first show.
+- The timeline is the one clock. A seek, a step back and reduced motion show the picture finished: `data-still` on the stage sets every animation and transition to zero length (not `none`, so nothing replays when motion returns), and a panel gets `still` for motion it drives from JavaScript.
+- Charts follow the Bklit motion policy as decorative: the library's reveal, 700 ms, on first show and again when the demo changes the chart. The replay is how a viewer sees that the chart changed.
 
 ## Layout
 

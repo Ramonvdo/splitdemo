@@ -16,12 +16,14 @@ export interface State {
   tiles: Tile[];
   /** The chart's bars, left to right. */
   points: Point[];
+  /** How many times the demo has changed the chart. The view draws the chart in again when this changes. */
+  pushes: number;
 }
 
 export const POINTS_MAX = 12;
 
 export const logic: PanelLogic<Config, State, Action> = {
-  initial: (config) => ({ tiles: config.tiles.map((tile) => ({ ...tile, rev: 0 })), points: config.chart?.points ?? [] }),
+  initial: (config) => ({ tiles: config.tiles.map((tile) => ({ ...tile, rev: 0 })), points: config.chart?.points ?? [], pushes: 0 }),
   reduce(state, action, config) {
     switch (action.type) {
       case "set": {
@@ -35,7 +37,7 @@ export const logic: PanelLogic<Config, State, Action> = {
         const known = state.points.some((p) => p.label === point.label);
         const points = known ? state.points.map((p) => (p.label === point.label ? point : p)) : [...state.points, point];
         if (points.length > POINTS_MAX) throw new Error(`the chart would hold ${points.length} bars and fits ${POINTS_MAX}`);
-        return { ...state, points };
+        return { ...state, points, pushes: state.pushes + 1 };
       }
     }
   },

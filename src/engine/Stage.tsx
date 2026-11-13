@@ -90,7 +90,7 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
           const pending = play.gate?.action.on === spec.id ? play.gate.action : undefined;
           return (
             <Monitor key={spec.id} spec={spec} slot={SLOTS[i]} live={live} waiting={play.focus !== undefined && !live}>
-              <View config={spec.config} state={now[spec.id]} pending={pending} onTrigger={pending ? play.press : undefined} clock={beat.clock} />
+              <View config={spec.config} state={now[spec.id]} pending={pending} onTrigger={pending ? play.press : undefined} clock={beat.clock} still={play.still} />
             </Monitor>
           );
         })}

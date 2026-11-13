@@ -27,6 +27,7 @@ it("starts with the numbers from the config, untouched", () => {
       { label: "Mon", value: 2 },
       { label: "Tue", value: 1 },
     ],
+    pushes: 0,
   });
 });
 
@@ -42,11 +43,14 @@ it("keeps a tile's delta when only the value is set", () => {
 });
 
 it("changes a bar that is there, and adds one that is not", () => {
-  expect(run([{ type: "push", label: "Tue", value: 3 }, { type: "push", label: "Wed", value: 1 }]).points).toEqual([
-    { label: "Mon", value: 2 },
-    { label: "Tue", value: 3 },
-    { label: "Wed", value: 1 },
-  ]);
+  expect(run([{ type: "push", label: "Tue", value: 3 }, { type: "push", label: "Wed", value: 1 }])).toMatchObject({
+    points: [
+      { label: "Mon", value: 2 },
+      { label: "Tue", value: 3 },
+      { label: "Wed", value: 1 },
+    ],
+    pushes: 2,
+  });
 });
 
 it("refuses what the board cannot show", () => {

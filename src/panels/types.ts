@@ -23,4 +23,9 @@ export interface PanelProps<C = any, S = any, A = any> {
   onTrigger?: () => void;
   /** The time in the story right now, e.g. "21:14". */
   clock?: string;
+  /**
+   * The stage jumped here (a step back, a screenshot), so show the picture finished.
+   * CSS animation is already stopped for you; this is for motion a panel drives from JavaScript.
+   */
+  still?: boolean;
 }
