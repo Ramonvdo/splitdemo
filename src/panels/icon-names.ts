@@ -1,0 +1,21 @@
+/** The icons a panel's config can name. Kept apart from the drawings so a schema can list them without React. */
+export const ICON_NAMES = [
+  "bolt",
+  "sparkle",
+  "message",
+  "mail",
+  "phone",
+  "users",
+  "table",
+  "calendar",
+  "branch",
+  "clock",
+  "check",
+  "form",
+  "chart",
+  "doc",
+  "search",
+  "bell",
+  "card",
+  "star",
+] as const;
