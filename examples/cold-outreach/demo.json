@@ -1,0 +1,145 @@
+{
+  "v": 1,
+  "title": "New offices hear from you before you start work",
+  "panels": [
+    {
+      "id": "leads",
+      "type": "sheet",
+      "label": "Lead list",
+      "config": {
+        "columns": [
+          { "id": "company", "title": "Company" },
+          { "id": "contact", "title": "Contact" },
+          { "id": "line", "title": "First line", "wide": true },
+          { "id": "status", "title": "Status", "tag": true }
+        ],
+        "rows": [
+          { "id": "kestrel", "cells": { "company": "Kestrel Law", "contact": "Maya Ortiz", "line": "Saw the new 4th floor", "status": "Replied" }, "tone": "good" },
+          { "id": "alder", "cells": { "company": "Alder Dental", "contact": "Tom Becker", "line": "Six chairs, one cleaner?", "status": "Sent" }, "tone": "info" }
+        ]
+      }
+    },
+    {
+      "id": "flow",
+      "type": "workflow",
+      "label": "The automation",
+      "config": {
+        "nodes": [
+          { "id": "find", "label": "Finds offices that fit", "icon": "search" },
+          { "id": "write", "label": "Writes a first line", "app": "AI", "icon": "sparkle", "after": ["find"] },
+          { "id": "send", "label": "Sends from your address", "icon": "mail", "after": ["write"] },
+          { "id": "nudge", "label": "Follows up if quiet", "icon": "clock", "after": ["send"] },
+          { "id": "sort", "label": "Reads each reply", "app": "AI", "icon": "sparkle", "after": ["send"] },
+          { "id": "draft", "label": "Drafts your answer", "icon": "doc", "after": ["sort"] }
+        ]
+      }
+    },
+    {
+      "id": "campaign",
+      "type": "campaign",
+      "label": "Email campaign",
+      "config": {
+        "name": "Office managers in Denver",
+        "status": { "text": "Draft" },
+        "steps": [
+          { "id": "first", "title": "A first line about their office", "when": "Day 1" },
+          { "id": "nudge", "title": "A short follow-up", "when": "Day 4" },
+          { "id": "last", "title": "One last note", "when": "Day 9" }
+        ],
+        "stats": [
+          { "id": "sent", "label": "Sent", "value": "0" },
+          { "id": "opened", "label": "Opened", "value": "0" },
+          { "id": "replies", "label": "Replies", "value": "0" },
+          { "id": "visits", "label": "Site visits", "value": "0" }
+        ]
+      }
+    },
+    {
+      "id": "inbox",
+      "type": "inbox",
+      "label": "Your inbox",
+      "config": {
+        "title": "Brightside Cleaning",
+        "mails": [
+          { "id": "supplier", "from": "Peak Supply Co.", "subject": "Your order has shipped", "time": "Mon" },
+          { "id": "invoice", "from": "Accounting", "subject": "October invoices are ready", "time": "Fri" }
+        ]
+      }
+    }
+  ],
+  "beats": [
+    {
+      "say": "06:30. You are on a job. Offices that fit are found for you.",
+      "clock": "06:30",
+      "do": [
+        { "on": "flow", "type": "run", "node": "find", "note": "40 offices, 20+ staff" },
+        { "on": "leads", "type": "add", "id": "norwood", "cells": { "company": "Norwood Studio", "contact": "Dana Whitfield", "status": "New" } },
+        { "on": "leads", "type": "add", "id": "pike", "cells": { "company": "Pike & Rowe CPA", "contact": "Sam Rowe", "status": "New" } },
+        { "on": "leads", "type": "add", "id": "summit", "cells": { "company": "Summit Physio", "contact": "Lena Park", "status": "New" } }
+      ]
+    },
+    {
+      "say": "Each one gets a first line about their own office. No template.",
+      "do": [
+        { "on": "flow", "type": "run", "node": "write", "note": "40 lines written" },
+        { "on": "leads", "type": "set", "row": "norwood", "cells": { "line": "Congrats on the Larimer move" } },
+        { "on": "leads", "type": "set", "row": "pike", "cells": { "line": "Tax season gets messy" }, "after": 350 },
+        { "on": "leads", "type": "set", "row": "summit", "cells": { "line": "Two rooms added in May" }, "after": 350 }
+      ]
+    },
+    {
+      "say": "The emails go out from your own address while you work.",
+      "clock": "08:00",
+      "do": [
+        { "on": "flow", "type": "run", "node": "send" },
+        { "on": "campaign", "type": "status", "text": "Sending", "tone": "info" },
+        { "on": "campaign", "type": "send", "step": "first", "note": "40 sent" },
+        { "on": "campaign", "type": "stat", "stat": "sent", "value": "40", "after": 300 },
+        { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Sent" }, "tone": "info" },
+        { "on": "leads", "type": "set", "row": "pike", "cells": { "status": "Sent" }, "tone": "info", "after": 250 }
+      ]
+    },
+    {
+      "say": "Three days on, the quiet ones get a short nudge. You did nothing.",
+      "clock": "Day 4",
+      "do": [
+        { "on": "flow", "type": "run", "node": "nudge", "note": "31 had not answered" },
+        { "on": "campaign", "type": "send", "step": "nudge", "note": "31 sent" },
+        { "on": "campaign", "type": "stat", "stat": "sent", "value": "71", "after": 300 },
+        { "on": "campaign", "type": "stat", "stat": "opened", "value": "52", "after": 300 }
+      ]
+    },
+    {
+      "say": "A reply comes in. It is read and sorted before you see it.",
+      "do": [
+        { "on": "inbox", "type": "receive", "id": "dana", "from": "Dana Whitfield", "subject": "Re: Congrats on the Larimer move", "body": "Good timing. Our cleaner keeps missing the kitchen. Could you come by and give us a quote?", "time": "10:42" },
+        { "on": "flow", "type": "run", "node": "sort", "note": "Interested, wants a quote", "after": 900 },
+        { "on": "inbox", "type": "open", "mail": "dana", "after": 400 },
+        { "on": "inbox", "type": "tag", "mail": "dana", "tag": "Interested", "tone": "good", "after": 700 },
+        { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Replied" }, "tone": "good" },
+        { "on": "campaign", "type": "stat", "stat": "replies", "value": "6", "tone": "good", "after": 300 }
+      ]
+    },
+    {
+      "say": "The answer is already drafted. You read it and press send.",
+      "do": [
+        { "on": "flow", "type": "run", "node": "draft" },
+        { "on": "inbox", "type": "reply", "mail": "dana", "text": "Happy to, Dana. I can come by Thursday at 9:00 or Friday at 14:00. Which suits you?", "label": "Drafted for you" }
+      ]
+    },
+    {
+      "say": "One week in: real conversations, and you chased nobody.",
+      "clock": "Day 7",
+      "do": [
+        { "on": "campaign", "type": "status", "text": "Live", "tone": "good" },
+        { "on": "campaign", "type": "stat", "stat": "visits", "value": "3", "tone": "good" },
+        { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Visit Thu" }, "tone": "good" }
+      ]
+    }
+  ],
+  "outcome": [
+    { "value": "40", "label": "offices emailed, each personally", "was": "5 a week" },
+    { "value": "6", "label": "replies in the first week" },
+    { "value": "3", "label": "site visits booked", "was": "1 a month" }
+  ]
+}

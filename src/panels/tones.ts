@@ -8,3 +8,11 @@ export const TONES: Record<Tone, string> = {
   info: "bg-info/10 text-info",
   idle: "bg-wash text-muted",
 };
+
+/** The same colours for a bare number, with no tint behind it. Idle stays the ink it already is. */
+export const TONE_TEXT: Record<Tone, string> = {
+  good: "text-good",
+  wait: "text-wait",
+  info: "text-info",
+  idle: "",
+};

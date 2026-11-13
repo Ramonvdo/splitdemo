@@ -10,13 +10,14 @@ import type { Action, Config } from "./schema.ts";
 export default function Panel({ config, state }: PanelProps<Config, State, Action>) {
   const { at, cols } = useMemo(() => place(config.nodes), [config.nodes]);
   const x = (id: string) => ((at[id].col + 0.5) / cols) * 100;
-  const y = (id: string) => ((at[id].row + 0.5) / at[id].rows) * 100;
+  // A lone step sits in the middle. Stacked steps spread over the full height, so a note under one stays clear of the next.
+  const y = (id: string) => (at[id].rows === 1 ? 50 : (at[id].row / (at[id].rows - 1)) * 100);
   const edges = config.nodes.flatMap((node) => (node.after ?? []).map((from) => ({ from, to: node.id })));
 
   return (
     <div className="relative h-full bg-wash">
-      {/* Steps hang from their icon, so the lines join icon to icon and the labels sit clear below. */}
-      <div className="absolute inset-x-[0.6rem] bottom-[4.6rem] top-[1.9rem]">
+      {/* Steps hang from their icon, so the lines join icon to icon and the labels sit clear below. The bottom inset is the room a step at the very bottom needs for its label and note. */}
+      <div className="absolute inset-x-[0.6rem] bottom-[7.6rem] top-[2.2rem]">
         <svg className="absolute inset-0 size-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           {edges.map(({ from, to }) => {
             const mid = (x(from) + x(to)) / 2;
@@ -58,7 +59,7 @@ export default function Panel({ config, state }: PanelProps<Config, State, Actio
                     </span>
                   )}
                 </span>
-                <span className={cn("leading-tight", ran ? "font-semibold" : "text-muted")}>
+                <span className={cn("rounded-control bg-wash px-[0.25rem] leading-tight", ran ? "font-semibold" : "text-muted")}>
                   {node.label}
                   {node.app && <span className="block text-meta font-normal text-muted">{node.app}</span>}
                   <span className="sr-only">{ran ? " (done)" : " (not yet)"}</span>
