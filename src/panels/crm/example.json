@@ -1,0 +1,18 @@
+{
+  "label": "Sales pipeline",
+  "config": {
+    "columns": [
+      { "id": "new", "title": "New" },
+      { "id": "quoted", "title": "Quoted" },
+      { "id": "won", "title": "Won" }
+    ],
+    "cards": [{ "id": "harbor", "column": "quoted", "title": "Harbor Cafe", "subtitle": "New espresso bar", "value": "$4,200" }]
+  },
+  "actions": [
+    { "type": "add", "id": "lindqvist", "to": "new", "title": "Lindqvist Bakery", "subtitle": "Asked for a quote", "value": "$2,800" },
+    { "type": "move", "card": "lindqvist", "to": "quoted" },
+    { "type": "set", "card": "lindqvist", "tag": "Quote sent", "tone": "info" },
+    { "type": "move", "card": "harbor", "to": "won" },
+    { "type": "set", "card": "harbor", "tag": "Signed", "tone": "good" }
+  ]
+}

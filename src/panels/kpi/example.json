@@ -1,0 +1,24 @@
+{
+  "label": "This week",
+  "config": {
+    "tiles": [
+      { "id": "reply", "label": "Time to first reply", "value": "4 h" },
+      { "id": "booked", "label": "Jobs booked", "value": "11" },
+      { "id": "missed", "label": "Missed enquiries", "value": "6" }
+    ],
+    "chart": {
+      "title": "Jobs booked per day",
+      "points": [
+        { "label": "Mon", "value": 2 },
+        { "label": "Tue", "value": 3 },
+        { "label": "Wed", "value": 2 }
+      ]
+    }
+  },
+  "actions": [
+    { "type": "set", "tile": "reply", "value": "1 min", "delta": "was 4 h", "tone": "good" },
+    { "type": "set", "tile": "missed", "value": "0", "delta": "was 6", "tone": "good" },
+    { "type": "set", "tile": "booked", "value": "12", "delta": "+1", "tone": "good" },
+    { "type": "push", "label": "Thu", "value": 4 }
+  ]
+}

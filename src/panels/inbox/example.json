@@ -1,0 +1,16 @@
+{
+  "label": "Support inbox",
+  "config": {
+    "title": "Support",
+    "mails": [
+      { "id": "invoice", "from": "Ledger & Co", "subject": "Your March invoice", "time": "08:10" },
+      { "id": "news", "from": "Trade Weekly", "subject": "Five trends for spring", "time": "Mon" }
+    ]
+  },
+  "actions": [
+    { "type": "receive", "id": "late", "from": "Jonas Meyer", "subject": "Where is my order?", "body": "I ordered a desk two weeks ago and have heard nothing. When does it ship?", "time": "09:12" },
+    { "type": "tag", "mail": "late", "tag": "Order status", "tone": "info" },
+    { "type": "open", "mail": "late" },
+    { "type": "reply", "mail": "late", "text": "Hi Jonas, your desk left the workshop today and arrives on Thursday. Tracking is on its way.", "label": "Drafted for you" }
+  ]
+}

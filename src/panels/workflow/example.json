@@ -1,0 +1,19 @@
+{
+  "label": "The automation",
+  "config": {
+    "nodes": [
+      { "id": "in", "label": "New enquiry", "icon": "message" },
+      { "id": "read", "label": "Reads what they need", "app": "AI", "icon": "sparkle", "after": ["in"] },
+      { "id": "reply", "label": "Replies in a minute", "icon": "mail", "after": ["read"] },
+      { "id": "save", "label": "Saves the lead", "app": "CRM", "icon": "users", "after": ["read"] },
+      { "id": "tell", "label": "Tells the team", "icon": "bell", "after": ["reply", "save"] }
+    ]
+  },
+  "actions": [
+    { "type": "run", "node": "in" },
+    { "type": "run", "node": "read", "note": "Boiler leak, urgent" },
+    { "type": "run", "node": "reply" },
+    { "type": "run", "node": "save" },
+    { "type": "run", "node": "tell", "note": "Sent to Sam" }
+  ]
+}

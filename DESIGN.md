@@ -88,8 +88,13 @@ rail (a portrait panel first)        quad
 ```
 
 - `trio`: `a` on the left at full height, `b` and `c` stacked on the right. `duo`: two columns.
-- Under 720 px wide: one monitor at a time, with a row of tabs that follows the tally.
+- Under 720 px wide: one monitor at a time, with a row of tabs above the wall. The shown tab is wide and carries its label, the others are numbered circles, and a tally dot marks the live one. The wall follows the tally until the viewer picks a tab. No dimming here: the one monitor on screen is always the one to read.
+- Enlarge: click a label, or press 1 to 4. That monitor covers the wall and its content scales up by the same factor the window grew, so it reads from the back of a room. Escape, or the label again, brings the wall back. The other monitors stay mounted and hidden, so nothing restarts. A portrait panel keeps a phone's width when enlarged.
 - Panels size themselves with container queries, never with the viewport.
+
+## Gallery
+
+The dev server draws every preset with the example from its folder at `/__panels`: wide panels at 44 by 22 rem, portrait ones at 22 by 46 rem, each under its name and above the first paragraph of its `panel.md`. Replay runs the example's actions one at a time. It is a workbench, so it borrows the stage's tokens and adds none. A build is one demo and leaves the gallery out.
 
 ## Genericness test
 

@@ -15,7 +15,8 @@
     "test": "vitest run",
     "e2e": "playwright test",
     "check": "node scripts/check.ts",
-    "shots": "node scripts/shots.ts"
+    "shots": "node scripts/shots.ts",
+    "panels": "node scripts/panel-index.ts"
   },
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "^5.3.0",

@@ -1,0 +1,22 @@
+{
+  "label": "The team's week",
+  "config": {
+    "days": [
+      { "id": "mon", "label": "Mon" },
+      { "id": "tue", "label": "Tue" },
+      { "id": "wed", "label": "Wed" },
+      { "id": "thu", "label": "Thu" }
+    ],
+    "today": "mon",
+    "events": [
+      { "id": "audit", "day": "mon", "time": "09:00", "title": "Site audit, Mill Rd" },
+      { "id": "install", "day": "tue", "time": "10:00", "title": "Install, Kent Street" },
+      { "id": "review", "day": "wed", "time": "14:00", "title": "Quarterly review" }
+    ]
+  },
+  "actions": [
+    { "type": "book", "id": "survey", "day": "tue", "time": "14:00", "title": "Survey, Elm Close", "tone": "info" },
+    { "type": "move", "event": "review", "day": "thu", "time": "11:00" },
+    { "type": "cancel", "event": "audit" }
+  ]
+}

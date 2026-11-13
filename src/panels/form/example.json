@@ -1,0 +1,20 @@
+{
+  "label": "Your website's valuation form",
+  "config": {
+    "title": "Book a free valuation",
+    "intro": "Tell us about your home and we will call you back.",
+    "fields": [
+      { "id": "name", "label": "Your name", "placeholder": "First and last name" },
+      { "id": "home", "label": "What are you selling?", "options": ["House", "Flat", "Land"] },
+      { "id": "when", "label": "When do you want to move?", "placeholder": "A month or a season" }
+    ],
+    "button": "Request a call",
+    "done": { "title": "Request received", "text": "We will call you within the hour." }
+  },
+  "actions": [
+    { "type": "fill", "field": "name", "value": "Elena Brandt" },
+    { "type": "fill", "field": "home", "value": "Flat" },
+    { "type": "fill", "field": "when", "value": "Before the summer" },
+    { "type": "submit" }
+  ]
+}

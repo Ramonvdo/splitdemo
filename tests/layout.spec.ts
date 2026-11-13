@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, type Page, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+import { settle, spills } from "./spills.ts";
 
 const DEMOS = ["speed-to-lead", "cold-outreach", "intake-to-booking"];
 const SIZES = [
@@ -9,26 +10,6 @@ const SIZES = [
   // A phone, held upright: one monitor at a time.
   { width: 390, height: 844 },
 ];
-
-/** Everything on the stage that does not fit where it is. Hidden monitors count too: they are laid out, only not painted. */
-function spills(page: Page): Promise<string[]> {
-  return page.evaluate(() => {
-    const out: string[] = [];
-    const doc = document.documentElement;
-    if (doc.scrollWidth > innerWidth || doc.scrollHeight > innerHeight) out.push("the page scrolls");
-    for (const el of document.querySelectorAll<HTMLElement>("main.stage *")) {
-      const style = getComputedStyle(el);
-      // Ellipsis is a choice the panel made; anything else that does not fit is a spill.
-      if (style.textOverflow === "ellipsis" || el.closest("svg")) continue;
-      // Text for screen readers only is clipped to a pixel on purpose.
-      if (el.clientWidth <= 1 && el.clientHeight <= 1) continue;
-      const where = el.closest<HTMLElement>("[data-panel]")?.dataset.panel ?? "bar";
-      if (el.scrollWidth > el.clientWidth + 1 && style.overflowX !== "visible") out.push(`${where}, cut off sideways: ${el.textContent?.slice(0, 40)}`);
-      if (el.scrollHeight > el.clientHeight + 1 && style.overflowY === "hidden" && !el.dataset.scrolls) out.push(`${where}, cut off below: ${el.textContent?.slice(0, 40)}`);
-    }
-    return out;
-  });
-}
 
 for (const demo of DEMOS) {
   for (const size of SIZES) {
@@ -57,6 +38,7 @@ for (const demo of DEMOS) {
     for (const query of ["", "?at=end"]) {
       await page.goto(`/${demo}/${query}`);
       await page.locator("main.stage").waitFor();
+      await settle(page);
       const { violations } = await new AxeBuilder({ page }).analyze();
       const serious = violations.filter((v) => v.impact === "serious" || v.impact === "critical");
       expect(serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(" | ")}`), query || "start").toEqual([]);

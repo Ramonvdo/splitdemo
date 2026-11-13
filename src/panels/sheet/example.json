@@ -1,0 +1,20 @@
+{
+  "label": "Order sheet",
+  "config": {
+    "columns": [
+      { "id": "customer", "title": "Customer" },
+      { "id": "order", "title": "Order", "wide": true },
+      { "id": "total", "title": "Total" },
+      { "id": "status", "title": "Status", "tag": true }
+    ],
+    "rows": [
+      { "id": "ruiz", "cells": { "customer": "Marta Ruiz", "order": "Two oak shelves", "total": "$180", "status": "Shipped" }, "tone": "good" },
+      { "id": "hale", "cells": { "customer": "Owen Hale", "order": "Walnut desk", "total": "$640", "status": "Being made" }, "tone": "info" }
+    ]
+  },
+  "actions": [
+    { "type": "add", "id": "shah", "cells": { "customer": "Priya Shah", "order": "Bedside tables, a pair", "total": "$310", "status": "New" } },
+    { "type": "set", "row": "shah", "cells": { "status": "Invoice sent" }, "tone": "wait" },
+    { "type": "set", "row": "hale", "cells": { "status": "Shipped" }, "tone": "good" }
+  ]
+}

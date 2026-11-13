@@ -1,9 +1,15 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { prepare, Stage, type Flags, type Ready } from "./engine/Stage.tsx";
 import type { Demo } from "./engine/types.ts";
 
+/** Where the dev server shows every panel with its example. No demo can take this path: a slug starts with a letter or digit. */
+const GALLERY = "/__panels";
+// A build is one demo, so the gallery and the examples it draws stay out of it.
+const Gallery = import.meta.env.DEV ? lazy(() => import("./gallery/Gallery.tsx")) : undefined;
+
 type View =
   | { kind: "loading" }
+  | { kind: "gallery" }
   | { kind: "demo"; ready: Ready }
   | { kind: "problems"; problems: string[] }
   | { kind: "index"; demos: { slug: string; title: string; source: string }[] };
@@ -20,6 +26,7 @@ function flags(): Flags {
 }
 
 async function load(): Promise<View> {
+  if (import.meta.env.DEV && location.pathname === GALLERY) return { kind: "gallery" };
   // In dev the root lists every demo. A build is one demo: the demo.json that sits next to it.
   if (import.meta.env.DEV && location.pathname === "/") {
     return { kind: "index", demos: await (await fetch("/__demos.json")).json() };
@@ -44,6 +51,10 @@ export function App() {
   }, [view]);
 
   if (view.kind === "loading") return null;
+  if (view.kind === "gallery")
+    return (
+      <Suspense fallback={null}>{Gallery && <Gallery />}</Suspense>
+    );
   if (view.kind === "demo") return <Stage ready={view.ready} flags={flags()} />;
   if (view.kind === "problems") {
     return (
@@ -73,6 +84,9 @@ export function App() {
         ))}
         {view.demos.length === 0 && <li className="text-stage-muted">No demos yet.</li>}
       </ul>
+      <a className="self-start rounded-control px-3 text-meta text-stage-muted underline underline-offset-4" href={GALLERY}>
+        Every panel, with its example
+      </a>
     </main>
   );
 }

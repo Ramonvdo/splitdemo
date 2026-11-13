@@ -1,0 +1,11 @@
+{
+  "label": "Customer's phone",
+  "config": { "contact": "Northside Plumbing", "subtitle": "Text message" },
+  "actions": [
+    { "type": "send", "text": "Hi, my boiler is leaking. Can someone come today?" },
+    { "type": "typing" },
+    { "type": "receive", "text": "Sorry to hear that. We can be there at 14:00 or 16:30 today. Which suits you?" },
+    { "type": "send", "text": "14:00 please" },
+    { "type": "receive", "text": "Booked. Sam will be with you at 14:00." }
+  ]
+}

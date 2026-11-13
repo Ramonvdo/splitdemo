@@ -311,7 +311,8 @@
 }
 
 /* One series, in the demo's accent. Everything else in a chart is the monitor's own neutrals. */
-.stage {
+.stage,
+.gallery {
   --chart-1: var(--color-tally);
   --chart-background: var(--color-window);
   --chart-foreground: var(--color-ink);

@@ -1,0 +1,23 @@
+{
+  "label": "Email campaign",
+  "config": {
+    "name": "Gyms in Leeds",
+    "status": { "text": "Draft" },
+    "steps": [
+      { "id": "first", "title": "A note about their front desk", "when": "Day 1" },
+      { "id": "nudge", "title": "A short follow-up", "when": "Day 4" }
+    ],
+    "stats": [
+      { "id": "sent", "label": "Sent", "value": "0" },
+      { "id": "opened", "label": "Opened", "value": "0" },
+      { "id": "replies", "label": "Replies", "value": "0" }
+    ]
+  },
+  "actions": [
+    { "type": "status", "text": "Sending", "tone": "info" },
+    { "type": "send", "step": "first", "note": "60 sent" },
+    { "type": "stat", "stat": "sent", "value": "60" },
+    { "type": "stat", "stat": "opened", "value": "41" },
+    { "type": "stat", "stat": "replies", "value": "5", "tone": "good" }
+  ]
+}
