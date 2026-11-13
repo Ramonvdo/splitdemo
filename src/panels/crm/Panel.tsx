@@ -1,4 +1,4 @@
-import { cn } from "../../lib/utils.ts";
+import { cn } from "../../lib/style.ts";
 import { TONES } from "../tones.ts";
 import type { PanelProps } from "../types.ts";
 import type { State } from "./reduce.ts";

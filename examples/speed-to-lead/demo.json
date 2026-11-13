@@ -1,14 +1,120 @@
 {
   "v": 1,
-  "title": "A lead texts after closing time",
+  "title": "A new patient texts after closing time",
   "panels": [
-    { "id": "phone", "type": "phone", "label": "Customer's phone", "config": { "contact": "Harbor Dental", "subtitle": "Text message" } },
-    { "id": "owner", "type": "phone", "label": "Owner's phone", "config": { "contact": "Front desk", "subtitle": "Team chat" } }
+    {
+      "id": "phone",
+      "type": "phone",
+      "label": "Patient's phone",
+      "config": { "contact": "Harbor Dental", "subtitle": "Text message" }
+    },
+    {
+      "id": "flow",
+      "type": "workflow",
+      "label": "The automation",
+      "config": {
+        "nodes": [
+          { "id": "text", "label": "New text message", "icon": "message" },
+          { "id": "read", "label": "Reads what they need", "app": "AI", "icon": "sparkle", "after": ["text"] },
+          { "id": "slots", "label": "Checks open slots", "app": "Calendar", "icon": "calendar", "after": ["read"] },
+          { "id": "reply", "label": "Replies by text", "icon": "message", "after": ["slots"] },
+          { "id": "save", "label": "Saves the lead", "app": "CRM", "icon": "users", "after": ["slots"] },
+          { "id": "tell", "label": "Tells the front desk", "icon": "bell", "after": ["reply", "save"] }
+        ]
+      }
+    },
+    {
+      "id": "crm",
+      "type": "crm",
+      "label": "Patient pipeline",
+      "config": {
+        "columns": [
+          { "id": "new", "title": "New" },
+          { "id": "talking", "title": "In conversation" },
+          { "id": "booked", "title": "Booked" }
+        ],
+        "cards": [
+          { "id": "omar", "column": "talking", "title": "Omar Haddad", "subtitle": "Whitening, asked for a quote", "value": "$340" },
+          { "id": "priya", "column": "booked", "title": "Priya Nair", "subtitle": "Check-up", "value": "$120", "tag": "Mon 09:30", "tone": "good" }
+        ]
+      }
+    },
+    {
+      "id": "numbers",
+      "type": "kpi",
+      "label": "This week",
+      "config": {
+        "tiles": [
+          { "id": "reply", "label": "Time to first reply", "value": "14 h" },
+          { "id": "after", "label": "After-hours answered", "value": "0 of 5" },
+          { "id": "booked", "label": "New patients booked", "value": "6" }
+        ],
+        "chart": {
+          "title": "New patients booked per day",
+          "points": [
+            { "label": "Mon", "value": 2 },
+            { "label": "Tue", "value": 1 },
+            { "label": "Wed", "value": 3 },
+            { "label": "Thu", "value": 0 }
+          ]
+        }
+      }
+    }
   ],
   "beats": [
-    { "say": "A new patient texts at 21:14. The practice closed at six.", "clock": "21:14", "wait": "click", "do": [{ "on": "phone", "type": "send", "text": "Hi, I chipped a tooth. Can I come in this week?" }] },
-    { "say": "They get an answer in seconds, not the next morning.", "do": [{ "on": "phone", "type": "typing" }, { "on": "phone", "type": "receive", "text": "Sorry to hear that! We can see you Thursday at 10:00 or Friday at 14:30. Which works?", "after": 1400 }] },
-    { "say": "The owner hears about it once it is booked.", "clock": "21:15", "do": [{ "on": "owner", "type": "notify", "title": "New booking", "text": "Chipped tooth, Thursday 10:00" }] }
+    {
+      "say": "21:14. The practice closed at six. Send the text a new patient would.",
+      "clock": "21:14",
+      "wait": "click",
+      "do": [{ "on": "phone", "type": "send", "text": "Hi, I chipped a tooth. Can I come in this week?" }]
+    },
+    {
+      "say": "Nobody is at the desk. The message gets read anyway.",
+      "do": [
+        { "on": "flow", "type": "run", "node": "text" },
+        { "on": "flow", "type": "run", "node": "read", "note": "Chipped tooth, wants this week", "after": 900 },
+        { "on": "phone", "type": "typing", "after": 300 }
+      ]
+    },
+    {
+      "say": "They get a real answer with real times, 38 seconds later.",
+      "do": [
+        { "on": "flow", "type": "run", "node": "slots", "note": "Thu 10:00 and Fri 14:30 free" },
+        { "on": "flow", "type": "run", "node": "reply", "after": 900 },
+        { "on": "phone", "type": "receive", "text": "Sorry to hear that! We can see you Thursday at 10:00 or Friday at 14:30. Which works best?", "after": 400 }
+      ]
+    },
+    {
+      "say": "The lead is in your pipeline before you have seen it.",
+      "do": [
+        { "on": "flow", "type": "run", "node": "save" },
+        { "on": "crm", "type": "add", "id": "dana", "to": "new", "title": "Dana Whitfield", "subtitle": "Chipped tooth, new patient", "tag": "Replied in 38 sec", "tone": "info" }
+      ]
+    },
+    {
+      "say": "The patient picks a time. No phone tag tomorrow morning.",
+      "clock": "21:16",
+      "do": [
+        { "on": "phone", "type": "send", "text": "Thursday at 10 please" },
+        { "on": "phone", "type": "receive", "text": "Done. You are booked for Thursday at 10:00 with Dr. Lin. See you then!", "after": 1100 },
+        { "on": "crm", "type": "move", "card": "dana", "to": "booked" },
+        { "on": "crm", "type": "set", "card": "dana", "value": "$180", "tag": "Thu 10:00", "tone": "good", "after": 600 }
+      ]
+    },
+    {
+      "say": "You find out in the morning, with the chair already filled.",
+      "do": [
+        { "on": "flow", "type": "run", "node": "tell", "note": "Summary sent" },
+        { "on": "numbers", "type": "set", "tile": "reply", "value": "38 sec", "delta": "was 14 h", "tone": "good" },
+        { "on": "numbers", "type": "set", "tile": "after", "value": "5 of 5", "tone": "good" },
+        { "on": "numbers", "type": "set", "tile": "booked", "value": "7", "delta": "+1", "tone": "good" },
+        { "on": "numbers", "type": "push", "label": "Thu", "value": 1 }
+      ]
+    }
   ],
-  "outcome": [{ "value": "38 sec", "label": "to first reply", "was": "14 h" }]
+  "outcome": [
+    { "value": "38 sec", "label": "to first reply", "was": "14 h" },
+    { "value": "5 of 5", "label": "after-hours leads answered", "was": "0 of 5" },
+    { "value": "+1", "label": "patient booked overnight" }
+  ]
 }

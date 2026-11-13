@@ -59,7 +59,7 @@ function demos(): Plugin {
           return send(422, { problems: [`demo.json is not valid JSON: ${e instanceof Error ? e.message : String(e)}`] });
         }
         const { checkDemo } = (await server.ssrLoadModule("/scripts/lib/load.ts")) as typeof import("./scripts/lib/load.ts");
-        const { problems } = await checkDemo(raw);
+        const { problems } = await checkDemo(raw, true);
         return problems.length ? send(422, { problems }) : send(200, raw);
       });
     },

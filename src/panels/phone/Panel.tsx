@@ -1,5 +1,5 @@
 import { TapDot } from "../../engine/TapDot.tsx";
-import { cn } from "../../lib/utils.ts";
+import { cn } from "../../lib/style.ts";
 import type { PanelProps } from "../types.ts";
 import type { State } from "./reduce.ts";
 import type { Action, Config } from "./schema.ts";

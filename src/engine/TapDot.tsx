@@ -1,4 +1,4 @@
-import { cn } from "../lib/utils.ts";
+import { cn } from "../lib/style.ts";
 
 /**
  * "Press here." Sits on the control a waiting beat wants pressed; put it inside a `relative` element.

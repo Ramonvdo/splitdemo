@@ -1,5 +1,5 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
-import { cn, onColor } from "../lib/utils.ts";
+import { cn, onColor } from "../lib/style.ts";
 import { presets } from "../panels/registry.ts";
 import { Bar } from "./Bar.tsx";
 import { arrange, type Arranged } from "./layout.ts";
@@ -41,7 +41,7 @@ function Monitor({ spec, slot, live, waiting, children }: { spec: PanelSpec; slo
         </span>
         <span className="truncate">{spec.label}</span>
       </h2>
-      <div className={cn("@container relative min-h-0 flex-1 overflow-hidden rounded-monitor bg-window text-ink transition-[filter] duration-200", waiting && "brightness-[0.78]")}>{children}</div>
+      <div className={cn("@container relative min-h-0 flex-1 overflow-hidden rounded-monitor bg-window text-ink transition-[filter] duration-200", waiting && "brightness-[0.88]")}>{children}</div>
     </section>
   );
 }
@@ -75,7 +75,7 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
 
   return (
     <main
-      className={cn("grid h-dvh grid-rows-[minmax(0,1fr)_auto] gap-[0.9rem] p-[0.9rem]", flags.record && "cursor-none")}
+      className={cn("stage grid h-dvh grid-rows-[minmax(0,1fr)_auto] gap-[0.9rem] p-[0.9rem]", flags.record && "cursor-none")}
       style={style}
       data-status={play.status}
       data-beat={play.pos.beat}

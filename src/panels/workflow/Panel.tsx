@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { cn } from "../../lib/utils.ts";
+import { cn } from "../../lib/style.ts";
 import { Icon } from "../icons.tsx";
 import type { PanelProps } from "../types.ts";
 import { place } from "./place.ts";

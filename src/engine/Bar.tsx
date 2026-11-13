@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cn } from "../lib/utils.ts";
+import { cn } from "../lib/style.ts";
 import type { Demo, Timeline } from "./types.ts";
 import type { Playback } from "./usePlayback.ts";
 

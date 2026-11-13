@@ -20,8 +20,12 @@ export interface Preset {
 
 let cache: Promise<Record<string, Preset>> | undefined;
 
-/** Every preset in src/panels, with its schemas and its logic. No React is loaded. */
-export function loadPresets(): Promise<Record<string, Preset>> {
+/**
+ * Every preset in src/panels, with its schemas and its logic. No React is loaded.
+ * `fresh` reads the folder again: the dev server stays up while panels are added.
+ */
+export function loadPresets(fresh = false): Promise<Record<string, Preset>> {
+  if (fresh) cache = undefined;
   cache ??= (async () => {
     const out: Record<string, Preset> = {};
     for (const entry of readdirSync(PANELS_DIR, { withFileTypes: true })) {
@@ -54,11 +58,11 @@ export interface Checked {
 }
 
 /** Everything that can be known about a demo without opening a browser. */
-export async function checkDemo(raw: unknown): Promise<Checked> {
+export async function checkDemo(raw: unknown, fresh = false): Promise<Checked> {
   const shape = schema.demo.safeParse(raw);
   if (!shape.success) return { problems: issues("", shape), notes: [] };
   const demo = shape.data as Demo;
-  const presets = await loadPresets();
+  const presets = await loadPresets(fresh);
   const problems: string[] = [];
   const notes: string[] = [];
 
