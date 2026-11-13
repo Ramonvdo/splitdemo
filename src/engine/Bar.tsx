@@ -22,7 +22,7 @@ function Control({ icon, label, onClick, primary, disabled }: { icon: keyof type
       className={cn(
         "grid size-[2.6rem] shrink-0 place-items-center rounded-full transition-[opacity,transform,background-color,color] duration-200 ease-settle active:scale-[0.92] disabled:opacity-30",
         // The one filled control answers the pointer by growing; the quiet ones by lighting up.
-        primary ? "bg-tally text-on-tally hover:scale-[1.1]" : "text-stage-muted hover:bg-stage-raise hover:text-stage-ink",
+        primary ? "bg-tally text-on-tally hover:scale-[1.1]" : "text-stage-muted hover:bg-stage-line hover:text-stage-ink",
       )}
     >
       <svg viewBox="0 0 24 24" className="size-[1.25rem]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -37,6 +37,9 @@ function captionAt(t: Timeline, beat: number): string | undefined {
   for (let b = beat; b >= 0; b--) if (t.beats[b].say) return t.beats[b].say;
   return undefined;
 }
+
+/** A link a demo may put on the page. The check script holds demo.json to this too; here it guards a file nobody checked. */
+const SAFE_LINK = /^(https:\/\/|mailto:)/;
 
 /** The one strip of chrome: where the demo is, what the moment means, and at the end what came of it. */
 export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Timeline; play: Playback; record: boolean }) {
@@ -90,9 +93,21 @@ export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Ti
           <span className="sr-only">{done ? "Result. " : idle ? "" : `Step ${pos.beat + 1} of ${timeline.beats.length}. `}</span>
           {line}
         </div>
+        {done && !record && demo.next && SAFE_LINK.test(demo.next.url) && (
+          <a
+            href={demo.next.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-next
+            className="shrink-0 animate-land rounded-full bg-stage-ink px-[1.2rem] py-[0.6rem] text-center font-semibold text-stage transition-transform duration-200 ease-settle hover:scale-[1.05] active:scale-[0.97] compact:order-last compact:basis-full"
+            style={{ animationDelay: `${demo.outcome.length * 140}ms` }}
+          >
+            {demo.next.label}
+          </a>
+        )}
         <div className="flex shrink-0 items-center gap-[0.9rem] text-meta text-stage-muted">
           {beat.clock && !done && (
-            <time className="font-mono text-lead tabular-nums text-stage-ink" data-clock>
+            <time className="text-lead font-medium tabular-nums text-stage-ink" data-clock>
               {beat.clock}
             </time>
           )}

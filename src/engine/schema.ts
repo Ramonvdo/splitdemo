@@ -37,6 +37,15 @@ export const outcome = z.strictObject({
   was: z.string().min(1).max(12).optional(),
 });
 
+/** Where the viewer can go when the demo is over. Only a web page or an email: the link is put on the page as it is written. */
+export const next = z.strictObject({
+  label: z.string().min(1).max(28),
+  url: z
+    .string()
+    .max(300)
+    .regex(/^(https:\/\/[^\s/]+\.[^\s]+|mailto:[^\s@]+@[^\s@]+)$/, "use an https:// or a mailto: link"),
+});
+
 export const demo = z.strictObject({
   v: z.literal(1),
   title: z.string().min(1).max(60),
@@ -45,5 +54,6 @@ export const demo = z.strictObject({
   panels: z.array(panelSpec).min(2).max(4),
   beats: z.array(beat).min(1).max(16),
   outcome: z.array(outcome).min(1).max(3),
+  next: next.optional(),
   expires: z.iso.date().optional(),
 });

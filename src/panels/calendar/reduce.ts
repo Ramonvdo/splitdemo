@@ -25,6 +25,7 @@ export interface State {
 }
 
 export const logic: PanelLogic<Config, State, Action> = {
+  icon: "calendar",
   initial: (config) => sorted((config.events ?? []).map((event) => ({ ...event, rev: 0 })), config),
   reduce(state, action, config) {
     const days = config.days.map((day) => day.id);

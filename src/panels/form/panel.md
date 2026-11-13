@@ -1,6 +1,6 @@
 # form
 
-A web form the customer fills in: a few fields, a button, and the confirmation they see after.
+A web form the customer fills in: a few fields and a button. Once it is sent the answers stay on screen and the confirmation lands where the button was.
 
 Pick it when: the story starts with a request on a website: a quote, a booking, a sign-up, an application.
 

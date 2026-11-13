@@ -18,4 +18,5 @@ export const ICON_NAMES = [
   "bell",
   "card",
   "star",
+  "send",
 ] as const;

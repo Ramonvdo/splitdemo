@@ -23,6 +23,7 @@ export interface State {
 export const ROWS_MAX = 7;
 
 export const logic: PanelLogic<Config, State, Action> = {
+  icon: "table",
   initial: (config) => ({ rows: (config.rows ?? []).map((row) => ({ ...row, rev: 0, changed: [] })) }),
   reduce(state, action, config) {
     const ids = config.columns.map((column) => column.id);

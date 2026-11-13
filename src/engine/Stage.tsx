@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { cn, onColor } from "../lib/style.ts";
+import { Icon } from "../panels/icons.tsx";
 import { presets } from "../panels/registry.ts";
 import { Bar } from "./Bar.tsx";
 import { arrange, type Arranged } from "./layout.ts";
@@ -81,14 +82,14 @@ function Monitor({ spec, slot, live, waiting, zoom, scale, hidden, portrait, com
       {!compact && (
         <h2 className={cn("flex text-meta font-medium transition-opacity duration-200", live ? "text-stage-ink" : "text-stage-muted")}>
           {onZoom ? (
-            <button type="button" onClick={onZoom} aria-label={`${spec.label}: ${zoom ? "show all panels" : "enlarge"}`} title={zoom ? "Show all panels" : "Enlarge"} className="group flex min-w-0 items-center gap-[0.55rem] rounded-control text-left">
+            <button type="button" onClick={onZoom} aria-label={`${spec.label}: ${zoom ? "show all panels" : "enlarge"}`} title={zoom ? "Show all panels" : "Enlarge"} className="group flex min-h-[1.75rem] min-w-0 items-center gap-[0.55rem] rounded-control text-left transition-colors duration-200 hover:text-stage-ink">
               {name}
               <svg viewBox="0 0 24 24" className={cn("size-[0.95rem] shrink-0 transition-opacity duration-200", zoom ? "opacity-100" : "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100")} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 {zoom ? <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" /> : <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />}
               </svg>
             </button>
           ) : (
-            <span className="flex min-w-0 items-center gap-[0.55rem]">{name}</span>
+            <span className="flex min-h-[1.75rem] min-w-0 items-center gap-[0.55rem]">{name}</span>
           )}
         </h2>
       )}
@@ -189,10 +190,11 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
       <h1 className="sr-only">{demo.title}</h1>
       {compact && (
         <div role="tablist" aria-label="Panels" className="flex gap-[0.4rem]">
-          {arranged.slots.map((spec, i) => {
+          {arranged.slots.map((spec) => {
             const on = shown === spec.id;
+            const live = play.focus === spec.id;
             return (
-              // The tab in view is as wide as its name needs; the others are a number, lit when the action is there.
+              // The tab in view carries its name; the others are the panel's icon, lit when the action is there.
               <button
                 key={spec.id}
                 type="button"
@@ -200,10 +202,13 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
                 aria-selected={on}
                 aria-label={spec.label}
                 onClick={() => pick(spec.id)}
-                className={cn("flex h-[2.6rem] items-center justify-center gap-[0.5rem] rounded-full text-meta font-medium", on ? "min-w-0 flex-1 bg-stage-raise px-[0.9rem] text-stage-ink" : "w-[2.6rem] shrink-0 border border-stage-line text-stage-muted")}
+                className={cn(
+                  "flex h-[2.6rem] items-center justify-center gap-[0.5rem] rounded-full border text-meta font-medium",
+                  on ? "min-w-0 flex-1 border-transparent bg-stage-raise px-[0.9rem] text-stage-ink" : cn("w-[2.6rem] shrink-0", live ? "border-tally text-tally" : "border-stage-line text-stage-muted"),
+                )}
               >
-                <Tally live={play.focus === spec.id} />
-                {on ? <span className="truncate">{spec.label}</span> : <span className="tabular-nums">{i + 1}</span>}
+                {on && <Tally live={live} />}
+                {on ? <span className="min-w-0 truncate">{spec.label}</span> : <Icon name={presets[spec.type].logic.icon} className="size-[1.15rem]" />}
               </button>
             );
           })}
@@ -220,7 +225,8 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
               spec={spec}
               slot={SLOTS[i]}
               live={live}
-              waiting={play.focus !== undefined && !live && !compact}
+              // Before the first press every monitor is lit: the opening picture is the whole wall.
+              waiting={play.status !== "idle" && play.focus !== undefined && !live && !compact}
               zoom={shown === spec.id}
               scale={zoom?.id === spec.id ? zoom.scale : 1}
               hidden={shown !== undefined && shown !== spec.id}

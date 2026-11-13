@@ -48,8 +48,8 @@
         "events": [
           { "id": "gutter", "day": "mon", "time": "08:00", "title": "Gutter repair, Elm St" },
           { "id": "pine", "day": "mon", "time": "13:00", "title": "Quote visit, Pine Ave" },
-          { "id": "reroof-1", "day": "tue", "time": "13:00", "title": "Re-roof, day 1" },
-          { "id": "reroof-2", "day": "wed", "time": "08:00", "title": "Re-roof, day 2" },
+          { "id": "reroof-1", "day": "tue", "time": "13:00", "title": "Roof replacement" },
+          { "id": "reroof-2", "day": "wed", "time": "08:00", "title": "Roof replacement" },
           { "id": "oak", "day": "thu", "time": "10:00", "title": "Quote visit, Oak Ct" }
         ]
       }
@@ -59,10 +59,11 @@
       "type": "inbox",
       "label": "What the customer gets",
       "config": {
-        "title": "Dana's inbox",
+        "title": "Ruth's inbox",
         "mails": [
           { "id": "bank", "from": "Front Range Bank", "subject": "Your statement is ready", "time": "Sat" },
-          { "id": "school", "from": "Lincoln Elementary", "subject": "Field trip on Friday", "time": "Fri" }
+          { "id": "school", "from": "Lincoln Elementary", "subject": "Field trip on Friday", "time": "Fri" },
+          { "id": "pharmacy", "from": "Corner Pharmacy", "subject": "Your order is ready", "time": "Thu" }
         ]
       }
     }
@@ -72,7 +73,7 @@
       "say": "Sunday evening. A homeowner finds a leak and opens your website.",
       "clock": "20:40",
       "do": [
-        { "on": "form", "type": "fill", "field": "name", "value": "Dana Whitfield" },
+        { "on": "form", "type": "fill", "field": "name", "value": "Ruth Adeyemi" },
         { "on": "form", "type": "fill", "field": "address", "value": "14 Birch Lane", "after": 700 },
         { "on": "form", "type": "fill", "field": "need", "value": "Repair", "after": 700 },
         { "on": "form", "type": "fill", "field": "details", "value": "Water coming in after the storm", "after": 700 }
@@ -104,14 +105,14 @@
       "clock": "20:42",
       "do": [
         { "on": "flow", "type": "run", "node": "confirm" },
-        { "on": "mail", "type": "receive", "id": "booked", "from": "Ridgeline Roofing", "subject": "Your inspection: Tuesday 08:00", "body": "Hi Dana, sorry about the leak. Marco will be at 14 Birch Lane on Tuesday at 08:00. Reply to change the time.", "time": "20:42" },
+        { "on": "mail", "type": "receive", "id": "booked", "from": "Ridgeline Roofing", "subject": "Your inspection: Tuesday 08:00", "body": "Hi Ruth, sorry about the leak. Marco will be at 14 Birch Lane on Tuesday at 08:00. Reply to change the time.", "time": "20:42" },
         { "on": "mail", "type": "open", "mail": "booked", "after": 900 }
       ]
     },
     {
       "say": "Monday morning the job is on the board. Nobody made a call.",
       "clock": "07:00",
-      "do": [{ "on": "flow", "type": "run", "node": "brief", "note": "Sent with photos" }]
+      "do": [{ "on": "flow", "type": "run", "node": "brief", "note": "Address and details sent" }]
     }
   ],
   "outcome": [

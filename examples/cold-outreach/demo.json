@@ -15,7 +15,9 @@
         ],
         "rows": [
           { "id": "kestrel", "cells": { "company": "Kestrel Law", "contact": "Maya Ortiz", "line": "Saw the new 4th floor", "status": "Replied" }, "tone": "good" },
-          { "id": "alder", "cells": { "company": "Alder Dental", "contact": "Tom Becker", "line": "Six chairs, one cleaner?", "status": "Sent" }, "tone": "info" }
+          { "id": "alder", "cells": { "company": "Alder Dental", "contact": "Tom Becker", "line": "Six chairs, one cleaner?", "status": "Sent" }, "tone": "info" },
+          { "id": "summit", "cells": { "company": "Summit Physio", "contact": "Lena Park", "line": "Two rooms added in May", "status": "Sent" }, "tone": "info" },
+          { "id": "harlow", "cells": { "company": "Harlow & Finch", "contact": "Priya Shah", "line": "Three floors, one bin run", "status": "Sent" }, "tone": "info" }
         ]
       }
     },
@@ -50,7 +52,7 @@
           { "id": "sent", "label": "Sent", "value": "0" },
           { "id": "opened", "label": "Opened", "value": "0" },
           { "id": "replies", "label": "Replies", "value": "0" },
-          { "id": "visits", "label": "Site visits", "value": "0" }
+          { "id": "visits", "label": "Visits booked", "value": "0" }
         ]
       }
     },
@@ -62,7 +64,8 @@
         "title": "Brightside Cleaning",
         "mails": [
           { "id": "supplier", "from": "Peak Supply Co.", "subject": "Your order has shipped", "time": "Mon" },
-          { "id": "invoice", "from": "Accounting", "subject": "October invoices are ready", "time": "Fri" }
+          { "id": "invoice", "from": "Accounting", "subject": "October invoices are ready", "time": "Fri" },
+          { "id": "permit", "from": "City of Denver", "subject": "Parking permit renewed", "time": "Thu" }
         ]
       }
     }
@@ -73,9 +76,8 @@
       "clock": "06:30",
       "do": [
         { "on": "flow", "type": "run", "node": "find", "note": "40 offices, 20+ staff" },
-        { "on": "leads", "type": "add", "id": "norwood", "cells": { "company": "Norwood Studio", "contact": "Dana Whitfield", "status": "New" } },
-        { "on": "leads", "type": "add", "id": "pike", "cells": { "company": "Pike & Rowe CPA", "contact": "Sam Rowe", "status": "New" } },
-        { "on": "leads", "type": "add", "id": "summit", "cells": { "company": "Summit Physio", "contact": "Lena Park", "status": "New" } }
+        { "on": "leads", "type": "add", "id": "norwood", "cells": { "company": "Norwood Studio", "contact": "Ines Calloway", "status": "New" } },
+        { "on": "leads", "type": "add", "id": "pike", "cells": { "company": "Pike & Rowe CPA", "contact": "Sam Rowe", "status": "New" } }
       ]
     },
     {
@@ -83,8 +85,7 @@
       "do": [
         { "on": "flow", "type": "run", "node": "write", "note": "40 lines written" },
         { "on": "leads", "type": "set", "row": "norwood", "cells": { "line": "Congrats on the Larimer move" } },
-        { "on": "leads", "type": "set", "row": "pike", "cells": { "line": "Tax season gets messy" }, "after": 350 },
-        { "on": "leads", "type": "set", "row": "summit", "cells": { "line": "Two rooms added in May" }, "after": 350 }
+        { "on": "leads", "type": "set", "row": "pike", "cells": { "line": "Tax season gets messy" }, "after": 350 }
       ]
     },
     {
@@ -112,10 +113,10 @@
     {
       "say": "A reply comes in. It is read and sorted before you see it.",
       "do": [
-        { "on": "inbox", "type": "receive", "id": "dana", "from": "Dana Whitfield", "subject": "Re: Congrats on the Larimer move", "body": "Good timing. Our cleaner keeps missing the kitchen. Could you come by and give us a quote?", "time": "10:42" },
+        { "on": "inbox", "type": "receive", "id": "ines", "from": "Ines Calloway", "subject": "Re: Congrats on the Larimer move", "body": "Good timing. Our cleaner keeps missing the kitchen. Could you come by and give us a quote?", "time": "10:42" },
         { "on": "flow", "type": "run", "node": "sort", "note": "Interested, wants a quote", "after": 900 },
-        { "on": "inbox", "type": "open", "mail": "dana", "after": 400 },
-        { "on": "inbox", "type": "tag", "mail": "dana", "tag": "Interested", "tone": "good", "after": 700 },
+        { "on": "inbox", "type": "open", "mail": "ines", "after": 400 },
+        { "on": "inbox", "type": "tag", "mail": "ines", "tag": "Interested", "tone": "good", "after": 700 },
         { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Replied" }, "tone": "good" },
         { "on": "campaign", "type": "stat", "stat": "replies", "value": "6", "tone": "good", "after": 300 }
       ]
@@ -124,7 +125,7 @@
       "say": "The answer is already drafted. You read it and press send.",
       "do": [
         { "on": "flow", "type": "run", "node": "draft" },
-        { "on": "inbox", "type": "reply", "mail": "dana", "text": "Happy to, Dana. I can come by Thursday at 9:00 or Friday at 14:00. Which suits you?", "label": "Drafted for you" }
+        { "on": "inbox", "type": "reply", "mail": "ines", "text": "Happy to, Ines. I can come by Thursday at 9:00 or Friday at 14:00. Which suits you?", "label": "Drafted for you" }
       ]
     },
     {
@@ -133,13 +134,14 @@
       "do": [
         { "on": "campaign", "type": "status", "text": "Live", "tone": "good" },
         { "on": "campaign", "type": "stat", "stat": "visits", "value": "3", "tone": "good" },
-        { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Visit Thu" }, "tone": "good" }
+        { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Visit Thu" }, "tone": "good" },
+        { "on": "leads", "type": "set", "row": "kestrel", "cells": { "status": "Visit Fri" }, "tone": "good", "after": 350 }
       ]
     }
   ],
   "outcome": [
     { "value": "40", "label": "offices emailed, each personally", "was": "5 a week" },
     { "value": "6", "label": "replies in the first week" },
-    { "value": "3", "label": "site visits booked", "was": "1 a month" }
+    { "value": "3", "label": "visits booked to quote", "was": "1 a month" }
   ]
 }

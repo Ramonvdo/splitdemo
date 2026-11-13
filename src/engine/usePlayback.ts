@@ -73,8 +73,6 @@ function open(t: Timeline, { autoplay, at }: PlaybackOptions): State {
   const end: State = { pos: { beat: t.beats.length - 1, n: t.cues.length }, status: "done", still: true };
   if (at === "end") return end;
   if (typeof at === "number" && t.beats[at]) return { pos: { beat: at, n: t.beats[at].to }, status: "paused", still: true };
-  // Someone who asked for less motion gets the result, and can step back through it.
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return end;
   return { pos: { beat: 0, n: 0 }, status: autoplay ? "playing" : "idle", still: false };
 }
 

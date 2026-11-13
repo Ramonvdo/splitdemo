@@ -23,6 +23,7 @@ export interface State {
 export const POINTS_MAX = 12;
 
 export const logic: PanelLogic<Config, State, Action> = {
+  icon: "chart",
   initial: (config) => ({ tiles: config.tiles.map((tile) => ({ ...tile, rev: 0 })), points: config.chart?.points ?? [], pushes: 0 }),
   reduce(state, action, config) {
     switch (action.type) {

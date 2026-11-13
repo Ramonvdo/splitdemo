@@ -23,6 +23,7 @@ const PATHS: Record<IconName, ReactNode> = {
   bell: <path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2.2 2.2 0 0 0 4 0" />,
   card: <path d="M4.5 5.5h15A1.5 1.5 0 0 1 21 7v10a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17V7a1.5 1.5 0 0 1 1.5-1.5zM3 10h18M6.5 14.5h4" />,
   star: <path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.8z" />,
+  send: <path d="M20.5 3.5L10.5 13.5M20.5 3.5l-6 17-4-7-7-4z" />,
 };
 
 export function Icon({ name, className }: { name: IconName; className?: string }) {

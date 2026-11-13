@@ -31,6 +31,7 @@ function fits(cards: Card[], column: string): Card[] {
 }
 
 export const logic: PanelLogic<Config, State, Action> = {
+  icon: "users",
   initial: (config) => ({ cards: (config.cards ?? []).map((card) => ({ ...card, rev: 0 })) }),
   reduce(state, action, config) {
     const column = (id: string) => {

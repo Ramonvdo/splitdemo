@@ -9,6 +9,7 @@ export interface State {
 }
 
 export const logic: PanelLogic<Config, State, Action> = {
+  icon: "phone",
   portrait: true,
   triggers: ["send"],
   initial: (config) => ({ messages: config.messages ?? [], typing: false }),

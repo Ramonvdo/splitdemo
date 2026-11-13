@@ -30,6 +30,7 @@ export interface State {
 export const MAILS_MAX = 5;
 
 export const logic: PanelLogic<Config, State, Action> = {
+  icon: "mail",
   initial: (config) => ({ mails: (config.mails ?? []).map((mail) => ({ ...mail, unread: mail.unread ?? false, rev: 0 })) }),
   reduce(state, action) {
     const find = (id: string) => {

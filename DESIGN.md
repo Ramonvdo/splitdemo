@@ -63,15 +63,18 @@ Charts have one series and it takes the tally (`--chart-1`). Their grid, labels 
 
 One radius rule: monitors 10 px, controls inside a monitor 6 px, pills fully round (at 1280 wide; they scale with the rest). Hairlines are 1 px. No shadows on the stage: monitors are flat.
 
+A line between two steps of a flow leaves level, turns once and arrives level. The turn is a right angle rounded by 14 px and sits on the boundary between two columns, where no label reaches. A line that has not run is dotted, one that has is solid.
+
 ## Motion
 
 - Ease: `cubic-bezier(0.16, 1, 0.3, 1)` for everything.
 - `land` 420 ms: up from 10 px with opacity. Rows, cards, bubbles, mail.
 - `pop` 320 ms: scale from 0.96. Chips, notes, the tap dot.
 - `flash` 1100 ms: a tally-tinted wash that fades. A value that changed.
-- Tally: on is an instant cut, off fades over 240 ms. Waiting monitors dim to 88% brightness over 200 ms.
+- Tally: on is an instant cut, off fades over 240 ms. Waiting monitors dim to 88% brightness over 200 ms. Before the first press nothing waits yet, so the whole wall is lit.
 - Only `transform`, `opacity` and `filter` animate.
-- The timeline is the one clock. A seek, a step back and reduced motion show the picture finished: `data-still` on the stage sets every animation and transition to zero length (not `none`, so nothing replays when motion returns), and a panel gets `still` for motion it drives from JavaScript.
+- The timeline is the one clock. A seek and a step back show the picture finished: `data-still` on the stage sets every animation and transition to zero length (not `none`, so nothing replays when motion returns), and a panel gets `still` for motion it drives from JavaScript.
+- Reduced motion keeps the story and drops the movement. The demo opens at the start and plays beat by beat, and every animation and transition has zero length, so content cuts in where it would have landed.
 - Charts follow the Bklit motion policy as decorative: the library's reveal, 700 ms, on first show and again when the demo changes the chart. The replay is how a viewer sees that the chart changed.
 
 ## Layout
@@ -88,9 +91,13 @@ rail (a portrait panel first)        quad
 ```
 
 - `trio`: `a` on the left at full height, `b` and `c` stacked on the right. `duo`: two columns.
-- Under 720 px wide: one monitor at a time, with a row of tabs above the wall. The shown tab is wide and carries its label, the others are numbered circles, and a tally dot marks the live one. The wall follows the tally until the viewer picks a tab. No dimming here: the one monitor on screen is always the one to read.
+- Under 720 px wide: one monitor at a time, with a row of tabs above the wall. The shown tab is wide and carries its label. The others are round and carry their panel's icon, and the live one takes the tally colour. The wall follows the tally until the viewer picks a tab. No dimming here: the one monitor on screen is always the one to read.
 - Enlarge: click a label, or press 1 to 4. That monitor covers the wall and its content scales up by the same factor the window grew, so it reads from the back of a room. Escape, or the label again, brings the wall back. The other monitors stay mounted and hidden, so nothing restarts. A portrait panel keeps a phone's width when enlarged.
 - Panels size themselves with container queries, never with the viewport.
+
+## After the last beat
+
+The lower third reads the outcome, each value next to what it was before. A demo that names a `next` step gets one button there: a label and an `https://` or `mailto:` link, opened in a new tab. It is the only link on the stage, and a recording leaves it out.
 
 ## Loading
 
@@ -99,6 +106,13 @@ The first picture is the wall, the caption and the play button, and it waits for
 ## Gallery
 
 The dev server draws every preset with the example from its folder at `/__panels`: wide panels at 44 by 22 rem, portrait ones at 22 by 46 rem, each under its name and above the first paragraph of its `panel.md`. Replay runs the example's actions one at a time. It is a workbench, so it borrows the stage's tokens and adds none. A build is one demo and leaves the gallery out.
+
+## Left out on purpose
+
+- A switcher between demos. A shared demo is one prospect's page and knows of no other.
+- A skip link. The stage is one screen with a handful of stops, and the transport comes first in the tab order.
+- Anything for search engines. A shared demo is marked noindex; it is found by its link.
+- Motion while idle. The tap dot on the play button is the one thing that moves before the first press.
 
 ## Genericness test
 

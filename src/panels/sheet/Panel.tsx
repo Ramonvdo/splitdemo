@@ -4,10 +4,12 @@ import type { PanelProps } from "../types.ts";
 import type { State } from "./reduce.ts";
 import type { Action, Config } from "./schema.ts";
 
-// On a narrow monitor a row turns into a small card: the first cell is its title, the rest sit under it.
-const ROW = "@max-[30rem]:flex @max-[30rem]:flex-wrap @max-[30rem]:items-center @max-[30rem]:gap-x-[0.7rem] @max-[30rem]:px-[0.7rem] @max-[30rem]:py-[0.45rem] @max-[30rem]:first:border-t-0";
+// On a narrow monitor a row turns into a small card: the first cell is its title, a status sits beside it, the rest under it.
+const ROW = "@max-[30rem]:grid-cols-[minmax(0,1fr)_auto]! @max-[30rem]:items-center @max-[30rem]:gap-x-[0.7rem] @max-[30rem]:px-[0.7rem] @max-[30rem]:py-[0.45rem] @max-[30rem]:first:border-t-0";
 const CELL = "truncate border-l border-line px-[0.6rem] py-[0.5rem] @max-[30rem]:border-0 @max-[30rem]:p-0";
-const TITLE = "@max-[30rem]:w-full @max-[30rem]:font-semibold";
+const TITLE = "@max-[30rem]:col-start-1 @max-[30rem]:row-start-1 @max-[30rem]:font-semibold";
+const STATUS = "@max-[30rem]:col-start-2 @max-[30rem]:row-start-1";
+const REST = "@max-[30rem]:col-span-2";
 
 /** A spreadsheet: one row per lead, order or request. Rows land at the bottom; changed cells flash. */
 export default function Panel({ config, state }: PanelProps<Config, State, Action>) {
@@ -37,7 +39,7 @@ export default function Panel({ config, state }: PanelProps<Config, State, Actio
                 const hit = row.changed.includes(column.id);
                 return (
                   // A changed cell gets a new key, so it mounts again and flashes.
-                  <span key={hit ? `${column.id}:${row.rev}` : column.id} role="cell" data-cell={column.id} className={cn(CELL, at === 0 && TITLE, hit && "flash")}>
+                  <span key={hit ? `${column.id}:${row.rev}` : column.id} role="cell" data-cell={column.id} className={cn(CELL, at === 0 ? TITLE : column.tag ? STATUS : REST, hit && "flash")}>
                     {column.tag && text ? <span className={cn("rounded-full px-[0.55rem] py-[0.1rem] font-medium", TONES[row.tone ?? "idle"])}>{text}</span> : text}
                   </span>
                 );

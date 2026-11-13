@@ -43,9 +43,26 @@ test("the keyboard steps through, back, and starts over", async ({ page }) => {
   await expect(page.locator('[data-panel="phone"]')).not.toContainText("Sorry to hear that");
 });
 
-test("with reduced motion it opens on the finished picture", async ({ page }) => {
+test("with reduced motion the story still plays from the start, and nothing moves", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto(DEMO);
-  await expect(page.locator("main.stage")).toHaveAttribute("data-done", "true");
-  await expect(page.locator('[data-tile="booked"]')).toContainText("7");
+  const stage = page.locator("main.stage");
+  await expect(stage).toHaveAttribute("data-status", "idle");
+  await page.locator('[data-panel="phone"]').getByRole("button", { name: "Send" }).click();
+  await expect(page.locator('[data-node="text"]')).toHaveAttribute("data-ran", "true", { timeout: 10_000 });
+  // The caption that just changed is already in place: it did not travel there.
+  expect(await page.locator("[data-caption]").evaluate((el) => getComputedStyle(el).animationDuration)).toBe("0s");
+});
+
+test("when it is over the viewer is offered the next step the demo names", async ({ page }) => {
+  await page.route("**/speed-to-lead/demo.json", async (route) => {
+    const demo = await (await route.fetch()).json();
+    await route.fulfill({ json: { ...demo, next: { label: "Book a call", url: "https://example.com/call" } } });
+  });
+  await page.goto(`${DEMO}?at=3`);
+  await expect(page.getByRole("link", { name: "Book a call" })).toHaveCount(0);
+  await page.goto(`${DEMO}?at=end`);
+  const link = page.getByRole("link", { name: "Book a call" });
+  await expect(link).toHaveAttribute("href", "https://example.com/call");
+  await expect(link).toHaveAttribute("rel", /noopener/);
 });

@@ -5,6 +5,7 @@ import type { Demo, Pos } from "./types.ts";
 
 /** A panel that only counts, so every expected value below can be worked out by hand. */
 const counter: PanelLogic<{ start: number }, number, { type: "inc"; by: number }> = {
+  icon: "bolt",
   initial: (config) => config.start,
   reduce: (state, action) => {
     if (action.by < 0) throw new Error("cannot count down");

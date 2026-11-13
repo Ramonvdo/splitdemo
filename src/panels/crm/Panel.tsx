@@ -16,7 +16,7 @@ export default function Panel({ config, state }: PanelProps<Config, State, Actio
               <span className="truncate">{column.title}</span>
               <span className="tabular-nums text-muted">{cards.length}</span>
             </h3>
-            <ul className="flex min-h-0 flex-1 flex-col gap-[0.5rem] rounded-control @max-[30rem]:grid @max-[30rem]:grid-cols-2">
+            <ul className="flex min-h-0 flex-1 flex-col gap-[0.5rem] rounded-control @max-[30rem]:grid @max-[30rem]:grid-cols-[repeat(auto-fit,minmax(8.5rem,1fr))]">
               {cards.map((card) => (
                 // A touched card gets a new key, so it mounts again and its entrance shows what changed.
                 <li

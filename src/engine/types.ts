@@ -13,6 +13,8 @@ export interface Demo {
   beats: Beat[];
   /** 1 to 3 results, shown in the bar when the last beat is over. */
   outcome: Outcome[];
+  /** The one thing the viewer can do when the demo is over, e.g. book a call. An https:// or mailto: link. */
+  next?: { label: string; url: string };
   /** ISO date. A demo past this date is left out of a share. */
   expires?: string;
 }

@@ -21,6 +21,7 @@ export interface State {
 }
 
 export const logic: PanelLogic<Config, State, Action> = {
+  icon: "send",
   initial(config) {
     const state: State = { sent: [], notes: {}, stats: config.stats.map((stat) => ({ ...stat, rev: 0 })) };
     if (config.status) state.status = { ...config.status, rev: 0 };

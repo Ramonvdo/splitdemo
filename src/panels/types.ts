@@ -1,3 +1,5 @@
+import type { IconName } from "./icons.tsx";
+
 /**
  * What a panel preset is made of.
  *
@@ -5,6 +7,8 @@
  * The view (Panel.tsx) draws config + state and nothing else.
  */
 export interface PanelLogic<C = any, S = any, A extends { type: string } = any> {
+  /** Stands for the panel where there is no room for its label: a tab on a phone. */
+  icon: IconName;
   initial(config: C): S;
   /** Returns the next state. Throws, with a message a demo author can act on, when the action is impossible. */
   reduce(state: S, action: A, config: C): S;

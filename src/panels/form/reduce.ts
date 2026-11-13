@@ -10,6 +10,7 @@ export interface State {
 }
 
 export const logic: PanelLogic<Config, State, Action> = {
+  icon: "form",
   portrait: true,
   triggers: ["submit"],
   initial: () => ({ values: {}, sent: false }),

@@ -13,6 +13,7 @@ export interface State {
 }
 
 export const logic: PanelLogic<Config, State, Action> = {
+  icon: "branch",
   initial: () => ({ ran: [], runs: 0, notes: {} }),
   reduce(state, action, config) {
     const node = config.nodes.find((n) => n.id === action.node);

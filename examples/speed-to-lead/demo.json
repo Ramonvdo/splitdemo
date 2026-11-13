@@ -34,8 +34,10 @@
           { "id": "booked", "title": "Booked" }
         ],
         "cards": [
-          { "id": "omar", "column": "talking", "title": "Omar Haddad", "subtitle": "Whitening, asked for a quote", "value": "$340" },
-          { "id": "priya", "column": "booked", "title": "Priya Nair", "subtitle": "Check-up", "value": "$120", "tag": "Mon 09:30", "tone": "good" }
+          { "id": "omar", "column": "talking", "title": "Omar Haddad", "subtitle": "Whitening quote", "value": "$340" },
+          { "id": "marta", "column": "talking", "title": "Marta Kowalski", "subtitle": "Braces consult", "value": "$90" },
+          { "id": "priya", "column": "booked", "title": "Priya Nair", "subtitle": "Check-up", "value": "$120", "tag": "Mon 09:30", "tone": "good" },
+          { "id": "joel", "column": "booked", "title": "Joel Okafor", "subtitle": "Filling", "value": "$210", "tag": "Tue 14:00", "tone": "good" }
         ]
       }
     },
@@ -72,8 +74,8 @@
       "say": "Nobody is at the desk. The message gets read anyway.",
       "do": [
         { "on": "flow", "type": "run", "node": "text" },
-        { "on": "flow", "type": "run", "node": "read", "note": "Chipped tooth, wants this week", "after": 900 },
-        { "on": "phone", "type": "typing", "after": 300 }
+        { "on": "phone", "type": "typing", "after": 300 },
+        { "on": "flow", "type": "run", "node": "read", "note": "Chipped tooth, wants this week", "after": 900 }
       ]
     },
     {
@@ -88,7 +90,7 @@
       "say": "The lead is in your pipeline before you have seen it.",
       "do": [
         { "on": "flow", "type": "run", "node": "save" },
-        { "on": "crm", "type": "add", "id": "dana", "to": "new", "title": "Dana Whitfield", "subtitle": "Chipped tooth, new patient", "tag": "Replied in 38 sec", "tone": "info" }
+        { "on": "crm", "type": "add", "id": "dana", "to": "new", "title": "Dana Whitfield", "subtitle": "Chipped tooth", "tag": "Replied in 38 sec", "tone": "info" }
       ]
     },
     {
@@ -106,7 +108,7 @@
       "do": [
         { "on": "flow", "type": "run", "node": "tell", "note": "Summary sent" },
         { "on": "numbers", "type": "set", "tile": "reply", "value": "38 sec", "delta": "was 14 h", "tone": "good" },
-        { "on": "numbers", "type": "set", "tile": "after", "value": "5 of 5", "tone": "good" },
+        { "on": "numbers", "type": "set", "tile": "after", "value": "5 of 5", "delta": "was 0 of 5", "tone": "good" },
         { "on": "numbers", "type": "set", "tile": "booked", "value": "7", "delta": "+1", "tone": "good" },
         { "on": "numbers", "type": "push", "label": "Thu", "value": 1 }
       ]

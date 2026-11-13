@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { expect, it } from "vitest";
 import { loadPresets, PANELS_DIR } from "../../scripts/lib/load.ts";
 import { panelIndex } from "../../scripts/lib/panels.ts";
+import { ICON_NAMES } from "./icon-names.ts";
 
 const presets = await loadPresets();
 const names = Object.keys(presets);
@@ -28,6 +29,10 @@ it.each(names)("%s: what the browser loads takes only types from its schema", (n
     const imports = source.match(/^import (?!type )[^;]*from "\.\/schema\.ts";/gm) ?? [];
     expect(imports, file).toEqual([]);
   }
+});
+
+it.each(names)("%s names the icon that stands for it where there is no room for its label", (name) => {
+  expect(ICON_NAMES).toContain(presets[name].logic.icon);
 });
 
 it("INDEX.md is what the panel folders say today (npm run panels writes it)", async () => {
