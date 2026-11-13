@@ -1,0 +1,197 @@
+@import "tailwindcss";
+
+/* The tokens of DESIGN.md. Tailwind's own palette, type scale and radii are dropped, so only these exist. */
+@theme {
+  --font-sans: "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", monospace;
+
+  --color-*: initial;
+  --color-stage: #0f1012;
+  --color-stage-raise: #1a1c20;
+  --color-stage-line: #2c2f36;
+  --color-stage-ink: #f1f2f4;
+  --color-stage-muted: #9aa0ac;
+  --color-window: #ffffff;
+  --color-wash: #f3f4f6;
+  --color-ink: #16181d;
+  --color-muted: #5d626e;
+  --color-line: #e2e4e9;
+  --color-tally: #ff5c35;
+  --color-on-tally: #16181d;
+  --color-good: #0f7b54;
+  --color-wait: #a15c00;
+  --color-info: #2457d6;
+  --color-idle: #5d626e;
+
+  /* 1rem is the body size inside a monitor: 13 px on a 1280 x 720 stage. */
+  --text-*: initial;
+  --text-meta: 0.923rem;
+  --text-meta--line-height: 1.35;
+  --text-body: 1rem;
+  --text-body--line-height: 1.4;
+  --text-lead: 1.154rem;
+  --text-lead--line-height: 1.3;
+  --text-big: 1.538rem;
+  --text-big--line-height: 1.15;
+  --text-huge: 2.154rem;
+  --text-huge--line-height: 1.05;
+  --text-caption: 1.7rem;
+  --text-caption--line-height: 1.15;
+  --text-outcome: 2.38rem;
+  --text-outcome--line-height: 1;
+
+  --radius-*: initial;
+  --radius-monitor: 0.77rem;
+  --radius-control: 0.46rem;
+
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-land: land 420ms var(--ease-settle) both;
+  --animate-pop: pop 320ms var(--ease-settle) both;
+  --animate-blink: blink 1200ms ease-in-out infinite;
+  --animate-ring: ring 1400ms var(--ease-settle) infinite;
+  --animate-tap: tap 1400ms ease-in-out infinite;
+
+  @keyframes land {
+    from {
+      opacity: 0;
+      transform: translateY(0.77rem);
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+  @keyframes flash {
+    from {
+      opacity: 0.24;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  @keyframes ring {
+    from {
+      opacity: 0.9;
+      transform: scale(0.55);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+  @keyframes tap {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(0.84);
+    }
+  }
+}
+
+/* A value that just changed: a tally-coloured wash that fades. Give the element a new React key to play it. */
+@utility flash {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--color-tally);
+    opacity: 0;
+    pointer-events: none;
+    animation: flash 1100ms var(--ease-settle) both;
+  }
+}
+
+@layer base {
+  /* The stage scales as one picture, like a broadcast frame: the root size follows the viewport. */
+  html {
+    font-size: clamp(13px, min(1.016vw, 1.806vh), 20px);
+  }
+  @media (width < 720px) {
+    html {
+      font-size: 15px;
+    }
+  }
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: var(--color-stage);
+    color: var(--color-stage-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: default;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-tally);
+    outline-offset: 2px;
+  }
+}
+
+/* The wall of monitors. Slots are named a to d; DESIGN.md draws each layout. */
+.wall {
+  display: grid;
+  gap: 0.85rem;
+  min-height: 0;
+}
+.wall[data-layout="quad"] {
+  grid-template: "a b" 1fr "c d" 1fr / 1fr 1fr;
+}
+.wall[data-layout="rail"] {
+  grid-template: "a b b" 1.1fr "a c d" 1fr / 1fr 1fr 1fr;
+}
+.wall[data-layout="rail"][data-narrow] {
+  grid-template-columns: minmax(17rem, 0.6fr) 1fr 1fr;
+}
+.wall[data-layout="trio"] {
+  grid-template: "a b" 1fr "a c" 1fr / 1fr 1fr;
+}
+.wall[data-layout="duo"] {
+  grid-template: "a b" 1fr / 1fr 1fr;
+}
+.wall[data-layout="trio"][data-narrow],
+.wall[data-layout="duo"][data-narrow] {
+  grid-template-columns: minmax(17rem, 0.36fr) 1fr;
+}
+
+/* A seek, a step back and reduced motion show the result at once. Zero-length, so nothing replays when motion returns. */
+[data-still] *,
+[data-still] *::before,
+[data-still] *::after {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.build/
+.shots/
+.wrangler/
+test-results/
+playwright-report/
+*.log
+.env
+.env.*
+.DS_Store
+Thumbs.db

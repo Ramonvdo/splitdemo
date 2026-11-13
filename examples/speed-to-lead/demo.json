@@ -1,0 +1,14 @@
+{
+  "v": 1,
+  "title": "A lead texts after closing time",
+  "panels": [
+    { "id": "phone", "type": "phone", "label": "Customer's phone", "config": { "contact": "Harbor Dental", "subtitle": "Text message" } },
+    { "id": "owner", "type": "phone", "label": "Owner's phone", "config": { "contact": "Front desk", "subtitle": "Team chat" } }
+  ],
+  "beats": [
+    { "say": "A new patient texts at 21:14. The practice closed at six.", "clock": "21:14", "wait": "click", "do": [{ "on": "phone", "type": "send", "text": "Hi, I chipped a tooth. Can I come in this week?" }] },
+    { "say": "They get an answer in seconds, not the next morning.", "do": [{ "on": "phone", "type": "typing" }, { "on": "phone", "type": "receive", "text": "Sorry to hear that! We can see you Thursday at 10:00 or Friday at 14:30. Which works?", "after": 1400 }] },
+    { "say": "The owner hears about it once it is booked.", "clock": "21:15", "do": [{ "on": "owner", "type": "notify", "title": "New booking", "text": "Chipped tooth, Thursday 10:00" }] }
+  ],
+  "outcome": [{ "value": "38 sec", "label": "to first reply", "was": "14 h" }]
+}
