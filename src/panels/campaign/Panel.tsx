@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { cn } from "../../lib/style.ts";
 import { Icon } from "../icons.tsx";
 import { TONES, TONE_TEXT } from "../tones.ts";
@@ -38,7 +39,7 @@ export default function Panel({ config, state }: PanelProps<Config, State, Actio
         })}
       </ol>
 
-      <dl className="grid gap-[0.5rem]" style={{ gridTemplateColumns: `repeat(${state.stats.length}, minmax(0, 1fr))` }}>
+      <dl className="grid grid-cols-[repeat(var(--n),minmax(0,1fr))] gap-[0.5rem] @max-[30rem]:grid-cols-2" style={{ "--n": state.stats.length } as CSSProperties}>
         {state.stats.map((stat) => (
           <div key={stat.id} data-stat={stat.id} className="flex min-w-0 flex-col-reverse rounded-control border border-line px-[0.7rem] py-[0.45rem]">
             {/* A changed counter gets a new key, so it mounts again and flashes. */}

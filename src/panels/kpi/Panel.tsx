@@ -3,6 +3,7 @@ import { BarChart } from "@/components/charts/bar-chart";
 import { BarXAxis } from "@/components/charts/bar-x-axis";
 import { Grid } from "@/components/charts/grid";
 import { useReducedMotion } from "motion/react";
+import type { CSSProperties } from "react";
 import { cn } from "../../lib/style.ts";
 import { TONES } from "../tones.ts";
 import type { PanelProps } from "../types.ts";
@@ -14,7 +15,7 @@ export default function Panel({ config, state, still }: PanelProps<Config, State
   const calm = useReducedMotion() === true || still === true;
   return (
     <div className="flex h-full flex-col gap-[0.7rem] p-[0.8rem]">
-      <dl className="grid gap-[0.6rem]" style={{ gridTemplateColumns: `repeat(${state.tiles.length}, minmax(0, 1fr))` }}>
+      <dl className="grid grid-cols-[repeat(var(--n),minmax(0,1fr))] gap-[0.6rem] @max-[30rem]:grid-cols-2" style={{ "--n": state.tiles.length } as CSSProperties}>
         {state.tiles.map((tile) => (
           <div key={tile.id} data-tile={tile.id} className="flex min-w-0 flex-col-reverse justify-end rounded-control border border-line px-[0.8rem] py-[0.6rem]">
             {/* A changed number gets a new key, so it mounts again and flashes. */}

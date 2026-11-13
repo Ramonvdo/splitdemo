@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* A phone: one monitor at a time. The same width the stage reads in JavaScript. */
+@custom-variant compact (@media (width < 720px));
+
 /* The tokens of DESIGN.md. Tailwind's own palette, type scale and radii are dropped, so only these exist. */
 @theme {
   --font-sans: "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
@@ -18,8 +21,8 @@
   --color-line: #e2e4e9;
   --color-tally: #ff5c35;
   --color-on-tally: #16181d;
-  --color-good: #0f7b54;
-  --color-wait: #a15c00;
+  --color-good: #0b6e4a;
+  --color-wait: #8f5200;
   --color-info: #2457d6;
   --color-idle: #5d626e;
 
@@ -161,9 +164,21 @@
 
 /* The wall of monitors. Slots are named a to d; DESIGN.md draws each layout. */
 .wall {
+  position: relative;
   display: grid;
   gap: 0.85rem;
   min-height: 0;
+}
+/* An enlarged monitor lies over the wall. The others keep their place under it, so nothing in them starts over. */
+.wall > [data-zoom] {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+/* On a phone every monitor takes the whole wall, and one is shown. */
+.wall[data-compact] > section {
+  position: absolute;
+  inset: 0;
 }
 .wall[data-layout="quad"] {
   grid-template: "a b" 1fr "c d" 1fr / 1fr 1fr;

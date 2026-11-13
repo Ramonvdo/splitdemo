@@ -30,7 +30,7 @@ export const config = z
 
 export const action = z.discriminatedUnion("type", [
   /** A step runs. `note` is what it found or did, shown under the step: "Urgent, new patient". */
-  z.strictObject({ type: z.literal("run"), node: id, note: z.string().min(1).max(40).optional() }),
+  z.strictObject({ type: z.literal("run"), node: id, note: z.string().min(1).max(32).optional() }),
 ]);
 
 export type Config = z.infer<typeof config>;

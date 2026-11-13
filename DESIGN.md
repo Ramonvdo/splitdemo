@@ -41,7 +41,7 @@ Two surfaces: the stage (the wall) and the windows (the monitors, which imitate 
 | `line` | `#e2e4e9` | Hairlines inside a monitor |
 | `tally` | `#ff5c35` | The accent. One per demo, set by `accent` in `demo.json` |
 
-Status colours live only inside monitors and never stand in for the tally: `good #0f7b54`, `wait #a15c00`, `info #2457d6`, `idle #5d626e`, each with a 10% tint as its background.
+Status colours live only inside monitors and never stand in for the tally: `good #0b6e4a`, `wait #8f5200`, `info #2457d6`, `idle #5d626e`, each with a 10% tint as its background. Good and wait are dark enough to pass 4.5:1 as a tag on a grey row as well as on white.
 
 Components use the tokens, never a hex value.
 

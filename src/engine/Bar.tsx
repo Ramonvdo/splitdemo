@@ -47,11 +47,11 @@ export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Ti
   let line: ReactNode;
   if (done) {
     line = (
-      <dl key="outcome" className="flex flex-wrap items-end gap-x-[2.6rem] gap-y-2" data-outcome>
+      <dl key="outcome" className="flex flex-wrap items-end gap-x-[2.6rem] gap-y-2 compact:gap-x-[1.4rem]" data-outcome>
         {demo.outcome.map((o, i) => (
           <div key={i} className="flex animate-land items-end gap-3 border-l-2 border-tally pl-3" style={{ animationDelay: `${i * 140}ms` }}>
-            <dd className="text-outcome font-bold tabular-nums tracking-tight">{o.value}</dd>
-            <dt className="pb-[0.2rem] text-lead leading-tight text-stage-muted">
+            <dd className="text-outcome font-bold tabular-nums tracking-tight compact:text-big">{o.value}</dd>
+            <dt className="pb-[0.2rem] text-lead leading-tight text-stage-muted compact:text-meta">
               {o.label}
               {o.was && <span className="block text-meta">was {o.was}</span>}
             </dt>
@@ -61,7 +61,7 @@ export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Ti
     );
   } else {
     line = (
-      <p key={idle ? "title" : pos.beat} className="animate-land text-balance text-caption font-semibold tracking-[-0.01em]" data-caption>
+      <p key={idle ? "title" : pos.beat} className="animate-land text-balance text-caption font-semibold tracking-[-0.01em] compact:text-lead" data-caption>
         {idle ? demo.title : captionAt(timeline, pos.beat)}
       </p>
     );
@@ -76,7 +76,7 @@ export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Ti
           </span>
         ))}
       </div>
-      <div className="flex min-h-[3.6rem] items-center gap-[1.2rem]">
+      <div className="flex min-h-[3.6rem] items-center gap-[1.2rem] compact:flex-wrap compact:justify-between compact:gap-y-[0.6rem]">
         {!record && (
           <div className="flex items-center gap-1">
             <Control icon={status === "playing" ? "pause" : done ? "replay" : "play"} label={status === "playing" ? "Pause" : done ? "Play again" : "Play"} onClick={play.toggle} primary />
@@ -84,7 +84,8 @@ export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Ti
             <Control icon="next" label="Step forward" onClick={play.next} disabled={done} />
           </div>
         )}
-        <div className="min-w-0 flex-1" aria-live="polite">
+        {/* On a phone the line gets a row of its own, tall enough that the controls under it never move. */}
+        <div className="min-w-0 flex-1 compact:order-first compact:flex compact:min-h-[4.6rem] compact:basis-full compact:items-center" aria-live="polite">
           <span className="sr-only">{done ? "Result. " : idle ? "" : `Step ${pos.beat + 1} of ${timeline.beats.length}. `}</span>
           {line}
         </div>
