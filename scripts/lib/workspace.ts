@@ -11,6 +11,8 @@ export const SLUG = /^[a-z0-9][a-z0-9-]*$/;
 
 /** What onboarding writes to ~/.splitdemo/config.json. */
 export interface Settings {
+  /** The app's folder (the clone). The scripts know where they are; the skills read this to find them. */
+  app?: string;
   /** Where your own demos live, outside the app's folder: <workspace>/demos/<slug>/demo.json */
   workspace?: string;
   hosting?: { provider: "cloudflare" | "none"; project?: string; domain?: string };

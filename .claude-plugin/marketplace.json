@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace-manifest.json",
+  "name": "splitdemo",
+  "description": "splitdemo skills for Claude Code.",
+  "owner": {
+    "name": "Ramon",
+    "url": "https://github.com/Ramonvdo"
+  },
+  "plugins": [
+    {
+      "name": "splitdemo",
+      "source": "./",
+      "description": "Turn a job post or a process description into a split-screen demo a non-technical owner can watch: one scripted story across up to four app-like panels. Share it as a link or film it.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": ["splitdemo", "demo", "automation", "agency", "sales", "proposal", "video"]
+    }
+  ]
+}
