@@ -34,6 +34,14 @@ it("shows a notification until the next message", () => {
   expect(run([notify, { type: "receive", text: "See you then" }]).notice).toBeUndefined();
 });
 
+it("puts an event in the thread as a line nobody typed", () => {
+  expect(run([{ type: "event", text: "Missed call" }, { type: "receive", text: "Sorry we missed you." }]).messages).toEqual([
+    { from: "them", text: "Welcome!" },
+    { from: "event", text: "Missed call" },
+    { from: "them", text: "Sorry we missed you." },
+  ]);
+});
+
 it("lets the viewer press send, and stands tall", () => {
   expect(logic.triggers).toEqual(["send"]);
   expect(logic.portrait).toBe(true);

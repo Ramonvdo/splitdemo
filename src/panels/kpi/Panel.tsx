@@ -16,7 +16,7 @@ export default function Panel({ config, state, still }: PanelProps<Config, State
           <div key={tile.id} data-tile={tile.id} className="flex min-w-0 flex-col-reverse justify-between rounded-control border border-line px-[0.8rem] py-[0.6rem] @max-[30rem]:last:odd:col-span-2">
             {/* A changed number gets a new key, so it mounts again and flashes. */}
             <dd key={tile.rev} className={cn("flex flex-col items-start rounded-control", tile.rev > 0 && "flash")}>
-              <span className="text-big font-bold tabular-nums tracking-tight">{tile.value}</span>
+              <span className="text-big font-bold tracking-tight">{tile.value}</span>
               {/* The line is always there, so a tile keeps its height when a change arrives. */}
               <span className="flex h-[1.5rem] items-center">
                 {tile.delta && <span className={cn("rounded-full px-[0.5rem] py-[0.05rem] text-meta font-medium", TONES[tile.tone ?? "idle"])}>{tile.delta}</span>}

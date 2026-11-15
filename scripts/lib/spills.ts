@@ -11,18 +11,30 @@ export function spills(page: Page, root = "main.stage"): Promise<string[]> {
   return page.evaluate((root) => {
     const out: string[] = [];
     const doc = document.documentElement;
-    if (doc.scrollWidth > innerWidth || doc.scrollHeight > innerHeight) out.push("the page scrolls");
+    const scrolls = doc.scrollWidth > innerWidth || doc.scrollHeight > innerHeight;
+    // What a scrolling page is blamed on: the first text that reaches past the window.
+    let past: string | undefined;
     for (const el of document.querySelectorAll<HTMLElement>(`${root} *`)) {
-      const style = getComputedStyle(el);
-      // Ellipsis is a choice the panel made; anything else that does not fit is a spill.
-      if (style.textOverflow === "ellipsis" || el.closest("svg")) continue;
+      if (el.closest("svg")) continue;
       // Text for screen readers only is clipped to a pixel on purpose.
       if (el.clientWidth <= 1 && el.clientHeight <= 1) continue;
+      const style = getComputedStyle(el);
       const box = el.closest<HTMLElement>("[data-panel], [data-example]");
       const where = box?.dataset.panel ?? box?.dataset.example ?? "outside the panels";
-      if (el.scrollWidth > el.clientWidth + 1 && style.overflowX !== "visible") out.push(`${where}, cut off sideways: ${el.textContent?.slice(0, 40)}`);
-      if (el.scrollHeight > el.clientHeight + 1 && style.overflowY === "hidden" && !el.dataset.scrolls) out.push(`${where}, cut off below: ${el.textContent?.slice(0, 40)}`);
+      const text = el.textContent?.slice(0, 40);
+      if (scrolls && !past && !el.firstElementChild && text) {
+        const rect = el.getBoundingClientRect();
+        if (rect.right > innerWidth + 1 || rect.bottom > innerHeight + 1) past = `${where}: ${text}`;
+      }
+      if (style.textOverflow === "ellipsis") {
+        // Three dots hide the rest of something the viewer came to read. A panel marks the few places where a preview is the point.
+        if (el.scrollWidth > el.clientWidth + 1 && !el.closest("[data-clip]")) out.push(`${where}, cut short: ${text}`);
+        continue;
+      }
+      if (el.scrollWidth > el.clientWidth + 1 && style.overflowX !== "visible") out.push(`${where}, cut off sideways: ${text}`);
+      if (el.scrollHeight > el.clientHeight + 1 && style.overflowY === "hidden" && !el.dataset.scrolls) out.push(`${where}, cut off below: ${text}`);
     }
+    if (scrolls) out.unshift(past ? `the page scrolls, first past the edge: ${past}` : "the page scrolls");
     return out;
   }, root);
 }

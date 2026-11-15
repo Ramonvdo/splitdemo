@@ -28,7 +28,7 @@ export default function Panel({ config, state }: PanelProps<Config, State, Actio
                   {card.subtitle && <p className="truncate text-meta text-muted">{card.subtitle}</p>}
                   {(card.value || card.tag) && (
                     <p className="mt-[0.4rem] flex items-center justify-between gap-2 text-meta">
-                      <span className="font-semibold tabular-nums">{card.value}</span>
+                      <span className="font-semibold">{card.value}</span>
                       {card.tag && <span className={cn("truncate rounded-full px-[0.55rem] py-[0.1rem] font-medium", TONES[card.tone ?? "idle"])}>{card.tag}</span>}
                     </p>
                   )}

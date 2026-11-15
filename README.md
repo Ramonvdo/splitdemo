@@ -16,7 +16,7 @@ splitdemo puts those on one wall. The customer's phone, the automation, the CRM 
 - Nine panels come with it: phone, form, inbox, workflow, CRM board, sheet, calendar, email campaign and a numbers board with a chart. They share one neutral look and take the tool's name as a label, like "CRM in ClickUp".
 - You can show a demo live on a call from your own machine, send it as a private link, or film it (1920x1080, upright for a phone, or a gif).
 - The Claude Code skills write a demo from a job post, a process description or a call transcript. They check it and look at every frame before they hand it over.
-- Two checks catch a bad demo before a prospect does. One finds an action that cannot happen or a caption that is too long. The other finds text that gets cut off on a laptop or a phone.
+- Two checks catch a bad demo before a prospect does. One finds an action that cannot happen or a caption that is too long. The other finds text that gets cut off or ends in three dots, on a laptop or a phone.
 
 Every demo carries a small "Scripted example" tag. Nothing connects to a real system; it is a simulation of what the system will do.
 
@@ -92,7 +92,7 @@ Your own demos live outside this repo, in a workspace folder you choose: `<works
 | --- | --- |
 | `npm run dev` | Plays every demo at `http://localhost:4310/<slug>/` and reloads when its file changes. |
 | `npm run check -- <slug>` | Says whether the demo can play and where in the file it goes wrong. |
-| `npm run shots -- <slug>` | One picture per beat, and a failure when any text is cut off. |
+| `npm run shots -- <slug>` | One picture per beat, and a failure when any text is cut off or shortened. |
 | `npm run share -- <slug>` | Publishes the demo to your Cloudflare Worker. `--dry-run` publishes nothing. |
 | `npm run export -- <slug>` | Writes the demo as one plain folder for any static host. |
 | `npm run record -- <slug>` | Films it. `--portrait` and `--gif` as above. Needs ffmpeg. |

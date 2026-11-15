@@ -3,7 +3,8 @@
  *
  * One screenshot of the start, one per beat, and one of the end, so a demo can be judged
  * the way a viewer meets it: by looking. Prints the files it wrote, then everything that does
- * not fit where it is, on a laptop screen and on a phone. Anything that does not fit fails it.
+ * not fit where it is, on a laptop screen and on a phone. Anything that does not fit fails it,
+ * and a state that does not fit on a phone gets a phone picture to look at.
  */
 import { mkdirSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -47,7 +48,9 @@ try {
     // A part that loads on its own, like the chart, marks itself until it has arrived.
     await page.locator(READY).waitFor();
     await page.evaluate(() => document.fonts.ready);
-    for (const spill of await spills(page)) if (!tight.has(spill)) tight.set(spill, where);
+    const found = await spills(page);
+    for (const spill of found) if (!tight.has(spill)) tight.set(spill, where);
+    return found.length;
   };
   const pad = (n: number) => String(n).padStart(2, "0");
   const states = ["", ...demo.beats.map((_, beat) => `&at=${beat}`), "&at=end"];
@@ -58,16 +61,23 @@ try {
     await page.screenshot({ path: file });
     console.log(file);
   }
-  // The same states on a phone held upright. No pictures: only whether everything fits.
+  // The same states on a phone held upright. A picture only of a state where something does not fit.
   await page.setViewportSize({ width: 390, height: 844 });
-  for (const [i, query] of states.entries()) await open(query, `${names[i]}, on a phone`);
+  for (const [i, query] of states.entries()) {
+    if (!(await open(query, `${names[i]}, on a phone: ${names[i]}-phone.png`))) continue;
+    const file = join(out, `${names[i]}-phone.png`);
+    await page.screenshot({ path: file });
+    console.log(file);
+  }
 } finally {
   await browser.close();
   await server.close();
+  // The build held a copy of the demo. It goes, so a prospect's data never stays in the app's folder.
+  rmSync(site, { recursive: true, force: true });
 }
 
 for (const [spill, where] of tight) console.log(`  does not fit  ${spill} (${where})`);
 if (tight.size) {
-  console.log(`${tight.size} ${tight.size === 1 ? "thing does" : "things do"} not fit. Shorten the text or show less in that panel, then shoot again.`);
+  console.log(`${tight.size} ${tight.size === 1 ? "thing does" : "things do"} not fit. Shorten that text or show less in that panel, then shoot again.`);
   process.exit(1);
 }

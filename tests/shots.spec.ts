@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, test } from "@playwright/test";
+import { spills } from "../scripts/lib/spills.ts";
 import { ROOT } from "../scripts/lib/workspace.ts";
 
 test.describe.configure({ mode: "serial", timeout: 180_000 });
@@ -30,6 +31,18 @@ test.beforeAll(() => {
   week.config.events.push({ id: "ash", day: "fri", time: "09:00", title: "Shingle repair, Ash Rd" });
   mkdirSync(join(ws, "demos", "wide-week"), { recursive: true });
   writeFileSync(join(ws, "demos", "wide-week", "demo.json"), JSON.stringify(demo));
+
+  // Every label as long as the format allows: 40 characters.
+  const long = JSON.parse(readFileSync(join(ROOT, "examples", "intake-to-booking", "demo.json"), "utf8"));
+  for (const panel of long.panels) panel.label = "Quote requests in your Google Sheets tab";
+  mkdirSync(join(ws, "demos", "long-labels"), { recursive: true });
+  writeFileSync(join(ws, "demos", "long-labels", "demo.json"), JSON.stringify(long));
+
+  // A company name the schema allows (28 characters at most) and a narrow column cannot show whole.
+  const cells = JSON.parse(readFileSync(join(ROOT, "examples", "cold-outreach", "demo.json"), "utf8"));
+  cells.panels.find((panel: { type: string }) => panel.type === "sheet").config.rows[0].cells.company = "Kestrel Family Law Partners";
+  mkdirSync(join(ws, "demos", "long-cells"), { recursive: true });
+  writeFileSync(join(ws, "demos", "long-cells", "demo.json"), JSON.stringify(cells));
 });
 
 test.afterAll(() => rmSync(ws, { recursive: true, force: true }));
@@ -41,10 +54,32 @@ test("shots of a demo where everything fits end clean", () => {
   expect(existsSync(join(ws, "demos", "fits", "shots", "00-start.png"))).toBe(true);
 });
 
+test("a label of the full 40 characters fits, on a laptop and on a phone", () => {
+  const run = shots("long-labels");
+  expect(run.stdout).not.toContain("does not fit");
+  expect(run.status).toBe(0);
+});
+
+test("a text that ends in three dots does not fit either", () => {
+  const run = shots("long-cells");
+  expect(run.stdout).toContain("does not fit  leads, cut short: Kestrel Family Law Partners");
+  expect(run.status).toBe(1);
+});
+
 test("shots say what does not fit, by panel, and fail", () => {
   const run = shots("wide-week");
   expect(run.stdout).toMatch(/does not fit {2}week, cut off (below|sideways): /);
   expect(run.status).toBe(1);
   // The pictures are still there to look at.
   expect(existsSync(join(ws, "demos", "wide-week", "shots", "00-start.png"))).toBe(true);
+});
+
+test("shots leave no copy of the demo in the app's folder", () => {
+  shots("fits");
+  expect(existsSync(join(ROOT, ".build", "shots", "fits"))).toBe(false);
+});
+
+test("a page that scrolls says what reaches past the edge", async ({ page }) => {
+  await page.setContent('<main class="stage"><section data-panel="week"><p style="width: 3000px">Roof replacement</p></section></main>');
+  expect(await spills(page)).toEqual(["the page scrolls, first past the edge: week: Roof replacement"]);
 });

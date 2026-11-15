@@ -215,7 +215,7 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
     >
       <h1 className="sr-only">{demo.title}</h1>
       {compact && (
-        <div role="tablist" aria-label="Panels" className="flex gap-[0.4rem]">
+        <div role="tablist" aria-label="Panels" className="flex min-w-0 gap-[0.4rem]">
           {arranged.slots.map((spec) => {
             const on = shown === spec.id;
             const live = play.focus === spec.id;
@@ -234,7 +234,7 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
                 )}
               >
                 {on && <Tally live={live} />}
-                {on ? <span className="min-w-0 truncate">{spec.label}</span> : <Icon name={presets[spec.type].logic.icon} className="size-[1.15rem]" />}
+                {on ? <span className="line-clamp-2 min-w-0 text-left leading-[1.15]">{spec.label}</span> : <Icon name={presets[spec.type].logic.icon} className="size-[1.15rem]" />}
               </button>
             );
           })}

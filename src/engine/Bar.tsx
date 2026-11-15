@@ -55,7 +55,7 @@ export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Ti
       <dl key="outcome" className="flex flex-wrap items-end gap-x-[2.6rem] gap-y-2 compact:grid compact:w-full compact:grid-cols-[max-content_1fr] compact:gap-x-3" data-outcome>
         {demo.outcome.map((o, i) => (
           <div key={i} className="flex animate-land items-end gap-3 border-l-2 border-tally pl-3 compact:col-span-2 compact:grid compact:grid-cols-subgrid" style={{ animationDelay: `${i * 140}ms` }}>
-            <dd className="text-outcome font-bold tabular-nums tracking-tight compact:text-big">{o.value}</dd>
+            <dd className="text-outcome font-bold tracking-tight compact:text-big">{o.value}</dd>
             <dt className="pb-[0.2rem] text-lead leading-tight text-stage-muted compact:text-meta">
               {o.label}
               {o.was && <span className="block text-body font-medium text-stage-ink/75 compact:text-meta">was {o.was}</span>}
@@ -108,7 +108,7 @@ export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Ti
         )}
         <div className="flex shrink-0 items-center gap-[0.9rem] text-meta text-stage-muted">
           {beat.clock && !done && (
-            <time className="text-lead font-medium tabular-nums text-stage-ink" data-clock>
+            <time className="text-lead font-medium text-stage-ink" data-clock>
               {beat.clock}
             </time>
           )}

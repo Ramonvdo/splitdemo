@@ -34,10 +34,11 @@ export default function Panel({ config, state }: PanelProps<Config, State, Actio
               <div className="min-w-0 flex-1">
                 <p className="flex items-baseline justify-between gap-2">
                   <span className={cn("truncate", mail.unread && "font-semibold")}>{mail.from}</span>
-                  {mail.time && <span className="shrink-0 text-meta tabular-nums text-muted">{mail.time}</span>}
+                  {mail.time && <span className="shrink-0 text-meta text-muted">{mail.time}</span>}
                 </p>
                 <p className="flex items-center justify-between gap-2 text-meta">
-                  <span className={cn("truncate", !mail.unread && "text-muted")}>{mail.subject}</span>
+                  {/* A list shows the start of a subject; the open message shows all of it. */}
+                  <span data-clip className={cn("truncate", !mail.unread && "text-muted")}>{mail.subject}</span>
                   <Tag mail={mail} />
                 </p>
               </div>

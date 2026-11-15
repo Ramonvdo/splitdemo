@@ -19,6 +19,8 @@ export const logic: PanelLogic<Config, State, Action> = {
         return { messages: [...state.messages, { from: "me", text: action.text }], typing: state.typing };
       case "receive":
         return { messages: [...state.messages, { from: "them", text: action.text }], typing: false };
+      case "event":
+        return { ...state, messages: [...state.messages, { from: "event", text: action.text }] };
       case "typing":
         return { ...state, typing: true };
       case "notify":

@@ -33,7 +33,7 @@ export default function Panel({ config, state }: PanelProps<Config, State, Actio
                 <p className={cn("truncate font-medium", !sent && "text-muted")}>{step.title}</p>
                 {step.when && <p className="text-meta text-muted">{step.when}</p>}
               </div>
-              {note && <span className="shrink-0 animate-pop text-meta font-medium tabular-nums">{note}</span>}
+              {note && <span className="shrink-0 animate-pop text-meta font-medium">{note}</span>}
             </li>
           );
         })}
@@ -43,7 +43,7 @@ export default function Panel({ config, state }: PanelProps<Config, State, Actio
         {state.stats.map((stat) => (
           <div key={stat.id} data-stat={stat.id} className="flex min-w-0 flex-col-reverse rounded-control border border-line px-[0.7rem] py-[0.45rem]">
             {/* A changed counter gets a new key, so it mounts again and flashes. */}
-            <dd key={stat.rev} className={cn("rounded-control text-big font-bold tabular-nums tracking-tight", stat.tone && TONE_TEXT[stat.tone], stat.rev > 0 && "flash")}>
+            <dd key={stat.rev} className={cn("rounded-control text-big font-bold tracking-tight", stat.tone && TONE_TEXT[stat.tone], stat.rev > 0 && "flash")}>
               {stat.value}
             </dd>
             <dt className="truncate text-meta text-muted">{stat.label}</dt>
