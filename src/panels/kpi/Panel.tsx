@@ -22,8 +22,8 @@ export default function Panel({ config, state, still }: PanelProps<Config, State
                 {tile.delta && <span className={cn("rounded-full px-[0.5rem] py-[0.05rem] text-meta font-medium", TONES[tile.tone ?? "idle"])}>{tile.delta}</span>}
               </span>
             </dd>
-            {/* Two tiles across leave a label less room than it may need, so there it takes a second line instead of losing its end. */}
-            <dt className="truncate text-meta leading-tight text-muted @max-[30rem]:whitespace-normal">{tile.label}</dt>
+            {/* A narrow tile leaves a label less room than it may need, so it takes a second line instead of losing its end. */}
+            <dt className="line-clamp-2 text-meta leading-tight text-muted">{tile.label}</dt>
           </div>
         ))}
       </dl>
