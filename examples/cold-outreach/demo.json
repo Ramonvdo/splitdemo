@@ -5,7 +5,7 @@
     {
       "id": "leads",
       "type": "sheet",
-      "label": "Lead list",
+      "label": "Lead list, first rows",
       "config": {
         "columns": [
           { "id": "company", "title": "Company" },
@@ -50,9 +50,7 @@
         ],
         "stats": [
           { "id": "sent", "label": "Sent", "value": "0" },
-          { "id": "opened", "label": "Opened", "value": "0" },
-          { "id": "replies", "label": "Replies", "value": "0" },
-          { "id": "visits", "label": "Visits booked", "value": "0" }
+          { "id": "replies", "label": "Replies", "value": "0" }
         ]
       }
     },
@@ -101,11 +99,11 @@
       "say": "A reply comes in. It is read and sorted before you see it.",
       "clock": "10:42 AM",
       "do": [
-        { "on": "inbox", "type": "receive", "id": "ines", "from": "Ines Calloway", "subject": "Re: Your new office", "body": "Good timing. Our cleaner keeps missing the kitchen. Could you come by and give us a quote?", "time": "10:42 AM" },
+        { "on": "inbox", "type": "receive", "id": "ines", "from": "Ines Calloway", "subject": "Re: Your new office", "body": "Good timing. Our cleaner keeps missing the kitchen. Could you come by and give us a quote?", "time": "Mon" },
         { "on": "flow", "type": "run", "node": "sort", "note": "Interested, wants a quote", "after": 900 },
         { "on": "inbox", "type": "open", "mail": "ines", "after": 400 },
         { "on": "inbox", "type": "tag", "mail": "ines", "tag": "Interested", "tone": "good", "after": 700 },
-        { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Replied" }, "tone": "good" },
+        { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Interested" }, "tone": "good" },
         { "on": "campaign", "type": "stat", "stat": "replies", "value": "1", "tone": "good", "after": 300 }
       ]
     },
@@ -123,33 +121,24 @@
         { "on": "flow", "type": "run", "node": "nudge", "note": "39 had not answered" },
         { "on": "campaign", "type": "send", "step": "nudge", "note": "39 sent" },
         { "on": "campaign", "type": "stat", "stat": "sent", "value": "79", "after": 300 },
-        { "on": "campaign", "type": "stat", "stat": "opened", "value": "52", "after": 300 }
+        { "on": "inbox", "type": "reply", "mail": "ines", "text": "Happy to, Ines. I can come by Thursday at 9 AM or Friday at 2 PM. Which suits you?", "label": "Sent with your OK" }
       ]
     },
     {
-      "say": "The nudge works. Two more offices write back.",
+      "say": "The nudge works. Two more offices write back, and you chased nobody.",
       "clock": "Day 5",
       "do": [
         { "on": "inbox", "type": "receive", "id": "maya", "from": "Maya Ortiz", "subject": "Re: Your 4th floor", "body": "Yes, we could use help up there. Can you visit on Friday?", "time": "Thu", "tag": "Interested", "tone": "good" },
         { "on": "inbox", "type": "receive", "id": "tom", "from": "Tom Becker", "subject": "Re: Six chairs", "body": "What would twice a week cost us?", "time": "Fri", "tag": "Wants prices", "tone": "info", "after": 600 },
-        { "on": "leads", "type": "set", "row": "kestrel", "cells": { "status": "Replied" }, "tone": "good" },
+        { "on": "leads", "type": "set", "row": "kestrel", "cells": { "status": "Interested" }, "tone": "good" },
         { "on": "leads", "type": "set", "row": "alder", "cells": { "status": "Replied" }, "tone": "good", "after": 350 },
         { "on": "campaign", "type": "stat", "stat": "replies", "value": "3", "tone": "good", "after": 300 }
-      ]
-    },
-    {
-      "say": "One week in: real conversations, and you chased nobody.",
-      "clock": "Day 7",
-      "do": [
-        { "on": "campaign", "type": "stat", "stat": "visits", "value": "2", "tone": "good" },
-        { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Visit Thu" }, "tone": "good", "after": 300 },
-        { "on": "leads", "type": "set", "row": "kestrel", "cells": { "status": "Visit Fri" }, "tone": "good", "after": 350 }
       ]
     }
   ],
   "outcome": [
     { "value": "40", "label": "offices emailed, each personally", "was": "5 a week" },
     { "value": "3", "label": "replies in the first week", "was": "0 most weeks" },
-    { "value": "2", "label": "visits booked to quote", "was": "1 a month" }
+    { "value": "2", "label": "offices asking you to come by", "was": "1 a month" }
   ]
 }
