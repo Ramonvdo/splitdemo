@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
-import { READY, settle, spills } from "./spills.ts";
+import { READY, settle, spills } from "../scripts/lib/spills.ts";
 
 const DEMOS = ["speed-to-lead", "cold-outreach", "intake-to-booking"];
 const SIZES = [

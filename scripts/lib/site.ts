@@ -6,12 +6,16 @@ import { ROOT } from "./workspace.ts";
 
 /** Everything the scripts generate lives here. It is ignored by git. */
 export const BUILD_DIR = join(ROOT, ".build");
-const APP_DIR = join(BUILD_DIR, "app");
 
-/** Builds the app once: the same files play any demo.json placed next to them. */
+/**
+ * Builds the app once: the same files play any demo.json placed next to them.
+ * Each run builds into a folder of its own and removes it when it ends, so two scripts at once never share one.
+ */
 export async function buildApp(): Promise<string> {
-  await build({ root: ROOT, logLevel: "warn", build: { outDir: APP_DIR, emptyOutDir: true } });
-  return APP_DIR;
+  const dir = join(BUILD_DIR, `app-${process.pid}`);
+  process.once("exit", () => rmSync(dir, { recursive: true, force: true }));
+  await build({ root: ROOT, logLevel: "warn", build: { outDir: dir, emptyOutDir: true } });
+  return dir;
 }
 
 /**
@@ -39,18 +43,22 @@ const TYPES: Record<string, string> = {
   ".txt": "text/plain; charset=utf-8",
 };
 
-/** Serves a folder on this machine only, on a free port. An unknown path is a real 404. */
-export function serveDir(dir: string): Promise<{ url: string; close(): Promise<void> }> {
+/**
+ * Serves a folder on this machine only, on a free port, the way the host serves a share:
+ * `headers` go out with every file, and an unknown path is a real 404 that shows the folder's 404.html when it has one.
+ */
+export function serveDir(dir: string, headers: Record<string, string> = {}): Promise<{ url: string; close(): Promise<void> }> {
   const server: Server = createServer((req, res) => {
     const path = decodeURIComponent((req.url ?? "/").split("?")[0]);
     let file = normalize(join(dir, path));
     if (file !== dir && !file.startsWith(dir + sep)) file = dir;
     if (existsSync(file) && statSync(file).isDirectory()) file = join(file, "index.html");
     if (!existsSync(file)) {
-      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-      return res.end("Not found");
+      const page = join(dir, "404.html");
+      res.writeHead(404, { ...headers, "Content-Type": existsSync(page) ? TYPES[".html"] : TYPES[".txt"] });
+      return res.end(existsSync(page) ? readFileSync(page) : "Not found");
     }
-    res.writeHead(200, { "Content-Type": TYPES[extname(file)] ?? "application/octet-stream", "Cache-Control": "no-store" });
+    res.writeHead(200, { ...headers, "Content-Type": TYPES[extname(file)] ?? "application/octet-stream", "Cache-Control": "no-store" });
     res.end(readFileSync(file));
   });
   return new Promise((resolve, reject) => {

@@ -73,5 +73,5 @@ export default defineConfig({
   resolve: { alias: { "@": join(ROOT, "src") } },
   server: { port: 4310, strictPort: true },
   preview: { port: 4311, strictPort: true },
-  test: { include: ["src/**/*.test.ts"] },
+  test: { include: ["src/**/*.test.ts", "scripts/**/*.test.ts"] },
 });

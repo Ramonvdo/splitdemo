@@ -51,13 +51,14 @@ export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Ti
   let line: ReactNode;
   if (done) {
     line = (
-      <dl key="outcome" className="flex flex-wrap items-end gap-x-[2.6rem] gap-y-2 compact:gap-x-[1.4rem]" data-outcome>
+      // On a phone the numbers share one column, so the three lines of what they mean start at the same place.
+      <dl key="outcome" className="flex flex-wrap items-end gap-x-[2.6rem] gap-y-2 compact:grid compact:w-full compact:grid-cols-[max-content_1fr] compact:gap-x-3" data-outcome>
         {demo.outcome.map((o, i) => (
-          <div key={i} className="flex animate-land items-end gap-3 border-l-2 border-tally pl-3" style={{ animationDelay: `${i * 140}ms` }}>
+          <div key={i} className="flex animate-land items-end gap-3 border-l-2 border-tally pl-3 compact:col-span-2 compact:grid compact:grid-cols-subgrid" style={{ animationDelay: `${i * 140}ms` }}>
             <dd className="text-outcome font-bold tabular-nums tracking-tight compact:text-big">{o.value}</dd>
             <dt className="pb-[0.2rem] text-lead leading-tight text-stage-muted compact:text-meta">
               {o.label}
-              {o.was && <span className="block text-meta">was {o.was}</span>}
+              {o.was && <span className="block text-body font-medium text-stage-ink/75 compact:text-meta">was {o.was}</span>}
             </dt>
           </div>
         ))}

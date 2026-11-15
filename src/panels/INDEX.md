@@ -11,7 +11,7 @@ Written by `npm run panels` from each panel's folder. To change a row, change th
 | `inbox` | A mailbox: the list of mail, and next to it the opened mail with its reply. | the system reads, sorts, answers or sends email, or the customer gets a confirmation by mail. | `receive`, `open`, `tag`, `reply` |
 | `kpi` | The owner's numbers: up to four tiles, and one bar chart under them. | the gain is a number the owner already watches: reply time, bookings, hours saved, revenue. | `set`, `push` |
 | `phone` (tall) | One message thread on a phone: the conversation as the person holding it lives it. | the system talks to someone by text, WhatsApp or chat, or turns a missed call into a message. | `send` (pressable), `receive`, `typing`, `notify` |
-| `sheet` | A spreadsheet: one row per lead, order or request. New rows land at the bottom and changed cells flash. | the prospect runs on Google Sheets, Excel or Airtable, or the system fills in a list someone types by hand today. | `add`, `set` |
+| `sheet` | A spreadsheet: one row per lead, order or request. New rows land at the bottom and changed cells flash. | the prospect runs on Google Sheets, Excel or Airtable, or the system fills in a list someone types by hand today. | `add`, `set`, `fill` |
 | `workflow` | The automation as a short flow, left to right. Each step lights up as it runs and says what it found. | the viewer should see that a system did the work, step by step, with nobody at a desk. | `run` |
 
 - **tall**: drawn tall and narrow. It takes the full-height slot on the left, and a wall has one such slot.

@@ -35,6 +35,8 @@ export const action = z.discriminatedUnion("type", [
   z.strictObject({ type: z.literal("add"), id, cells, tone: tone.optional() }),
   /** Cells of a row change in place. Name only the cells that change. */
   z.strictObject({ type: z.literal("set"), row: id, cells: cells.optional(), tone: tone.optional() }),
+  /** One column gets the same text in every row, like a fill down: a whole list turns "Sent" at once. */
+  z.strictObject({ type: z.literal("fill"), column: id, value: z.string().max(28), tone: tone.optional() }),
 ]);
 
 export type Config = z.infer<typeof config>;

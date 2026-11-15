@@ -13,7 +13,7 @@ export default function Panel({ config, state, still }: PanelProps<Config, State
     <div className="flex h-full flex-col gap-[0.7rem] p-[0.8rem]">
       <dl className="grid grid-cols-[repeat(var(--n),minmax(0,1fr))] gap-[0.6rem] @max-[30rem]:grid-cols-2" style={{ "--n": state.tiles.length } as CSSProperties}>
         {state.tiles.map((tile) => (
-          <div key={tile.id} data-tile={tile.id} className="flex min-w-0 flex-col-reverse justify-end rounded-control border border-line px-[0.8rem] py-[0.6rem] @max-[30rem]:last:odd:col-span-2">
+          <div key={tile.id} data-tile={tile.id} className="flex min-w-0 flex-col-reverse justify-between rounded-control border border-line px-[0.8rem] py-[0.6rem] @max-[30rem]:last:odd:col-span-2">
             {/* A changed number gets a new key, so it mounts again and flashes. */}
             <dd key={tile.rev} className={cn("flex flex-col items-start rounded-control", tile.rev > 0 && "flash")}>
               <span className="text-big font-bold tabular-nums tracking-tight">{tile.value}</span>

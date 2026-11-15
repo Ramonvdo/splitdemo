@@ -73,6 +73,7 @@ function Monitor({ spec, slot, live, waiting, zoom, scale, hidden, portrait, com
       aria-label={spec.label}
       data-panel={spec.id}
       data-live={live || undefined}
+      data-waiting={waiting || undefined}
       data-zoom={zoom || undefined}
       inert={hidden}
       className={cn("flex min-h-0 min-w-0 flex-col gap-[0.45rem] bg-stage", hidden && "invisible")}
@@ -110,6 +111,9 @@ function Monitor({ spec, slot, live, waiting, zoom, scale, hidden, portrait, com
 }
 
 const COMPACT = "(width < 720px)";
+
+/** How long a recording holds the opening picture, with the demo's title under it, before the story starts. */
+export const TITLE_CARD_MS = 1200;
 
 /** True on a phone, where the wall shows one monitor at a time. */
 function useCompact(): boolean {
@@ -156,6 +160,28 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
   useEffect(() => {
     if (compact && play.focus) setZoom({ id: play.focus, scale: 1 });
   }, [compact, play.focus]);
+
+  // Left to play on its own, the story starts once the picture is whole: every part loaded, every letter in its font.
+  // A recording first holds the opening picture for a moment, as its title card.
+  const latest = useRef(play);
+  latest.current = play;
+  useEffect(() => {
+    if (!flags.autoplay || flags.at !== undefined) return;
+    let frame = 0;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let off = false;
+    const start = () => !off && latest.current.status === "idle" && latest.current.toggle();
+    const wait = () => {
+      if (wall.current?.querySelector("[data-loading]")) return void (frame = requestAnimationFrame(wait));
+      document.fonts.ready.then(() => (timer = setTimeout(start, flags.record ? TITLE_CARD_MS : 0)));
+    };
+    wait();
+    return () => {
+      off = true;
+      cancelAnimationFrame(frame);
+      clearTimeout(timer);
+    };
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -226,7 +252,7 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
               slot={SLOTS[i]}
               live={live}
               // Before the first press every monitor is lit: the opening picture is the whole wall.
-              waiting={play.status !== "idle" && play.focus !== undefined && !live && !compact}
+              waiting={play.status !== "idle" && play.lit.length > 0 && !play.lit.includes(spec.id) && !compact}
               zoom={shown === spec.id}
               scale={zoom?.id === spec.id ? zoom.scale : 1}
               hidden={shown !== undefined && shown !== spec.id}
@@ -234,7 +260,7 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
               compact={compact}
               onZoom={flags.record ? undefined : () => pick(spec.id)}
             >
-              <View config={spec.config} state={now[spec.id]} pending={pending} onTrigger={pending ? play.press : undefined} clock={beat.clock} still={play.still} />
+              <View config={spec.config} state={now[spec.id]} pending={pending} onTrigger={pending ? play.press : undefined} clock={beat.clock} still={play.still} live={live} />
             </Monitor>
           );
         })}

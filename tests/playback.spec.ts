@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { READY } from "../scripts/lib/spills.ts";
 
 const DEMO = "/speed-to-lead/";
 
@@ -7,7 +8,7 @@ test("left alone, it plays to the end and shows what the business gained", async
   await expect(page.locator("main.stage")).toHaveAttribute("data-done", "true", { timeout: 50_000 });
   await expect(page.locator('[data-column="booked"] [data-card="dana"]')).toContainText("Thu 10:00");
   await expect(page.locator('[data-tile="reply"]')).toContainText("38 sec");
-  await expect(page.getByRole("img", { name: /Thu 1$/ })).toBeVisible();
+  await expect(page.getByRole("img", { name: /Wed 1$/ })).toBeVisible();
   // The outcome, with what it was before.
   await expect(page.locator("dl").last()).toContainText("38 sec");
   await expect(page.locator("dl").last()).toContainText("was 14 h");
@@ -65,4 +66,19 @@ test("when it is over the viewer is offered the next step the demo names", async
   const link = page.getByRole("link", { name: "Book a call" });
   await expect(link).toHaveAttribute("href", "https://example.com/call");
   await expect(link).toHaveAttribute("rel", /noopener/);
+});
+
+test("when it is over no step is still running, and a beat lights its cause next to its effect", async ({ page }) => {
+  await page.goto("/speed-to-lead/?at=end");
+  await page.locator(READY).waitFor();
+  await expect(page.locator('[data-panel="flow"] [data-ran]')).toHaveCount(6);
+  await expect(page.locator("[data-running]")).toHaveCount(0);
+
+  // Beat 3: the automation answers and the reply lands on the phone. Both are lit; the pipeline waits.
+  await page.goto("/speed-to-lead/?at=2");
+  await page.locator(READY).waitFor();
+  const waiting = await page.locator("[data-panel][data-waiting]").evaluateAll((els) => els.map((el) => (el as HTMLElement).dataset.panel));
+  expect(waiting).not.toContain("flow");
+  expect(waiting).not.toContain("phone");
+  expect(waiting.length).toBeGreaterThan(0);
 });

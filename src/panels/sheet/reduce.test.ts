@@ -45,3 +45,20 @@ it("refuses what the sheet cannot show", () => {
   const many = Array.from({ length: 7 }, (_, i): Action => ({ type: "add", id: `r${i}`, cells: {} }));
   expect(() => run(many)).toThrow("the sheet would hold 8 rows and fits 7");
 });
+
+it("fills a column down: every row gets the value, and only the rows it changed flash", () => {
+  const rows = run([
+    { type: "add", id: "dana", cells: { name: "Dana Whitfield", status: "New" } },
+    { type: "fill", column: "status", value: "Sent", tone: "info" },
+  ]).rows;
+  expect(rows.map((row) => [row.id, row.cells.status, row.tone])).toEqual([
+    ["omar", "Sent", "info"],
+    ["dana", "Sent", "info"],
+  ]);
+  // Omar was "Sent" in blue already, so nothing about him changed.
+  expect(rows.map((row) => [row.rev, row.changed])).toEqual([
+    [0, []],
+    [2, ["status"]],
+  ]);
+  expect(() => run([{ type: "fill", column: "phone", value: "1" }])).toThrow('there is no column "phone". Columns: name, email, status');
+});

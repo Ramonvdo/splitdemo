@@ -48,16 +48,15 @@
       "config": {
         "tiles": [
           { "id": "reply", "label": "Time to first reply", "value": "14 h" },
-          { "id": "after", "label": "After-hours answered", "value": "0 of 5" },
-          { "id": "booked", "label": "New patients booked", "value": "6" }
+          { "id": "closed", "label": "Booked while closed", "value": "$0" },
+          { "id": "booked", "label": "New patients booked", "value": "2" }
         ],
         "chart": {
-          "title": "New patients booked per day",
+          "title": "Bookings made per day",
           "points": [
-            { "label": "Mon", "value": 2 },
+            { "label": "Mon", "value": 1 },
             { "label": "Tue", "value": 1 },
-            { "label": "Wed", "value": 3 },
-            { "label": "Thu", "value": 0 }
+            { "label": "Wed", "value": 0 }
           ]
         }
       }
@@ -68,7 +67,7 @@
       "say": "21:14. The practice closed at six. Send the text a new patient would.",
       "clock": "21:14",
       "wait": "click",
-      "do": [{ "on": "phone", "type": "send", "text": "Hi, I chipped a tooth. Can I come in this week?" }]
+      "do": [{ "on": "phone", "type": "send", "text": "Hi, Dana Whitfield here. I chipped a tooth. Can I come in this week?" }]
     },
     {
       "say": "Nobody is at the desk. The message gets read anyway.",
@@ -83,7 +82,7 @@
       "do": [
         { "on": "flow", "type": "run", "node": "slots", "note": "Thu 10:00 and Fri 14:30 free" },
         { "on": "flow", "type": "run", "node": "reply", "after": 900 },
-        { "on": "phone", "type": "receive", "text": "Sorry to hear that! We can see you Thursday at 10:00 or Friday at 14:30. Which works best?", "after": 400 }
+        { "on": "phone", "type": "receive", "text": "Sorry to hear that, Dana! We can see you Thursday at 10:00 or Friday at 14:30. Which works best?", "after": 400 }
       ]
     },
     {
@@ -108,15 +107,15 @@
       "do": [
         { "on": "flow", "type": "run", "node": "tell", "note": "Summary sent" },
         { "on": "numbers", "type": "set", "tile": "reply", "value": "38 sec", "delta": "was 14 h", "tone": "good" },
-        { "on": "numbers", "type": "set", "tile": "after", "value": "5 of 5", "delta": "was 0 of 5", "tone": "good" },
-        { "on": "numbers", "type": "set", "tile": "booked", "value": "7", "delta": "+1", "tone": "good" },
-        { "on": "numbers", "type": "push", "label": "Thu", "value": 1 }
+        { "on": "numbers", "type": "set", "tile": "closed", "value": "$180", "delta": "was $0", "tone": "good" },
+        { "on": "numbers", "type": "set", "tile": "booked", "value": "3", "delta": "+1 tonight", "tone": "good" },
+        { "on": "numbers", "type": "push", "label": "Wed", "value": 1 }
       ]
     }
   ],
   "outcome": [
     { "value": "38 sec", "label": "to first reply", "was": "14 h" },
-    { "value": "5 of 5", "label": "after-hours leads answered", "was": "0 of 5" },
+    { "value": "$180", "label": "booked while you were closed", "was": "$0" },
     { "value": "+1", "label": "patient booked overnight" }
   ]
 }

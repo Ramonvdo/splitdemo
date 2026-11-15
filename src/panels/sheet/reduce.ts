@@ -53,6 +53,19 @@ export const logic: PanelLogic<Config, State, Action> = {
         if (tone) next.tone = tone;
         return { rows: state.rows.map((r) => (r === row ? next : r)) };
       }
+      case "fill": {
+        known({ [action.column]: action.value });
+        return {
+          rows: state.rows.map((row) => {
+            const tone = action.tone ?? row.tone;
+            // A row that reads the same already is left alone, so it does not flash.
+            if (row.cells[action.column] === action.value && tone === row.tone) return row;
+            const next: Row = { id: row.id, cells: { ...row.cells, [action.column]: action.value }, rev: row.rev + 1, changed: [action.column] };
+            if (tone) next.tone = tone;
+            return next;
+          }),
+        };
+      }
     }
   },
 };

@@ -13,9 +13,9 @@ type Node = Config["nodes"][number];
 const ROW_GAP_REM = 12.5;
 
 /** A step's icon: quiet until it runs, the tally while it runs, dark with a check once it is done. */
-function Mark({ node, state }: { node: Node; state: State }) {
+function Mark({ node, state, running }: { node: Node; state: State; running: boolean }) {
   const ran = state.ran.includes(node.id);
-  const live = state.last === node.id;
+  const live = running && state.last === node.id;
   return (
     <span
       key={live ? state.runs : "rest"}
@@ -54,7 +54,7 @@ function Note({ text }: { text: string }) {
 }
 
 /** The automation as a short flow, left to right. Steps light up as they run and say what they found. */
-export default function Panel({ config, state }: PanelProps<Config, State, Action>) {
+export default function Panel({ config, state, live: running = false }: PanelProps<Config, State, Action>) {
   const { at, cols } = useMemo(() => place(config.nodes), [config.nodes]);
   const edges = config.nodes.flatMap((node) => (node.after ?? []).map((from) => ({ from, to: node.id })));
 
@@ -115,11 +115,12 @@ export default function Panel({ config, state }: PanelProps<Config, State, Actio
                 key={node.id}
                 data-node={node.id}
                 data-ran={ran || undefined}
+                data-running={(running && state.last === node.id) || undefined}
                 className="absolute flex w-[8.6rem] -translate-x-1/2 -translate-y-[1.25rem] flex-col items-center gap-[0.4rem] text-center"
                 // A little narrower than its column, so the line between two columns stays free for the turns.
                 style={{ left: `${x(node.id)}%`, top: `${y(node.id)}%`, maxWidth: `calc(${100 / cols}% - 0.6rem)` }}
               >
-                <Mark node={node} state={state} />
+                <Mark node={node} state={state} running={running} />
                 <Label node={node} ran={ran} />
                 {note && <Note text={note} />}
               </li>
@@ -129,13 +130,13 @@ export default function Panel({ config, state }: PanelProps<Config, State, Actio
       </div>
 
       {/* A narrow monitor has no room for a canvas, so there the same steps are a list, top to bottom. */}
-      <ol className="hidden h-full flex-col justify-center gap-[0.55rem] p-[0.9rem] @max-[30rem]:flex">
+      <ol className="hidden h-full flex-col gap-[0.55rem] p-[0.9rem] @max-[30rem]:flex">
         {config.nodes.map((node) => {
           const ran = state.ran.includes(node.id);
           const note = state.notes[node.id];
           return (
             <li key={node.id} data-step={node.id} className="flex items-center gap-[0.7rem]">
-              <Mark node={node} state={state} />
+              <Mark node={node} state={state} running={running} />
               <span className="flex min-w-0 flex-1 flex-col items-start gap-[0.25rem]">
                 <Label node={node} ran={ran} />
                 {note && <Note text={note} />}

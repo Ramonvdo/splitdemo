@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PanelLogic } from "../panels/types.ts";
-import { advance, compile, duration, nextStep, readMs, snapshots } from "./timeline.ts";
+import { advance, compile, duration, lit, nextStep, readMs, snapshots } from "./timeline.ts";
 import type { Demo, Pos } from "./types.ts";
 
 /** A panel that only counts, so every expected value below can be worked out by hand. */
@@ -119,5 +119,37 @@ describe("playback", () => {
 
   it("stays put at the end", () => {
     expect(advance(t, { beat: 2, n: 3 })).toEqual({ beat: 2, n: 3 });
+  });
+});
+
+describe("lit", () => {
+  const two: Demo = {
+    ...demo,
+    panels: [
+      { id: "c", type: "counter", label: "Cause", config: { start: 0 } },
+      { id: "d", type: "counter", label: "Effect", config: { start: 0 } },
+    ],
+    beats: [
+      { say: "one", do: [{ on: "c", type: "inc", by: 1 }, { on: "d", type: "inc", by: 1 }] },
+      { say: "two", do: [{ on: "c", type: "inc", by: 1 }] },
+      { wait: "click", do: [{ on: "d", type: "inc", by: 1 }, { on: "c", type: "inc", by: 1 }] },
+    ],
+  };
+  const t = compile(two);
+
+  it("lights every panel the beat has acted on so far: the cause stays lit next to its effect", () => {
+    expect(lit(t, { beat: 0, n: 0 })).toEqual([]);
+    expect(lit(t, { beat: 0, n: 1 })).toEqual(["c"]);
+    expect(lit(t, { beat: 0, n: 2 })).toEqual(["c", "d"]);
+  });
+
+  it("keeps the last picture lit while the next beat has not acted yet", () => {
+    expect(lit(t, { beat: 1, n: 2 })).toEqual(["d"]);
+    expect(lit(t, { beat: 1, n: 3 })).toEqual(["c"]);
+  });
+
+  it("lights only the panel that waits for a press", () => {
+    expect(lit(t, { beat: 2, n: 3 })).toEqual(["d"]);
+    expect(lit(t, { beat: 2, n: 5 })).toEqual(["d", "c"]);
   });
 });

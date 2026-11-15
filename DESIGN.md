@@ -72,6 +72,8 @@ A line between two steps of a flow leaves level, turns once and arrives level. T
 - `pop` 320 ms: scale from 0.96. Chips, notes, the tap dot.
 - `flash` 1100 ms: a tally-tinted wash that fades. A value that changed.
 - Tally: on is an instant cut, off fades over 240 ms. Waiting monitors dim to 88% brightness over 200 ms. Before the first press nothing waits yet, so the whole wall is lit.
+- A beat lights every monitor it has acted on so far, so the cause stays lit next to its effect. The label light sits on the last one. A press the demo is waiting for lights only the monitor to press. A beat that has not acted yet keeps the picture of the one before.
+- A workflow step is tally-coloured only while the action is on the workflow. Once the story moves to another monitor, or ends, the step carries its done check, so nothing looks like it is still running.
 - Only `transform`, `opacity` and `filter` animate.
 - The timeline is the one clock. A seek and a step back show the picture finished: `data-still` on the stage sets every animation and transition to zero length (not `none`, so nothing replays when motion returns), and a panel gets `still` for motion it drives from JavaScript.
 - Reduced motion keeps the story and drops the movement. The demo opens at the start and plays beat by beat, and every animation and transition has zero length, so content cuts in where it would have landed.
@@ -101,7 +103,7 @@ The lower third reads the outcome, each value next to what it was before. A demo
 
 ## Loading
 
-The first picture is the wall, the caption and the play button, and it waits for nothing else. What a browser loads from a panel folder takes only types from `schema.ts`, so the validation library stays with the scripts. The bar chart brings its library in a file of its own: its place in the KPI monitor keeps its size and carries `data-loading` until it lands, and anything that judges a still picture waits for that mark to go.
+The first picture is the wall, the caption and the play button, and it waits for nothing else. What a browser loads from a panel folder takes only types from `schema.ts`, so the validation library stays with the scripts. The bar chart brings its library in a file of its own: its place in the KPI monitor keeps its size and carries `data-loading` until it lands, and anything that judges a still picture waits for that mark to go. Autoplay waits for it too, and for the fonts, so a demo never starts on a half-drawn wall. A recording then holds that first picture for 1.2 s with the demo's title as its caption: the title card.
 
 ## Gallery
 
@@ -110,7 +112,7 @@ The dev server draws every preset with the example from its folder at `/__panels
 ## Left out on purpose
 
 - A switcher between demos. A shared demo is one prospect's page and knows of no other.
-- A skip link. The stage is one screen with a handful of stops, and the transport comes first in the tab order.
+- A skip link. The stage is one screen with a handful of stops: the monitors first, then the transport.
 - Anything for search engines. A shared demo is marked noindex; it is found by its link.
 - Motion while idle. The tap dot on the play button is the one thing that moves before the first press.
 

@@ -14,10 +14,10 @@
           { "id": "status", "title": "Status", "tag": true }
         ],
         "rows": [
-          { "id": "kestrel", "cells": { "company": "Kestrel Law", "contact": "Maya Ortiz", "line": "Saw the new 4th floor", "status": "Replied" }, "tone": "good" },
-          { "id": "alder", "cells": { "company": "Alder Dental", "contact": "Tom Becker", "line": "Six chairs, one cleaner?", "status": "Sent" }, "tone": "info" },
-          { "id": "summit", "cells": { "company": "Summit Physio", "contact": "Lena Park", "line": "Two rooms added in May", "status": "Sent" }, "tone": "info" },
-          { "id": "harlow", "cells": { "company": "Harlow & Finch", "contact": "Priya Shah", "line": "Three floors, one bin run", "status": "Sent" }, "tone": "info" }
+          { "id": "kestrel", "cells": { "company": "Kestrel Law", "contact": "Maya Ortiz", "line": "Saw the new 4th floor", "status": "Ready" } },
+          { "id": "alder", "cells": { "company": "Alder Dental", "contact": "Tom Becker", "line": "Six chairs, one cleaner?", "status": "Ready" } },
+          { "id": "summit", "cells": { "company": "Summit Physio", "contact": "Lena Park", "line": "Two rooms added in May", "status": "Ready" } },
+          { "id": "harlow", "cells": { "company": "Harlow & Finch", "contact": "Priya Shah", "line": "Three floors, one bin run", "status": "Ready" } }
         ]
       }
     },
@@ -93,21 +93,21 @@
       "clock": "08:00",
       "do": [
         { "on": "flow", "type": "run", "node": "send" },
-        { "on": "campaign", "type": "status", "text": "Sending", "tone": "info" },
+        { "on": "campaign", "type": "status", "text": "Live", "tone": "good" },
         { "on": "campaign", "type": "send", "step": "first", "note": "40 sent" },
         { "on": "campaign", "type": "stat", "stat": "sent", "value": "40", "after": 300 },
-        { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Sent" }, "tone": "info" },
-        { "on": "leads", "type": "set", "row": "pike", "cells": { "status": "Sent" }, "tone": "info", "after": 250 }
+        { "on": "leads", "type": "fill", "column": "status", "value": "Sent", "tone": "info" }
       ]
     },
     {
       "say": "Three days on, the quiet ones get a short nudge. You did nothing.",
       "clock": "Day 4",
       "do": [
-        { "on": "flow", "type": "run", "node": "nudge", "note": "31 had not answered" },
-        { "on": "campaign", "type": "send", "step": "nudge", "note": "31 sent" },
-        { "on": "campaign", "type": "stat", "stat": "sent", "value": "71", "after": 300 },
-        { "on": "campaign", "type": "stat", "stat": "opened", "value": "52", "after": 300 }
+        { "on": "flow", "type": "run", "node": "nudge", "note": "36 had not answered" },
+        { "on": "campaign", "type": "send", "step": "nudge", "note": "36 sent" },
+        { "on": "campaign", "type": "stat", "stat": "sent", "value": "76", "after": 300 },
+        { "on": "campaign", "type": "stat", "stat": "opened", "value": "52", "after": 300 },
+        { "on": "campaign", "type": "stat", "stat": "replies", "value": "4", "tone": "good", "after": 300 }
       ]
     },
     {
@@ -118,11 +118,11 @@
         { "on": "inbox", "type": "open", "mail": "ines", "after": 400 },
         { "on": "inbox", "type": "tag", "mail": "ines", "tag": "Interested", "tone": "good", "after": 700 },
         { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Replied" }, "tone": "good" },
-        { "on": "campaign", "type": "stat", "stat": "replies", "value": "6", "tone": "good", "after": 300 }
+        { "on": "campaign", "type": "stat", "stat": "replies", "value": "5", "tone": "good", "after": 300 }
       ]
     },
     {
-      "say": "The answer is already drafted. You read it and press send.",
+      "say": "The answer is already drafted. It waits for your OK.",
       "do": [
         { "on": "flow", "type": "run", "node": "draft" },
         { "on": "inbox", "type": "reply", "mail": "ines", "text": "Happy to, Ines. I can come by Thursday at 9:00 or Friday at 14:00. Which suits you?", "label": "Drafted for you" }
@@ -132,8 +132,8 @@
       "say": "One week in: real conversations, and you chased nobody.",
       "clock": "Day 7",
       "do": [
-        { "on": "campaign", "type": "status", "text": "Live", "tone": "good" },
-        { "on": "campaign", "type": "stat", "stat": "visits", "value": "3", "tone": "good" },
+        { "on": "campaign", "type": "stat", "stat": "replies", "value": "6", "tone": "good" },
+        { "on": "campaign", "type": "stat", "stat": "visits", "value": "3", "tone": "good", "after": 300 },
         { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Visit Thu" }, "tone": "good" },
         { "on": "leads", "type": "set", "row": "kestrel", "cells": { "status": "Visit Fri" }, "tone": "good", "after": 350 }
       ]

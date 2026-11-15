@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { spills } from "./spills.ts";
+import { spills } from "../scripts/lib/spills.ts";
 
 const PANELS = ["calendar", "campaign", "crm", "form", "inbox", "kpi", "phone", "sheet", "workflow"];
 

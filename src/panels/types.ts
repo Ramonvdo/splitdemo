@@ -25,6 +25,8 @@ export interface PanelProps<C = any, S = any, A = any> {
   pending?: A;
   /** Press the pending action. */
   onTrigger?: () => void;
+  /** The action is on this panel right now: its label carries the tally. Something that is "running" runs only while this is true. */
+  live?: boolean;
   /** The time in the story right now, e.g. "21:14". */
   clock?: string;
   /**

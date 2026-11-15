@@ -79,6 +79,16 @@ export function nextStep(t: Timeline, pos: Pos): Step {
   return pos.beat === t.beats.length - 1 ? { kind: "end", delay } : { kind: "beat", delay };
 }
 
+/**
+ * The panels to keep lit at `pos`: every one this beat has acted on so far, so a cause stays lit next to its effect.
+ * A beat that waits for a press lights only the panel to press. A beat that has not acted yet keeps the last picture.
+ */
+export function lit(t: Timeline, pos: Pos): string[] {
+  if (nextStep(t, pos).kind === "gate") return [t.cues[pos.n].action.on];
+  const from = t.beats[pos.beat].from;
+  return [...new Set(t.cues.slice(Math.max(pos.n > from ? from : pos.n - 1, 0), pos.n).map((cue) => cue.action.on))];
+}
+
 /** The position one step on: the next cue applied, or the next beat begun. */
 export function advance(t: Timeline, pos: Pos): Pos {
   const beat = t.beats[pos.beat];
