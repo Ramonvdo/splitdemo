@@ -67,7 +67,7 @@ On a call: space plays and pauses, the arrow keys step through the story, `R` pl
   ],
   "beats": [
     {
-      "say": "21:14. The practice closed at six. Send the text a new patient would.",
+      "say": "9:14 PM. The practice closed at six. Send the text a new patient would.",
       "wait": "click",
       "do": [{ "on": "phone", "type": "send", "text": "Hi, I chipped a tooth. Can I come in this week?" }]
     },

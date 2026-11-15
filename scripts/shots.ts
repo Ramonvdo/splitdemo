@@ -53,7 +53,7 @@ try {
     return found.length;
   };
   const pad = (n: number) => String(n).padStart(2, "0");
-  const states = ["", ...demo.beats.map((_, beat) => `&at=${beat}`), "&at=end"];
+  const states = ["&at=start", ...demo.beats.map((_, beat) => `&at=${beat}`), "&at=end"];
   const names = ["00-start", ...demo.beats.map((_, beat) => `${pad(beat + 1)}-beat`), `${pad(demo.beats.length + 1)}-end`];
   for (const [i, query] of states.entries()) {
     await open(query, names[i]);

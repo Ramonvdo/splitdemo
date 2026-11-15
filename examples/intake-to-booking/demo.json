@@ -39,6 +39,7 @@
       "type": "calendar",
       "label": "Your crew's week",
       "config": {
+        "ampm": true,
         "days": [
           { "id": "mon", "label": "Mon" },
           { "id": "tue", "label": "Tue" },
@@ -71,7 +72,7 @@
   "beats": [
     {
       "say": "Sunday evening. A homeowner finds a leak and opens your website.",
-      "clock": "20:40",
+      "clock": "8:40 PM",
       "do": [
         { "on": "form", "type": "fill", "field": "name", "value": "Ruth Adeyemi" },
         { "on": "form", "type": "fill", "field": "address", "value": "14 Birch Lane", "after": 700 },
@@ -93,25 +94,25 @@
     },
     {
       "say": "Your crew's week is checked and the first free slot is taken.",
-      "clock": "20:41",
+      "clock": "8:41 PM",
       "do": [
-        { "on": "flow", "type": "run", "node": "slot", "note": "Mon 08:00 is free" },
+        { "on": "flow", "type": "run", "node": "slot", "note": "Mon 8:00 AM is free" },
         { "on": "flow", "type": "run", "node": "book", "after": 900 },
         { "on": "week", "type": "book", "id": "leak", "day": "mon", "time": "08:00", "title": "Leak, 14 Birch Lane", "tone": "info", "after": 400 }
       ]
     },
     {
       "say": "The homeowner gets a time, not a promise to call back.",
-      "clock": "20:42",
+      "clock": "8:42 PM",
       "do": [
         { "on": "flow", "type": "run", "node": "confirm" },
-        { "on": "mail", "type": "receive", "id": "booked", "from": "Ridgeline Roofing", "subject": "Monday 08:00: your inspection", "body": "Hi Ruth, sorry about the leak. Marco will be at 14 Birch Lane tomorrow, Monday, at 08:00. Reply to change the time.", "time": "20:42" },
+        { "on": "mail", "type": "receive", "id": "booked", "from": "Ridgeline Roofing", "subject": "Inspection Monday 8 AM", "body": "Hi Ruth, sorry about the leak. Marco will be at 14 Birch Lane tomorrow, Monday, at 8:00 AM. Reply to change the time.", "time": "8:42 PM" },
         { "on": "mail", "type": "open", "mail": "booked", "after": 900 }
       ]
     },
     {
       "say": "Monday morning the job is on the board. Nobody made a call.",
-      "clock": "07:00",
+      "clock": "7:00 AM",
       "do": [{ "on": "flow", "type": "run", "node": "brief", "note": "Address and details sent" }]
     }
   ],

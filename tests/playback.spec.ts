@@ -6,7 +6,7 @@ const DEMO = "/speed-to-lead/";
 test("left alone, it plays to the end and shows what the business gained", async ({ page }) => {
   await page.goto(`${DEMO}?autoplay=1`);
   await expect(page.locator("main.stage")).toHaveAttribute("data-done", "true", { timeout: 50_000 });
-  await expect(page.locator('[data-column="booked"] [data-card="dana"]')).toContainText("Thu 10:00");
+  await expect(page.locator('[data-column="booked"] [data-card="dana"]')).toContainText("Thu 10 AM");
   await expect(page.locator('[data-tile="reply"]')).toContainText("38 sec");
   await expect(page.getByRole("img", { name: /Wed 1$/ })).toBeVisible();
   // The outcome, with what it was before.
@@ -81,4 +81,12 @@ test("when it is over no step is still running, and a beat lights its cause next
   expect(waiting).not.toContain("flow");
   expect(waiting).not.toContain("phone");
   expect(waiting.length).toBeGreaterThan(0);
+});
+
+test("opened as a picture of the start, nothing moves: the chart has its bars at once", async ({ page }) => {
+  await page.goto(`${DEMO}?at=start`);
+  await page.locator(READY).waitFor();
+  const stage = page.locator("main.stage");
+  await expect(stage).toHaveAttribute("data-status", "idle");
+  await expect(stage).toHaveAttribute("data-still", "true");
 });

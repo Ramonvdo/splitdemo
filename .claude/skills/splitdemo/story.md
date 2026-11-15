@@ -45,7 +45,7 @@ A label says whose screen it is or which tool it is, in 40 characters or fewer (
 - A number the prospect stated goes in as they stated it.
 - A number you invent stays modest and plausible for a business that size. List the invented ones in your report so the user can replace them. The page itself carries a "Scripted example" tag.
 - At least one outcome carries `was`: "38 sec", was "14 h". A value is 12 characters or fewer. `was` can be a few words when the before has no number: "no reply".
-- Write times, dates and money the way the viewer does: "6:42 PM" and "$450" for an owner in the US, "18:42" and "€450" for one in the Netherlands.
+- Write times, dates and money the way the viewer does: "6:42 PM" and "$450" for an owner in the US, "18:42" and "€450" for one in the Netherlands. A calendar panel shows AM and PM with `ampm: true`.
 - Use the prospect's business name. When the input gives none, write the trade where the name would go ("Your HVAC office") and say so in your report. Invent its customers: names that fit the trade and the place, problems that customer would really have.
 
 ## The cold read

@@ -63,17 +63,15 @@
       "config": {
         "title": "Brightside Cleaning",
         "mails": [
-          { "id": "supplier", "from": "Peak Supply Co.", "subject": "Your order has shipped", "time": "Mon" },
-          { "id": "invoice", "from": "Accounting", "subject": "October invoices are ready", "time": "Fri" },
-          { "id": "permit", "from": "City of Denver", "subject": "Parking permit renewed", "time": "Thu" }
+          { "id": "supplier", "from": "Peak Supply Co.", "subject": "Your order has shipped", "time": "Sat" }
         ]
       }
     }
   ],
   "beats": [
     {
-      "say": "06:30. You are on a job. Offices that fit are found for you.",
-      "clock": "06:30",
+      "say": "6:30 AM. You are on a job. Offices that fit are found for you.",
+      "clock": "6:30 AM",
       "do": [
         { "on": "flow", "type": "run", "node": "find", "note": "40 offices, 20+ staff" },
         { "on": "leads", "type": "add", "id": "norwood", "cells": { "company": "Norwood Studio", "contact": "Ines Calloway", "status": "New" } },
@@ -84,13 +82,13 @@
       "say": "Each one gets a first line about their own office. No template.",
       "do": [
         { "on": "flow", "type": "run", "node": "write", "note": "40 lines written" },
-        { "on": "leads", "type": "set", "row": "norwood", "cells": { "line": "Congrats on the Larimer move" } },
-        { "on": "leads", "type": "set", "row": "pike", "cells": { "line": "Tax season gets messy" }, "after": 350 }
+        { "on": "leads", "type": "set", "row": "norwood", "cells": { "line": "Congrats on the Larimer move", "status": "Ready" } },
+        { "on": "leads", "type": "set", "row": "pike", "cells": { "line": "Tax season gets messy", "status": "Ready" }, "after": 350 }
       ]
     },
     {
       "say": "The emails go out from your own address while you work.",
-      "clock": "08:00",
+      "clock": "8:00 AM",
       "do": [
         { "on": "flow", "type": "run", "node": "send" },
         { "on": "campaign", "type": "status", "text": "Live", "tone": "good" },
@@ -100,48 +98,58 @@
       ]
     },
     {
-      "say": "Three days on, the quiet ones get a short nudge. You did nothing.",
-      "clock": "Day 4",
-      "do": [
-        { "on": "flow", "type": "run", "node": "nudge", "note": "36 had not answered" },
-        { "on": "campaign", "type": "send", "step": "nudge", "note": "36 sent" },
-        { "on": "campaign", "type": "stat", "stat": "sent", "value": "76", "after": 300 },
-        { "on": "campaign", "type": "stat", "stat": "opened", "value": "52", "after": 300 },
-        { "on": "campaign", "type": "stat", "stat": "replies", "value": "4", "tone": "good", "after": 300 }
-      ]
-    },
-    {
       "say": "A reply comes in. It is read and sorted before you see it.",
+      "clock": "10:42 AM",
       "do": [
-        { "on": "inbox", "type": "receive", "id": "ines", "from": "Ines Calloway", "subject": "Re: Congrats on the Larimer move", "body": "Good timing. Our cleaner keeps missing the kitchen. Could you come by and give us a quote?", "time": "10:42" },
+        { "on": "inbox", "type": "receive", "id": "ines", "from": "Ines Calloway", "subject": "Re: Your new office", "body": "Good timing. Our cleaner keeps missing the kitchen. Could you come by and give us a quote?", "time": "10:42 AM" },
         { "on": "flow", "type": "run", "node": "sort", "note": "Interested, wants a quote", "after": 900 },
         { "on": "inbox", "type": "open", "mail": "ines", "after": 400 },
         { "on": "inbox", "type": "tag", "mail": "ines", "tag": "Interested", "tone": "good", "after": 700 },
         { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Replied" }, "tone": "good" },
-        { "on": "campaign", "type": "stat", "stat": "replies", "value": "5", "tone": "good", "after": 300 }
+        { "on": "campaign", "type": "stat", "stat": "replies", "value": "1", "tone": "good", "after": 300 }
       ]
     },
     {
       "say": "The answer is already drafted. It waits for your OK.",
       "do": [
         { "on": "flow", "type": "run", "node": "draft" },
-        { "on": "inbox", "type": "reply", "mail": "ines", "text": "Happy to, Ines. I can come by Thursday at 9:00 or Friday at 14:00. Which suits you?", "label": "Drafted for you" }
+        { "on": "inbox", "type": "reply", "mail": "ines", "text": "Happy to, Ines. I can come by Thursday at 9 AM or Friday at 2 PM. Which suits you?", "label": "Drafted for you" }
+      ]
+    },
+    {
+      "say": "Three days on, the quiet ones get a short nudge. You did nothing.",
+      "clock": "Day 4",
+      "do": [
+        { "on": "flow", "type": "run", "node": "nudge", "note": "39 had not answered" },
+        { "on": "campaign", "type": "send", "step": "nudge", "note": "39 sent" },
+        { "on": "campaign", "type": "stat", "stat": "sent", "value": "79", "after": 300 },
+        { "on": "campaign", "type": "stat", "stat": "opened", "value": "52", "after": 300 }
+      ]
+    },
+    {
+      "say": "The nudge works. Two more offices write back.",
+      "clock": "Day 5",
+      "do": [
+        { "on": "inbox", "type": "receive", "id": "maya", "from": "Maya Ortiz", "subject": "Re: Your 4th floor", "body": "Yes, we could use help up there. Can you visit on Friday?", "time": "Thu", "tag": "Interested", "tone": "good" },
+        { "on": "inbox", "type": "receive", "id": "tom", "from": "Tom Becker", "subject": "Re: Six chairs", "body": "What would twice a week cost us?", "time": "Fri", "tag": "Wants prices", "tone": "info", "after": 600 },
+        { "on": "leads", "type": "set", "row": "kestrel", "cells": { "status": "Replied" }, "tone": "good" },
+        { "on": "leads", "type": "set", "row": "alder", "cells": { "status": "Replied" }, "tone": "good", "after": 350 },
+        { "on": "campaign", "type": "stat", "stat": "replies", "value": "3", "tone": "good", "after": 300 }
       ]
     },
     {
       "say": "One week in: real conversations, and you chased nobody.",
       "clock": "Day 7",
       "do": [
-        { "on": "campaign", "type": "stat", "stat": "replies", "value": "6", "tone": "good" },
-        { "on": "campaign", "type": "stat", "stat": "visits", "value": "3", "tone": "good", "after": 300 },
-        { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Visit Thu" }, "tone": "good" },
+        { "on": "campaign", "type": "stat", "stat": "visits", "value": "2", "tone": "good" },
+        { "on": "leads", "type": "set", "row": "norwood", "cells": { "status": "Visit Thu" }, "tone": "good", "after": 300 },
         { "on": "leads", "type": "set", "row": "kestrel", "cells": { "status": "Visit Fri" }, "tone": "good", "after": 350 }
       ]
     }
   ],
   "outcome": [
     { "value": "40", "label": "offices emailed, each personally", "was": "5 a week" },
-    { "value": "6", "label": "replies in the first week" },
-    { "value": "3", "label": "visits booked to quote", "was": "1 a month" }
+    { "value": "3", "label": "replies in the first week", "was": "0 most weeks" },
+    { "value": "2", "label": "visits booked to quote", "was": "1 a month" }
   ]
 }

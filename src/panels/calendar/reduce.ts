@@ -72,6 +72,14 @@ export const logic: PanelLogic<Config, State, Action> = {
   },
 };
 
+/** A booking's time as the viewer reads it: "13:00", or "1:00 PM" on a calendar that shows AM and PM. */
+export function shown(time: string, ampm?: boolean): string {
+  if (!ampm) return time;
+  const [hours, minutes] = time.split(":");
+  const h = Number(hours);
+  return `${h % 12 || 12}:${minutes} ${h < 12 ? "AM" : "PM"}`;
+}
+
 function sorted(events: Booking[], config: Config): State {
   const at = (id: string) => config.days.findIndex((day) => day.id === id);
   return { events: [...events].sort((a, b) => at(a.day) - at(b.day) || a.time.localeCompare(b.time)) };

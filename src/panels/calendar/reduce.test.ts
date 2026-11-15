@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { logic } from "./reduce.ts";
+import { logic, shown } from "./reduce.ts";
 import type { Action, Config } from "./schema.ts";
 
 const config: Config = {
@@ -51,4 +51,12 @@ it("refuses what the calendar cannot show", () => {
   expect(() => run([{ type: "move", event: "gutter", day: "tue", time: "13:00" }])).toThrow('tue 13:00 is taken by "re-roof"');
   expect(() => run([{ type: "cancel", event: "gutter" }, { type: "cancel", event: "gutter" }])).toThrow('"gutter" is already cancelled');
   expect(() => run([{ type: "cancel", event: "gutter" }, { type: "move", event: "gutter", day: "tue", time: "09:00" }])).toThrow('"gutter" is cancelled, so it cannot move');
+});
+
+it("shows a time on a 24-hour clock, or with AM and PM when the config asks", () => {
+  expect(shown("08:00")).toBe("08:00");
+  expect(shown("08:00", true)).toBe("8:00 AM");
+  expect(shown("13:00", true)).toBe("1:00 PM");
+  expect(shown("12:00", true)).toBe("12:00 PM");
+  expect(shown("00:15", true)).toBe("12:15 AM");
 });

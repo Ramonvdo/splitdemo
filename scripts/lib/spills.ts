@@ -27,8 +27,8 @@ export function spills(page: Page, root = "main.stage"): Promise<string[]> {
         if (rect.right > innerWidth + 1 || rect.bottom > innerHeight + 1) past = `${where}: ${text}`;
       }
       if (style.textOverflow === "ellipsis") {
-        // Three dots hide the rest of something the viewer came to read. A panel marks the few places where a preview is the point.
-        if (el.scrollWidth > el.clientWidth + 1 && !el.closest("[data-clip]")) out.push(`${where}, cut short: ${text}`);
+        // Three dots hide the rest of something the viewer came to read.
+        if (el.scrollWidth > el.clientWidth + 1) out.push(`${where}, cut short: ${text}`);
         continue;
       }
       if (el.scrollWidth > el.clientWidth + 1 && style.overflowX !== "visible") out.push(`${where}, cut off sideways: ${text}`);

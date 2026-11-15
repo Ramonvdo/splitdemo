@@ -52,7 +52,7 @@ Charts have one series and it takes the tally (`--chart-1`). Their grid, labels 
 ## Type
 
 - Schibsted Grotesk (variable, 400 to 700) for everything. A newsroom grotesk, which suits a lower third.
-- JetBrains Mono only where the text is data: the timecode and spreadsheet cells.
+- JetBrains Mono only on the developer pages: the list of demos and the panel gallery. Nothing on the wall is monospaced.
 - The stage scales as one picture. The root font size follows the viewport (`clamp(13px, min(1.016vw, 1.806vh), 20px)`), so 1rem is 13 px at 1280x720 and every size is in rem. A recording at 1920x1080 is the same frame, larger.
 - Inside a monitor: `body` 1rem, `meta` 0.923rem as the floor. A count that is digits only uses tabular figures. A value with a comma or a colon keeps the font's own spacing, since the tabular set widens both ("$5 , 400").
 - Monitor labels: `meta`, weight 500.

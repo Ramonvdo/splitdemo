@@ -68,15 +68,15 @@ export interface Playback {
 export interface PlaybackOptions {
   /** Nobody is there to press: a beat that waits presses for itself after a moment. The stage starts the story. */
   autoplay?: boolean;
-  /** Open on the end of this beat, or on the end of the demo, without motion. */
-  at?: number | "end";
+  /** Open on the start, on the end of this beat, or on the end of the demo, without motion. */
+  at?: number | "start" | "end";
 }
 
 function open(t: Timeline, { at }: PlaybackOptions): State {
   const end: State = { pos: { beat: t.beats.length - 1, n: t.cues.length }, status: "done", still: true };
   if (at === "end") return end;
   if (typeof at === "number" && t.beats[at]) return { pos: { beat: at, n: t.beats[at].to }, status: "paused", still: true };
-  return { pos: { beat: 0, n: 0 }, status: "idle", still: false };
+  return { pos: { beat: 0, n: 0 }, status: "idle", still: at === "start" };
 }
 
 /** Runs a timeline: one timer per step, and every jump is a plain change of position. */

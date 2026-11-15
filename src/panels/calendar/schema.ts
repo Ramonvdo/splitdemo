@@ -14,6 +14,8 @@ export const config = z
     days: z.array(z.strictObject({ id, label: z.string().min(1).max(10) })).min(2).max(5),
     /** The id of the day marked "Today". */
     today: id.optional(),
+    /** Show times as "8:00 AM" instead of "08:00". Write them on a 24-hour clock either way. */
+    ampm: z.boolean().optional(),
     /** What is already booked when the demo starts. A day fits 3. */
     events: z.array(z.strictObject({ id, day: id, time, title, tone: tone.optional() })).max(12).optional(),
   })

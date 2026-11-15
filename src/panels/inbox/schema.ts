@@ -22,7 +22,7 @@ export const config = z
   .strictObject({
     /** The mailbox's name, e.g. "Sales inbox". Default: "Inbox". */
     title: z.string().min(1).max(24).optional(),
-    /** Mail already there when the demo starts, newest first. The list fits 5. */
+    /** Mail already there when the demo starts, newest first. On a four-panel wall the list fits 4, the mails that arrive included. */
     mails: z.array(z.strictObject({ id, ...fields, unread: z.boolean().optional() })).max(4).optional(),
   })
   .superRefine((value, ctx) => {

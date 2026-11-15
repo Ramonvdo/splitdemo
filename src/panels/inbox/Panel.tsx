@@ -37,8 +37,7 @@ export default function Panel({ config, state }: PanelProps<Config, State, Actio
                   {mail.time && <span className="shrink-0 text-meta text-muted">{mail.time}</span>}
                 </p>
                 <p className="flex items-center justify-between gap-2 text-meta">
-                  {/* A list shows the start of a subject; the open message shows all of it. */}
-                  <span data-clip className={cn("truncate", !mail.unread && "text-muted")}>{mail.subject}</span>
+                  <span className={cn("truncate", !mail.unread && "text-muted")}>{mail.subject}</span>
                   <Tag mail={mail} />
                 </p>
               </div>

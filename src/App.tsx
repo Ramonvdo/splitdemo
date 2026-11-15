@@ -21,7 +21,7 @@ function flags(): Flags {
     autoplay: q.get("autoplay") === "1",
     record: q.get("record") === "1",
     bare: q.get("bare") === "1",
-    at: at === "end" ? "end" : at !== null && /^\d+$/.test(at) ? Number(at) : undefined,
+    at: at === "start" || at === "end" ? at : at !== null && /^\d+$/.test(at) ? Number(at) : undefined,
   };
 }
 

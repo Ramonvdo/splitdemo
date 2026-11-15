@@ -9,3 +9,4 @@ Pick it when: the result is an appointment, visit, call or job on someone's cale
 - `book` at the time a caption or a message already named, so the panels agree.
 - `move` and `cancel` tell a rescheduling story. A cancelled booking stays, struck through, until its slot is booked again.
 - A day fits three bookings.
+- Write every time as `HH:MM` on a 24-hour clock, so bookings sort. For a viewer who reads "8:00 AM", set `ampm: true` and the calendar shows it that way.

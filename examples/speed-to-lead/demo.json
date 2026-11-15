@@ -36,8 +36,8 @@
         "cards": [
           { "id": "omar", "column": "talking", "title": "Omar Haddad", "subtitle": "Whitening quote", "value": "$340" },
           { "id": "marta", "column": "talking", "title": "Marta Kowalski", "subtitle": "Braces consult", "value": "$90" },
-          { "id": "priya", "column": "booked", "title": "Priya Nair", "subtitle": "Check-up", "value": "$120", "tag": "Mon 09:30", "tone": "good" },
-          { "id": "joel", "column": "booked", "title": "Joel Okafor", "subtitle": "Filling", "value": "$210", "tag": "Tue 14:00", "tone": "good" }
+          { "id": "priya", "column": "booked", "title": "Priya Nair", "subtitle": "Check-up", "value": "$120", "tag": "Mon 9:30 AM", "tone": "good" },
+          { "id": "joel", "column": "booked", "title": "Joel Okafor", "subtitle": "Filling", "value": "$210", "tag": "Tue 2 PM", "tone": "good" }
         ]
       }
     },
@@ -64,8 +64,8 @@
   ],
   "beats": [
     {
-      "say": "21:14. The practice closed at six. Send the text a new patient would.",
-      "clock": "21:14",
+      "say": "9:14 PM. The practice closed at six. Send the text a new patient would.",
+      "clock": "9:14 PM",
       "wait": "click",
       "do": [{ "on": "phone", "type": "send", "text": "Hi, Dana Whitfield here. I chipped a tooth. Can I come in this week?" }]
     },
@@ -80,9 +80,9 @@
     {
       "say": "They get a real answer with real times, 38 seconds later.",
       "do": [
-        { "on": "flow", "type": "run", "node": "slots", "note": "Thu 10:00 and Fri 14:30 free" },
+        { "on": "flow", "type": "run", "node": "slots", "note": "Thu 10 AM and Fri 2:30 PM free" },
         { "on": "flow", "type": "run", "node": "reply", "after": 900 },
-        { "on": "phone", "type": "receive", "text": "Sorry to hear that, Dana! We can see you Thursday at 10:00 or Friday at 14:30. Which works best?", "after": 400 }
+        { "on": "phone", "type": "receive", "text": "Sorry to hear that, Dana! We can see you Thursday at 10 AM or Friday at 2:30 PM. Which works best?", "after": 400 }
       ]
     },
     {
@@ -94,21 +94,22 @@
     },
     {
       "say": "The patient picks a time. No phone tag tomorrow morning.",
-      "clock": "21:16",
+      "clock": "9:16 PM",
       "do": [
         { "on": "phone", "type": "send", "text": "Thursday at 10 please" },
-        { "on": "phone", "type": "receive", "text": "Done. You are booked for Thursday at 10:00 with Dr. Lin. See you then!", "after": 1100 },
+        { "on": "phone", "type": "receive", "text": "Done. You are booked for Thursday at 10 AM with Dr. Lin. See you then!", "after": 1100 },
         { "on": "crm", "type": "move", "card": "dana", "to": "booked" },
-        { "on": "crm", "type": "set", "card": "dana", "value": "$180", "tag": "Thu 10:00", "tone": "good", "after": 600 }
+        { "on": "crm", "type": "set", "card": "dana", "value": "$180", "tag": "Thu 10 AM", "tone": "good", "after": 600 }
       ]
     },
     {
       "say": "You find out in the morning, with the chair already filled.",
+      "clock": "7:30 AM",
       "do": [
         { "on": "flow", "type": "run", "node": "tell", "note": "Summary sent" },
         { "on": "numbers", "type": "set", "tile": "reply", "value": "38 sec", "delta": "was 14 h", "tone": "good" },
         { "on": "numbers", "type": "set", "tile": "closed", "value": "$180", "delta": "was $0", "tone": "good" },
-        { "on": "numbers", "type": "set", "tile": "booked", "value": "3", "delta": "+1 tonight", "tone": "good" },
+        { "on": "numbers", "type": "set", "tile": "booked", "value": "3", "delta": "+1 overnight", "tone": "good" },
         { "on": "numbers", "type": "push", "label": "Wed", "value": 1 }
       ]
     }

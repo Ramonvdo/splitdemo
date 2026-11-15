@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { cn } from "../../lib/style.ts";
 import { TONE_TEXT } from "../tones.ts";
 import type { PanelProps } from "../types.ts";
-import type { State } from "./reduce.ts";
+import { shown, type State } from "./reduce.ts";
 import type { Action, Config } from "./schema.ts";
 
 /** A week of bookings, one column a day, in time order. New bookings land in their day. */
@@ -32,9 +32,9 @@ export default function Panel({ config, state }: PanelProps<Config, State, Actio
                     event.how === "flash" && "flash",
                   )}
                 >
-                  <p className="font-mono text-meta tabular-nums text-muted">
-                    {event.time}
-                    {event.cancelled && <span className="font-sans"> · Cancelled</span>}
+                  <p className="text-meta text-muted">
+                    {shown(event.time, config.ampm)}
+                    {event.cancelled && <span> · Cancelled</span>}
                   </p>
                   <p className={cn("line-clamp-2 font-medium leading-snug", event.cancelled ? "text-muted line-through" : "text-ink")}>{event.title}</p>
                 </li>

@@ -12,8 +12,8 @@ Three finished demos to match are in the app: `examples/speed-to-lead`, `example
   ],
   "beats": [
     {
-      "say": "21:14. The practice closed at six. Send the text a new patient would.",
-      "clock": "21:14",
+      "say": "9:14 PM. The practice closed at six. Send the text a new patient would.",
+      "clock": "9:14 PM",
       "wait": "click",
       "do": [{ "on": "phone", "type": "send", "text": "Hi, I chipped a tooth. Can I come in this week?" }]
     },
