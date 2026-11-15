@@ -4,9 +4,9 @@ The look of the demo stage and of every panel. Read this before changing a panel
 
 ## Brief
 
-- **Subject:** a scripted split-screen demo of an automation system.
-- **Audience:** a business owner watching on a call, from a link, or in a short video. Not technical.
-- **Job:** within 30 seconds they can say what happened and what they gained from it.
+- Subject: a scripted split-screen demo of an automation system.
+- Audience: a business owner who is not technical, watching on a call, from a link, or in a short video.
+- Job: within 30 seconds they can say what happened and what they gained from it.
 
 ## Concept
 
@@ -19,7 +19,7 @@ The look of the demo stage and of every panel. Read this before changing a panel
 | Motion verb | Cut and settle. The tally cuts instantly; content lands and settles, with no bounce. |
 | Screenshot | The last beat: every monitor filled, the lower third reading the outcome next to what it was before. |
 
-Anchor: every screen must carry a small label saying what it is. In a broadcast multiview every monitor has exactly that, so the label is the concept and not decoration.
+Anchor: every screen must carry a small label saying what it is. In a broadcast multiview every monitor has exactly that, so the label belongs to the concept.
 
 Rejected: "front of house, back of house" (a light customer side and a dark business side breaks when no panel faces the customer) and "contact sheet" (static, with no notion of which frame is live).
 
@@ -51,8 +51,8 @@ Charts have one series and it takes the tally (`--chart-1`). Their grid, labels 
 
 ## Type
 
-- **Schibsted Grotesk** (variable, 400 to 700) for everything. A newsroom grotesk, which suits a lower third.
-- **JetBrains Mono** only where the text is data: the timecode and spreadsheet cells.
+- Schibsted Grotesk (variable, 400 to 700) for everything. A newsroom grotesk, which suits a lower third.
+- JetBrains Mono only where the text is data: the timecode and spreadsheet cells.
 - The stage scales as one picture. The root font size follows the viewport (`clamp(13px, min(1.016vw, 1.806vh), 20px)`), so 1rem is 13 px at 1280x720 and every size is in rem. A recording at 1920x1080 is the same frame, larger.
 - Inside a monitor: `body` 1rem, `meta` 0.923rem as the floor, tabular figures for every number.
 - Monitor labels: `meta`, weight 500.
@@ -61,7 +61,7 @@ Charts have one series and it takes the tally (`--chart-1`). Their grid, labels 
 
 ## Shape
 
-One radius rule: monitors 10 px, controls inside a monitor 6 px, pills fully round (at 1280 wide; they scale with the rest). Hairlines are 1 px. No shadows on the stage: monitors are flat.
+One radius rule: monitors 10 px, controls inside a monitor 6 px, pills fully round (at 1280 wide; they scale with the rest). Hairlines are 1 px. The stage has no shadows: monitors are flat.
 
 A line between two steps of a flow leaves level, turns once and arrives level. The turn is a right angle rounded by 14 px and sits on the boundary between two columns, where no label reaches. A line that has not run is dotted, one that has is solid.
 
@@ -93,7 +93,7 @@ rail (a portrait panel first)        quad
 ```
 
 - `trio`: `a` on the left at full height, `b` and `c` stacked on the right. `duo`: two columns.
-- Under 720 px wide: one monitor at a time, with a row of tabs above the wall. The shown tab is wide and carries its label. The others are round and carry their panel's icon, and the live one takes the tally colour. The wall follows the tally until the viewer picks a tab. No dimming here: the one monitor on screen is always the one to read.
+- Under 720 px wide: one monitor at a time, with a row of tabs above the wall. The shown tab is wide and carries its label. The others are round and carry their panel's icon, and the live one takes the tally colour. The wall follows the tally until the viewer picks a tab. Nothing dims here, because the one monitor on screen is always the one to read.
 - Enlarge: click a label, or press 1 to 4. That monitor covers the wall and its content scales up by the same factor the window grew, so it reads from the back of a room. Escape, or the label again, brings the wall back. The other monitors stay mounted and hidden, so nothing restarts. A portrait panel keeps a phone's width when enlarged.
 - Panels size themselves with container queries, never with the viewport.
 
@@ -122,8 +122,8 @@ A generic answer is a light SaaS dashboard: a header, a grid of rounded cards wi
 
 ## Rules for a panel view
 
-1. Tokens only. No hex, no font names.
-2. App names appear as plain text in the label. No third-party logos and no copied interface.
-3. Render every string as text. Never as HTML.
+1. Use the tokens. A view names no hex value and no font.
+2. App names appear as plain text in the label. A view carries no third-party logo and copies no interface.
+3. Render every string as text, never as HTML.
 4. Stable React keys on everything that can appear, move or change, so the mount animation is the "what changed" signal.
 5. Fit the content budget in `panel.md`. A panel never scrolls on its own, except the phone thread, which follows its last message.
