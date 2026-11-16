@@ -36,4 +36,7 @@ SOFTWARE.
 
 ## Fonts
 
-Schibsted Grotesk and JetBrains Mono are loaded from the `@fontsource-variable` packages. Both are under the SIL Open Font License 1.1.
+The typefaces are loaded from the `@fontsource-variable` and `@fontsource` packages. All are under the SIL Open Font License 1.1.
+
+- The wall and the developer pages: Schibsted Grotesk, JetBrains Mono.
+- The panels: Arimo, DM Sans, Figtree, IBM Plex Sans, Instrument Serif, Inter, Roboto, Source Sans 3.

@@ -14,6 +14,8 @@ const field = z.strictObject({
 
 export const config = z
   .strictObject({
+    /** The address of the page the form is on, e.g. "ridgelineroofing.com/quote". With it, the form sits in a browser window. */
+    site: z.string().min(1).max(30).optional(),
     /** What the form is for, e.g. "Request a quote". */
     title: z.string().min(1).max(36),
     /** One line under the title. */

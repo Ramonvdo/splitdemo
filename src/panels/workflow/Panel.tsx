@@ -1,3 +1,4 @@
+import "./skin.css";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { cn } from "../../lib/style.ts";
 import { Icon } from "../icons.tsx";
@@ -12,21 +13,20 @@ type Node = Config["nodes"][number];
 /** The most room between two stacked steps: an icon, a label on two lines, its app and a note on two lines. */
 const ROW_GAP_REM = 12.5;
 
-/** A step's icon: quiet until it runs, the tally while it runs, dark with a check once it is done. */
+/** A step's icon: quiet until it runs, the tally while it runs, then the colour of what it does (skin.css) with a check. */
 function Mark({ node, state, running }: { node: Node; state: State; running: boolean }) {
   const ran = state.ran.includes(node.id);
   const live = running && state.last === node.id;
   return (
     <span
       key={live ? state.runs : "rest"}
-      className={cn(
-        "relative grid size-[2.5rem] shrink-0 place-items-center rounded-control border",
-        live ? "animate-pop border-tally bg-tally text-on-tally" : ran ? "border-ink bg-ink text-window" : "border-line bg-window text-muted",
-      )}
+      data-kind={node.icon ?? "bolt"}
+      data-state={live ? "live" : ran ? "ran" : "rest"}
+      className={cn("relative grid size-[2.5rem] shrink-0 place-items-center rounded-control border", live ? "animate-pop border-tally bg-tally text-on-tally" : "border-line bg-window text-muted")}
     >
       <Icon name={node.icon ?? "bolt"} className="size-[1.3rem]" />
       {ran && !live && (
-        <span className="absolute -right-[0.35rem] -top-[0.35rem] grid size-[1rem] animate-pop place-items-center rounded-full bg-good text-window">
+        <span className="absolute -right-[0.35rem] -top-[0.35rem] grid size-[1rem] animate-pop place-items-center rounded-full bg-good text-wash ring-2 ring-wash">
           <Icon name="check" className="size-[0.65rem] stroke-[3.5]" />
         </span>
       )}
@@ -82,7 +82,7 @@ export default function Panel({ config, state, live: running = false }: PanelPro
   };
 
   return (
-    <div className="relative h-full bg-wash">
+    <div data-canvas className="relative h-full bg-wash">
       {/* Steps hang from their icon, so the lines join icon to icon and the labels sit clear below. The bottom inset is the room a step at the very bottom needs: a label on two lines, its app and a note on two lines. */}
       <div ref={canvas} className="absolute inset-x-[0.6rem] bottom-[9.2rem] top-[2.2rem] @max-[30rem]:hidden">
         {size && size.w > 0 && (
@@ -96,7 +96,7 @@ export default function Panel({ config, state, live: running = false }: PanelPro
                   // The turn sits on the line between the last two columns: labels stop short of it on both sides.
                   const d = elbow(px(from), px(to), px(to).x - size.w / cols / 2, 14);
                   return solid ? (
-                    <path key={`${from}>${to}`} d={d} data-edge={`${from}>${to}`} className="animate-fade stroke-ink" vectorEffect="non-scaling-stroke" />
+                    <path key={`${from}>${to}`} d={d} data-edge={`${from}>${to}`} className="animate-fade stroke-good" vectorEffect="non-scaling-stroke" />
                   ) : (
                     <path key={`${from}>${to}`} d={d} className="stroke-line" strokeDasharray="1 5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
                   );

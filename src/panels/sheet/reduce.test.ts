@@ -62,3 +62,18 @@ it("fills a column down: every row gets the value, and only the rows it changed 
   ]);
   expect(() => run([{ type: "fill", column: "phone", value: "1" }])).toThrow('there is no column "phone". Columns: name, email, status');
 });
+
+it("keeps the selection on the cell the last action wrote", () => {
+  expect(logic.initial(config).active).toBeUndefined();
+  // A new row: the last cell it filled in.
+  expect(run([{ type: "add", id: "dana", cells: { name: "Dana Whitfield", email: "dana@example.com" } }]).active).toEqual({ row: "dana", column: "email" });
+  // A change in place: the last changed column, left to right. A new tone recolours the status.
+  expect(run([{ type: "set", row: "omar", cells: { name: "Omar H." }, tone: "good" }]).active).toEqual({ row: "omar", column: "status" });
+  // A fill: the lowest row it changed. A fill that changes nothing leaves the selection where it was.
+  const filled = run([
+    { type: "add", id: "dana", cells: { name: "Dana Whitfield" } },
+    { type: "fill", column: "status", value: "Sent", tone: "info" },
+  ]);
+  expect(filled.active).toEqual({ row: "dana", column: "status" });
+  expect(run([{ type: "set", row: "omar", cells: { email: "omar@example.com" } }, { type: "fill", column: "status", value: "Sent", tone: "info" }]).active).toEqual({ row: "omar", column: "email" });
+});

@@ -1,6 +1,7 @@
 {
   "label": "The team's week",
   "config": {
+    "title": "Week 24",
     "days": [
       { "id": "mon", "label": "Mon" },
       { "id": "tue", "label": "Tue" },

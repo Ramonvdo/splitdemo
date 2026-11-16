@@ -95,6 +95,8 @@ function Monitor({ spec, slot, live, waiting, zoom, scale, hidden, portrait, com
         </h2>
       )}
       <div
+        // The panel's own app look hangs on this: src/panels/<type>/skin.css.
+        data-app={spec.type}
         className={cn(
           "@container relative min-h-0 flex-1 overflow-hidden rounded-monitor bg-window text-ink transition-[filter] duration-200",
           waiting && "brightness-[0.88]",

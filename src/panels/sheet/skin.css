@@ -1,0 +1,71 @@
+/* A spreadsheet in the browser: white grid, column letters, a green file mark and a blue selection. */
+[data-app="sheet"] {
+  --color-window: #ffffff;
+  --color-wash: #f8f9fa;
+  --color-line: #dfe1e5;
+  --color-ink: #1f1f1f;
+  --color-muted: #5f6368;
+  --color-app: #188038;
+  --color-on-app: #ffffff;
+  --color-app-wash: #c2e7ff;
+  --color-mark: #0b57d0;
+  /* The cells: the face a new spreadsheet opens in. */
+  font-family: "Arimo Variable", Arial, sans-serif;
+}
+/* The app around the cells speaks in its own face. */
+[data-app="sheet"] [data-chrome] {
+  font-family: "Roboto Variable", "Arimo Variable", sans-serif;
+}
+/* The frozen header row ends on a heavier line. */
+[data-app="sheet"] [data-frozen] {
+  border-bottom: 2px solid #c4c7c5;
+}
+/* The letter and the number of the selected cell. */
+[data-app="sheet"] [data-on] {
+  background: #d3e3fd;
+  color: #041e49;
+}
+[data-app="sheet"] [data-active] {
+  box-shadow: inset 0 0 0 2px var(--color-mark);
+}
+/* The fill handle. */
+[data-app="sheet"] [data-active]::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 0.42rem;
+  height: 0.42rem;
+  background: var(--color-mark);
+  box-shadow: -1px -1px 0 var(--color-window);
+}
+[data-app="sheet"] [data-tab] {
+  background: #e1e9f7;
+  color: var(--color-mark);
+}
+/* A status is a dropdown chip. */
+[data-app="sheet"] [data-tone] {
+  background: #e6e6e6;
+  color: #3d3d3d;
+}
+[data-app="sheet"] [data-tone="good"] {
+  background: #d4edbc;
+  color: #11734b;
+}
+[data-app="sheet"] [data-tone="wait"] {
+  background: #ffe5a0;
+  color: #473821;
+}
+[data-app="sheet"] [data-tone="info"] {
+  background: #bfe1f6;
+  color: #0a53a8;
+}
+/* Narrow, a row is a card and there is no grid to select in. */
+@container (width < 30rem) {
+  [data-app="sheet"] [data-active] {
+    box-shadow: none;
+  }
+  [data-app="sheet"] [data-active]::before {
+    content: none;
+  }
+}

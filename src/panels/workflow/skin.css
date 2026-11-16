@@ -1,0 +1,67 @@
+/* An automation builder: a dark canvas with a dot grid, steps as tiles that take their own colour once they have run. */
+[data-app="workflow"] {
+  --color-window: #262a33;
+  --color-wash: #20232b;
+  --color-line: #4a505e;
+  --color-ink: #f2f3f5;
+  --color-muted: #a3a9b6;
+  --color-good: #34d399;
+  --radius-control: 0.6rem;
+  font-family: "Inter Variable", system-ui, sans-serif;
+}
+/* The canvas is a window of its own on the dark wall: a shade lighter, with an edge. */
+[data-app="workflow"] [data-canvas] {
+  border-radius: var(--radius-monitor);
+  box-shadow: inset 0 0 0 1px #3d4250;
+  background-image: radial-gradient(#363b47 1px, transparent 1px);
+  background-size: 1.25rem 1.25rem;
+}
+/* A step that ran wears the colour of what it does. White marks on the deep colours, dark marks on the light ones. */
+[data-app="workflow"] [data-kind] {
+  --kind: #64748b;
+  --on-kind: #ffffff;
+}
+[data-app="workflow"] [data-kind="message"],
+[data-app="workflow"] [data-kind="phone"],
+[data-app="workflow"] [data-kind="check"] {
+  --kind: #1f9d57;
+}
+[data-app="workflow"] [data-kind="table"] {
+  --kind: #188038;
+}
+[data-app="workflow"] [data-kind="mail"] {
+  --kind: #d9483b;
+}
+[data-app="workflow"] [data-kind="sparkle"] {
+  --kind: #7c5cf0;
+}
+[data-app="workflow"] [data-kind="calendar"],
+[data-app="workflow"] [data-kind="send"] {
+  --kind: #2f6fe4;
+}
+[data-app="workflow"] [data-kind="users"] {
+  --kind: #0e8f8f;
+}
+[data-app="workflow"] [data-kind="form"] {
+  --kind: #d6409f;
+}
+[data-app="workflow"] [data-kind="card"] {
+  --kind: #5b5bd6;
+}
+[data-app="workflow"] [data-kind="bell"],
+[data-app="workflow"] [data-kind="bolt"],
+[data-app="workflow"] [data-kind="star"] {
+  --kind: #f2b01e;
+  --on-kind: #20232b;
+}
+[data-app="workflow"] [data-kind="search"],
+[data-app="workflow"] [data-kind="doc"],
+[data-app="workflow"] [data-kind="chart"] {
+  --kind: #56b6f2;
+  --on-kind: #1b1d23;
+}
+[data-app="workflow"] [data-kind][data-state="ran"] {
+  border-color: transparent;
+  background: var(--kind);
+  color: var(--on-kind);
+}

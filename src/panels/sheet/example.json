@@ -1,6 +1,8 @@
 {
   "label": "Order sheet",
   "config": {
+    "title": "Orders 2026",
+    "tab": "Orders",
     "columns": [
       { "id": "customer", "title": "Customer" },
       { "id": "order", "title": "Order", "wide": true },

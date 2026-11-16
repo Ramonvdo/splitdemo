@@ -1,0 +1,17 @@
+/* A phone's own message app: white thread, blue bubbles for the owner, grey for the other side. */
+[data-app="phone"] {
+  --color-window: #ffffff;
+  --color-wash: #e9e9eb;
+  --color-line: #d8d8dc;
+  --color-ink: #111111;
+  --color-muted: #6e6e73;
+  --color-app: #0b68e8;
+  --color-on-app: #ffffff;
+  --color-app-wash: #f6f6f8;
+  --color-mark: #0b68e8;
+  font-family: "Inter Variable", system-ui, sans-serif;
+}
+/* A notification floats over the thread. */
+[data-app="phone"] [role="status"] {
+  box-shadow: 0 0.5rem 1.6rem rgb(0 0 0 / 0.18);
+}

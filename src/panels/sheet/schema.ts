@@ -8,6 +8,10 @@ const cells = z.record(id, z.string().max(28));
 
 export const config = z
   .strictObject({
+    /** The name of the file, top left, e.g. "Leads 2026". */
+    title: z.string().min(1).max(24).optional(),
+    /** The name on the tab at the bottom. Leave it out for "Sheet1". */
+    tab: z.string().min(1).max(14).optional(),
     /**
      * Left to right. Give the status column `tag: true` and its cells show as a pill in the row's tone.
      * Give the column with the longest text `wide: true` and it gets twice the room.

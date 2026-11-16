@@ -1,0 +1,47 @@
+/* A work calendar in the browser: a slim bar on top, the days side by side, bookings as blocks with a coloured edge. */
+[data-app="calendar"] {
+  --color-window: #ffffff;
+  --color-wash: #f0f0f7;
+  --color-line: #e0e0ea;
+  --color-ink: #1f1f29;
+  --color-muted: #5f6070;
+  --color-app: #4f52b2;
+  --color-on-app: #ffffff;
+  --color-app-wash: #e4e5f7;
+  --color-mark: #4f52b2;
+  --radius-control: 0.3rem;
+  font-family: "Figtree Variable", "Segoe UI", sans-serif;
+}
+/* A booking is a tinted block with its calendar's colour down the left edge. */
+[data-app="calendar"] [data-event] {
+  background: #e4e5f7;
+  color: #26286b;
+  box-shadow: inset 0.22rem 0 0 #4f52b2;
+}
+/* The booking the story is about is filled in. */
+[data-app="calendar"] [data-event][data-tone="info"] {
+  background: #4f52b2;
+  color: #ffffff;
+  box-shadow: none;
+}
+[data-app="calendar"] [data-event][data-tone="good"] {
+  background: #0b8043;
+  color: #ffffff;
+  box-shadow: none;
+}
+[data-app="calendar"] [data-event][data-tone="wait"] {
+  background: #f6bf26;
+  color: #3a2f00;
+  box-shadow: none;
+}
+[data-app="calendar"] [data-event][data-cancelled] {
+  background: var(--color-window);
+  color: var(--color-muted);
+  box-shadow: none;
+  outline: 1px dashed #a9aabd;
+  outline-offset: -1px;
+}
+/* The view switch on the bar: the week view is the one in use. */
+[data-app="calendar"] [data-view] {
+  box-shadow: 0 1px 2px rgb(31 31 41 / 0.14);
+}

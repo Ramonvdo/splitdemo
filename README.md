@@ -13,7 +13,7 @@ splitdemo puts those on one wall. The customer's phone, the automation, the CRM 
 ## What is in the box
 
 - A demo is one JSON file: the panels, a story in beats and the outcome. There is no code per demo, so swapping the CRM for a spreadsheet means changing one `type`.
-- Nine panels come with it: phone, form, inbox, workflow, CRM board, sheet, calendar, email campaign and a numbers board with a chart. They share one neutral look and take the tool's name as a label, like "CRM in ClickUp".
+- Nine panels come with it: phone, form, inbox, workflow, CRM board, sheet, calendar, email campaign and a numbers board with a chart. Each looks like the kind of app it stands for, with its own colours and typeface: the sheet has column letters and a formula bar, the CRM has a board with deal cards. A panel takes the tool's name as a label, like "CRM in ClickUp", and carries no logo.
 - You can show a demo live on a call from your own machine, send it as a private link, or film it (1920x1080, upright for a phone, or a gif).
 - The Claude Code skills write a demo from a job post, a process description or a call transcript. They check it and look at every frame before they hand it over.
 - Two checks catch a bad demo before a prospect does. One finds an action that cannot happen or a caption that is too long. The other finds text that gets cut off or ends in three dots, on a laptop or a phone.
@@ -108,7 +108,7 @@ By default a share shows you what will go online and waits for a yes. Set `"shar
 
 ## Adding a panel
 
-A panel is one folder in `src/panels/` with six files: a schema, a pure reducer with its tests, a view, a short guide for the agent and a working example. The app picks it up by name. [`CONTRIBUTING.md`](CONTRIBUTING.md) has the contract.
+A panel is one folder in `src/panels/` with seven files: a schema, a pure reducer with its tests, a view with its skin, a short guide for the agent and a working example. The app picks it up by name. [`CONTRIBUTING.md`](CONTRIBUTING.md) has the contract.
 
 ## License
 

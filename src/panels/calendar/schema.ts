@@ -10,6 +10,8 @@ const title = z.string().min(1).max(22);
 
 export const config = z
   .strictObject({
+    /** Which week this is, on the calendar's own bar, e.g. "June 2026" or "This week". */
+    title: z.string().min(1).max(20).optional(),
     /** The days shown, left to right, e.g. Mon to Thu. */
     days: z.array(z.strictObject({ id, label: z.string().min(1).max(10) })).min(2).max(5),
     /** The id of the day marked "Today". */

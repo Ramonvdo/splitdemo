@@ -1,0 +1,20 @@
+/* A reporting dashboard: neutral grey ground, white cards, engineered numerals, graphite bars. */
+[data-app="kpi"] {
+  --color-window: #ffffff;
+  --color-wash: #f4f4f5;
+  --color-line: #e4e4e7;
+  --color-ink: #09090b;
+  --color-muted: #63636b;
+  --color-good: #166a35;
+  --color-wait: #925807;
+  --color-info: #1d4ed8;
+  --radius-control: 0.3rem;
+  /* The chart is the dashboard's own, so its bars are not the wall's accent. */
+  --chart-1: #27272a;
+  --chart-on-1: #ffffff;
+  font-family: "IBM Plex Sans Variable", system-ui, sans-serif;
+}
+[data-app="kpi"] [data-tile],
+[data-app="kpi"] figure {
+  box-shadow: 0 1px 2px rgb(9 9 11 / 0.06);
+}

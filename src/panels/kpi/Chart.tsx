@@ -15,7 +15,7 @@ export default function Chart({ points, pushes, still }: { points: State["points
     // A push draws the bars in again: that is how the viewer sees the chart change.
     <BarChart data={points} xDataKey="label" aspectRatio="auto" className="h-full" margin={{ top: 22, right: 4, bottom: 30, left: 4 }} barGap={0.4} animationDuration={700} revealSignature={String(pushes)}>
       <Grid horizontal numTicksRows={3} />
-      <Bar dataKey="value" fill="var(--chart-1)" lineCap={4} animate={!calm} showValue valueLabelColor="var(--color-on-tally)" />
+      <Bar dataKey="value" fill="var(--chart-1)" lineCap={4} animate={!calm} showValue valueLabelColor="var(--chart-on-1)" />
       <BarXAxis showAllLabels />
     </BarChart>
   );

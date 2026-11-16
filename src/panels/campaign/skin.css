@@ -1,0 +1,28 @@
+/* An email marketing tool: warm paper, a yellow bar across the top, the sequence as a timeline. */
+[data-app="campaign"] {
+  --color-window: #fffdf8;
+  --color-wash: #f6f1e7;
+  --color-line: #e2d9c8;
+  --color-ink: #241c15;
+  --color-muted: #6b6157;
+  --color-app: #ffe01b;
+  --color-on-app: #241c15;
+  --color-app-wash: #fff6c2;
+  --color-good: #00694a;
+  --color-wait: #8a5300;
+  --color-info: #1e5bb8;
+  font-family: "DM Sans Variable", "Segoe UI", sans-serif;
+}
+/* The line that joins one email of the sequence to the next. */
+[data-app="campaign"] [data-step]:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: calc(1.15rem - 1px);
+  top: calc(50% + 0.85rem);
+  width: 2px;
+  height: calc(100% - 1.35rem);
+  background: var(--color-line);
+}
+[data-app="campaign"] [data-step][data-sent]:not(:last-child)::before {
+  background: var(--color-ink);
+}

@@ -1,0 +1,20 @@
+/* A page on the business's own website: cream paper, a serif headline, white fields, one dark button. */
+[data-app="form"] {
+  --color-window: #faf7f2;
+  --color-wash: #efe9df;
+  --color-line: #d9d2c5;
+  --color-ink: #1c1a17;
+  --color-muted: #6b655c;
+  --color-app: #1c1a17;
+  --color-on-app: #ffffff;
+  --color-good: #1f6b4a;
+  --radius-control: 0.55rem;
+  font-family: "Inter Variable", system-ui, sans-serif;
+}
+[data-app="form"] h3 {
+  font-family: "Instrument Serif", Georgia, serif;
+}
+[data-app="form"] [data-input],
+[data-app="form"] [data-url] {
+  background: #ffffff;
+}

@@ -37,7 +37,7 @@ A demo is data, and the state of every panel at any moment is the result of repl
 
 ## The panel contract
 
-A panel is a folder in `src/panels/` with six files.
+A panel is a folder in `src/panels/` with seven files.
 
 | File | What it holds |
 | --- | --- |
@@ -45,6 +45,7 @@ A panel is a folder in `src/panels/` with six files.
 | `reduce.ts` | `logic`: an `icon`, `initial(config)` and a pure `reduce(state, action, config)`. |
 | `reduce.test.ts` | A test for each action, and for each action that cannot happen. |
 | `Panel.tsx` | The view. It draws config and state and keeps no clock of its own. |
+| `skin.css` | The app's look: its colours, typeface and control radius, as values for the design tokens under `[data-app="<name>"]`. |
 | `panel.md` | A short guide for the agent that writes demos. |
 | `example.json` | A label, a config and actions that work. |
 
@@ -52,8 +53,8 @@ The rules:
 
 - An action that cannot happen throws, with a message the demo's author can act on. `npm run check` prints that message.
 - `reduce.ts` and `Panel.tsx` import only types from `schema.ts`, so the validation library stays out of the page a prospect loads.
-- Sizes are in `rem` and colours come from the tokens in `DESIGN.md`. The wall scales with the window.
-- A panel shows a kind of tool, with the tool's name as text in its label. It carries no logo and copies no interface.
+- Sizes are in `rem` and colours come from the tokens in `DESIGN.md`. The wall scales with the window. A view names no hex value and no font: both live in the panel's `skin.css`.
+- A panel looks like the kind of tool it stands for, with the tool's name as text in its label. It carries no logo, wordmark or product name.
 
 After adding or changing a panel, run `npm run panels` to rebuild `INDEX.md`. `npm test` fails when it is out of date. `http://localhost:4310/__panels` plays every panel with its example.
 

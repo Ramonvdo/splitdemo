@@ -9,7 +9,7 @@ const presets = await loadPresets();
 const names = Object.keys(presets);
 
 it.each(names)("%s has every file a panel is made of", (name) => {
-  for (const file of ["schema.ts", "reduce.ts", "reduce.test.ts", "Panel.tsx", "panel.md", "example.json"]) expect(existsSync(join(presets[name].dir, file)), file).toBe(true);
+  for (const file of ["schema.ts", "reduce.ts", "reduce.test.ts", "Panel.tsx", "skin.css", "panel.md", "example.json"]) expect(existsSync(join(presets[name].dir, file)), file).toBe(true);
 });
 
 it.each(names)("%s: its example is a config the panel takes and actions it can do", (name) => {

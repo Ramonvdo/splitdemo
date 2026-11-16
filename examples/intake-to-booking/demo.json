@@ -7,6 +7,7 @@
       "type": "form",
       "label": "Your website's quote form",
       "config": {
+        "site": "ridgelineroofing.com/quote",
         "title": "Request a quote",
         "intro": "Ridgeline Roofing. Every request gets an answer the same day.",
         "fields": [
@@ -39,6 +40,7 @@
       "type": "calendar",
       "label": "Your crew's week",
       "config": {
+        "title": "This week",
         "ampm": true,
         "days": [
           { "id": "mon", "label": "Mon" },

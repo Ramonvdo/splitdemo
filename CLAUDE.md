@@ -15,7 +15,7 @@ Scripts are `.ts` files run by Node itself (22.18 or newer). Use `import type` f
 ## What goes where
 
 - `src/engine/`: timeline, playback, stage, bar. `timeline.ts` is pure and holds the rules of time.
-- `src/panels/<name>/`: one panel in six files. The contract is in `CONTRIBUTING.md` and checked by `src/panels/contract.test.ts`.
+- `src/panels/<name>/`: one panel in seven files. Its look (hex values, typeface) lives in its `skin.css`, nowhere else. The contract is in `CONTRIBUTING.md` and checked by `src/panels/contract.test.ts`.
 - `scripts/lib/`: shared by the scripts. `load.ts` is the demo check, `publish.ts` the share ledger and site, `spills.ts` finds text that does not fit.
 - `.claude/skills/splitdemo/`: the skill that writes demos. `format.md` there describes `demo.json`; keep it in step with `src/engine/schema.ts`.
 - `DESIGN.md`: palette, type, motion and the rules a panel view follows.

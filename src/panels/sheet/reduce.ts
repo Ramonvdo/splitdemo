@@ -17,6 +17,8 @@ export interface Row {
 export interface State {
   /** Top to bottom. */
   rows: Row[];
+  /** The cell the last action wrote. The view draws the selection there, as if someone had just typed it. */
+  active?: { row: string; column: string };
 }
 
 /** More rows than this and the bottom ones fall off the monitor. */
@@ -38,7 +40,7 @@ export const logic: PanelLogic<Config, State, Action> = {
         if (state.rows.length + 1 > ROWS_MAX) throw new Error(`the sheet would hold ${state.rows.length + 1} rows and fits ${ROWS_MAX}`);
         const row: Row = { id: action.id, cells, rev: 1, changed: ids, landed: true };
         if (action.tone) row.tone = action.tone;
-        return { rows: [...state.rows, row] };
+        return { rows: [...state.rows, row], active: { row: row.id, column: ids.findLast((column) => column in cells) ?? ids[0] } };
       }
       case "set": {
         const row = state.rows.find((r) => r.id === action.row);
@@ -51,20 +53,23 @@ export const logic: PanelLogic<Config, State, Action> = {
         const next: Row = { id: row.id, cells: { ...row.cells, ...cells }, rev: row.rev + 1, changed };
         const tone = action.tone ?? row.tone;
         if (tone) next.tone = tone;
-        return { rows: state.rows.map((r) => (r === row ? next : r)) };
+        return { rows: state.rows.map((r) => (r === row ? next : r)), active: { row: row.id, column: ids.findLast((column) => changed.includes(column))! } };
       }
       case "fill": {
         known({ [action.column]: action.value });
-        return {
-          rows: state.rows.map((row) => {
-            const tone = action.tone ?? row.tone;
-            // A row that reads the same already is left alone, so it does not flash.
-            if (row.cells[action.column] === action.value && tone === row.tone) return row;
-            const next: Row = { id: row.id, cells: { ...row.cells, [action.column]: action.value }, rev: row.rev + 1, changed: [action.column] };
-            if (tone) next.tone = tone;
-            return next;
-          }),
-        };
+        const rows = state.rows.map((row) => {
+          const tone = action.tone ?? row.tone;
+          // A row that reads the same already is left alone, so it does not flash.
+          if (row.cells[action.column] === action.value && tone === row.tone) return row;
+          const next: Row = { id: row.id, cells: { ...row.cells, [action.column]: action.value }, rev: row.rev + 1, changed: [action.column] };
+          if (tone) next.tone = tone;
+          return next;
+        });
+        const last = rows.findLast((row, i) => row !== state.rows[i]);
+        const next: State = { rows };
+        const active = last ? { row: last.id, column: action.column } : state.active;
+        if (active) next.active = active;
+        return next;
       }
     }
   },

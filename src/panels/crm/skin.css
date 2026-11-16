@@ -1,0 +1,36 @@
+/* A sales CRM: a dark navigation rail, a cool grey board, white deal cards with a link-coloured name. */
+[data-app="crm"] {
+  --color-window: #ffffff;
+  --color-wash: #f5f8fa;
+  --color-line: #cbd6e2;
+  --color-ink: #2d3e50;
+  --color-muted: #516f90;
+  --color-app: #253342;
+  --color-on-app: #ffffff;
+  --color-app-wash: #eaf0f6;
+  --color-mark: #00748c;
+  --color-good: #00705f;
+  --color-wait: #8a5300;
+  --color-info: #0b62a8;
+  --radius-control: 0.23rem;
+  font-family: "Source Sans 3 Variable", "Segoe UI", sans-serif;
+}
+/* Every stage has its own colour on top of its column; the last one is where a deal is won. */
+[data-app="crm"] [data-column] {
+  --stage: #7c98b6;
+}
+[data-app="crm"] [data-column]:nth-child(2) {
+  --stage: #00a4bd;
+}
+[data-app="crm"] [data-column]:nth-child(3) {
+  --stage: #f5c26b;
+}
+[data-app="crm"] [data-column]:last-child {
+  --stage: #00bda5;
+}
+[data-app="crm"] [data-column] > h3 {
+  box-shadow: inset 0 0.2rem 0 var(--stage);
+}
+[data-app="crm"] [data-card] {
+  box-shadow: 0 1px 2px rgb(45 62 80 / 0.12);
+}

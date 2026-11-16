@@ -25,6 +25,12 @@
   --color-wait: #8f5200;
   --color-info: #2457d6;
   --color-idle: #5d626e;
+  /* The app's own colour inside a monitor: its header, its links, its buttons. A skin.css sets it; this is the fallback. */
+  --color-app: #16181d;
+  --color-on-app: #ffffff;
+  --color-app-wash: #f3f4f6;
+  /* The app's second colour: a selection, a link. */
+  --color-mark: #2457d6;
 
   /* 1rem is the body size inside a monitor: 13 px on a 1280 x 720 stage. */
   --text-*: initial;
@@ -310,10 +316,11 @@
   --chart-segment-line: oklch(0.5 0 0 / 0.25);
 }
 
-/* One series, in the demo's accent. Everything else in a chart is the monitor's own neutrals. */
+/* One series. On the stage it falls back to the demo's accent; the kpi panel's skin gives it the dashboard's own colour. Everything else in a chart is the monitor's own neutrals. */
 .stage,
 .gallery {
   --chart-1: var(--color-tally);
+  --chart-on-1: var(--color-on-tally);
   --chart-background: var(--color-window);
   --chart-foreground: var(--color-ink);
   --chart-foreground-muted: var(--color-muted);

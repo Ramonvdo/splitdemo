@@ -7,6 +7,8 @@
       "type": "sheet",
       "label": "Lead list, first rows",
       "config": {
+        "title": "Office cleaning leads",
+        "tab": "Leads",
         "columns": [
           { "id": "company", "title": "Company" },
           { "id": "contact", "title": "Contact" },

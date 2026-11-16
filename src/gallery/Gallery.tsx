@@ -40,7 +40,7 @@ function Card({ name, example }: { name: string; example: Example }) {
         </button>
       </header>
       {/* The same window a monitor on the wall has, at the size of its usual cell. */}
-      <div className={`@container relative max-w-full overflow-hidden rounded-monitor bg-window text-ink ${logic.portrait ? "h-[46rem] w-[22rem]" : "h-[22rem] w-[44rem]"}`}>
+      <div data-app={name} className={`@container relative max-w-full overflow-hidden rounded-monitor bg-window text-ink ${logic.portrait ? "h-[46rem] w-[22rem]" : "h-[22rem] w-[44rem]"}`}>
         <div className="relative size-full">
           <View config={example.config} state={state} live={n < example.actions.length} />
         </div>
