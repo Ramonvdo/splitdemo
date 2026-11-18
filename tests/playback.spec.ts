@@ -1,10 +1,11 @@
 import { expect, test } from "@playwright/test";
 import { READY } from "../scripts/lib/spills.ts";
 
-const DEMO = "/speed-to-lead/";
+// These tests are about the wall: every monitor at once.
+const DEMO = "/speed-to-lead/?mode=fast";
 
 test("left alone, it plays to the end and shows what the business gained", async ({ page }) => {
-  await page.goto(`${DEMO}?autoplay=1`);
+  await page.goto(`${DEMO}&autoplay=1`);
   await expect(page.locator("main.stage")).toHaveAttribute("data-done", "true", { timeout: 50_000 });
   await expect(page.locator('[data-column="booked"] [data-card="dana"]')).toContainText("Thu 10 AM");
   await expect(page.locator('[data-tile="reply"]')).toContainText("38 sec");
@@ -60,22 +61,22 @@ test("when it is over the viewer is offered the next step the demo names", async
     const demo = await (await route.fetch()).json();
     await route.fulfill({ json: { ...demo, next: { label: "Book a call", url: "https://example.com/call" } } });
   });
-  await page.goto(`${DEMO}?at=3`);
+  await page.goto(`${DEMO}&at=3`);
   await expect(page.getByRole("link", { name: "Book a call" })).toHaveCount(0);
-  await page.goto(`${DEMO}?at=end`);
+  await page.goto(`${DEMO}&at=end`);
   const link = page.getByRole("link", { name: "Book a call" });
   await expect(link).toHaveAttribute("href", "https://example.com/call");
   await expect(link).toHaveAttribute("rel", /noopener/);
 });
 
 test("when it is over no step is still running, and a beat lights its cause next to its effect", async ({ page }) => {
-  await page.goto("/speed-to-lead/?at=end");
+  await page.goto(`${DEMO}&at=end`);
   await page.locator(READY).waitFor();
   await expect(page.locator('[data-panel="flow"] [data-ran]')).toHaveCount(6);
   await expect(page.locator("[data-running]")).toHaveCount(0);
 
   // Beat 3: the automation answers and the reply lands on the phone. Both are lit; the pipeline waits.
-  await page.goto("/speed-to-lead/?at=2");
+  await page.goto(`${DEMO}&at=2`);
   await page.locator(READY).waitFor();
   const waiting = await page.locator("[data-panel][data-waiting]").evaluateAll((els) => els.map((el) => (el as HTMLElement).dataset.panel));
   expect(waiting).not.toContain("flow");
@@ -84,7 +85,7 @@ test("when it is over no step is still running, and a beat lights its cause next
 });
 
 test("opened as a picture of the start, nothing moves: the chart has its bars at once", async ({ page }) => {
-  await page.goto(`${DEMO}?at=start`);
+  await page.goto(`${DEMO}&at=start`);
   await page.locator(READY).waitFor();
   const stage = page.locator("main.stage");
   await expect(stage).toHaveAttribute("data-status", "idle");

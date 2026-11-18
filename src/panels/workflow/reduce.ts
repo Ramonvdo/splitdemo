@@ -15,6 +15,11 @@ export interface State {
 export const logic: PanelLogic<Config, State, Action> = {
   icon: "branch",
   initial: () => ({ ran: [], runs: 0, notes: {} }),
+  // A step that follows one that ran is reached along the line between them, the first time it runs.
+  pace(action, state, config) {
+    const after = config.nodes.find((node) => node.id === action.node)?.after ?? [];
+    return !state.ran.includes(action.node) && after.some((id) => state.ran.includes(id)) ? { travels: true } : undefined;
+  },
   reduce(state, action, config) {
     const node = config.nodes.find((n) => n.id === action.node);
     if (!node) throw new Error(`there is no node "${action.node}". Nodes: ${config.nodes.map((n) => n.id).join(", ")}`);

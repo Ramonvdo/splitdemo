@@ -4,7 +4,7 @@
  *
  * Says whether a demo can play, and where in demo.json it goes wrong. Exits 1 when any demo cannot play.
  */
-import { compile, duration } from "../src/engine/timeline.ts";
+import { duration } from "../src/engine/timeline.ts";
 import { checkFile } from "./lib/load.ts";
 import { findDemo, listDemos, type DemoRef } from "./lib/workspace.ts";
 
@@ -24,10 +24,10 @@ if (!asked.length) refs.push(...listDemos());
 if (!refs.length && !failed) console.log("No demos to check.");
 
 for (const ref of refs) {
-  const { demo, problems, notes } = await checkFile(ref.file);
-  if (demo) {
-    const seconds = Math.round(duration(compile(demo)) / 1000);
-    console.log(`${ref.slug}: plays. ${demo.panels.length} panels, ${demo.beats.length} beats, about ${seconds} s.`);
+  const { demo, timeline, problems, notes } = await checkFile(ref.file);
+  if (demo && timeline) {
+    const seconds = (mode: "explainer" | "fast") => Math.round(duration(timeline, mode) / 1000);
+    console.log(`${ref.slug}: plays. ${demo.panels.length} panels, ${demo.beats.length} beats. Explainer about ${seconds("explainer")} s, fast about ${seconds("fast")} s.`);
   } else {
     failed = true;
     console.log(`${ref.slug}: cannot play (${ref.file})`);

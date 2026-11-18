@@ -3,8 +3,8 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { ZodType } from "zod";
 import * as schema from "../../src/engine/schema.ts";
-import { compile, snapshots } from "../../src/engine/timeline.ts";
-import type { Demo } from "../../src/engine/types.ts";
+import { compile, paced, snapshots } from "../../src/engine/timeline.ts";
+import type { Demo, Timeline } from "../../src/engine/types.ts";
 import type { PanelLogic } from "../../src/panels/types.ts";
 import { ROOT } from "./workspace.ts";
 
@@ -51,6 +51,8 @@ function issues(base: string, result: { success: boolean; error?: { issues: { pa
 
 export interface Checked {
   demo?: Demo;
+  /** The demo laid out in time, when it can play. */
+  timeline?: Timeline;
   /** The demo cannot play, or will mislead. Each line starts with its place in demo.json. */
   problems: string[];
   /** It plays, but a viewer will get less from it. */
@@ -104,8 +106,10 @@ export async function checkDemo(raw: unknown, fresh = false): Promise<Checked> {
 
   if (problems.length) return { problems, notes };
 
+  const logic = (type: string) => presets[type]?.logic;
+  let timeline = compile(demo);
   try {
-    snapshots(demo, (type) => presets[type]?.logic, compile(demo));
+    timeline = paced(timeline, demo, logic, snapshots(demo, logic, timeline));
   } catch (e) {
     return { problems: [e instanceof Error ? e.message : String(e)], notes };
   }
@@ -116,7 +120,7 @@ export async function checkDemo(raw: unknown, fresh = false): Promise<Checked> {
   if (!demo.outcome.some((o) => o.was)) notes.push("outcome: no `was`. A result means more next to what it was before.");
   if (demo.expires && demo.expires < new Date().toISOString().slice(0, 10)) notes.push(`expires: ${demo.expires} has passed, so a share leaves this demo out.`);
 
-  return { demo, problems, notes };
+  return { demo, timeline, problems, notes };
 }
 
 /** Reads and checks a demo.json file. */

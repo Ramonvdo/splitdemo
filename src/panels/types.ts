@@ -16,6 +16,12 @@ export interface PanelLogic<C = any, S = any, A extends { type: string } = any> 
   triggers?: A["type"][];
   /** Drawn tall and narrow: takes the full-height slot of the rail layout. */
   portrait?: boolean;
+  /**
+   * Explainer mode gives every change time to be read: by default the words in the action itself.
+   * Answer here for an action where that is wrong: the `words` it really puts on screen, or that it `travels` in along a line first.
+   * `state` is the panel before the change.
+   */
+  pace?(action: A, state: S, config: C): { words?: number; travels?: boolean } | undefined;
 }
 
 export interface PanelProps<C = any, S = any, A = any> {

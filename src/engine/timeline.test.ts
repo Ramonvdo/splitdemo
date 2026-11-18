@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { PanelLogic } from "../panels/types.ts";
-import { advance, compile, duration, lit, nextStep, readMs, snapshots } from "./timeline.ts";
-import type { Demo, Pos } from "./types.ts";
+import { advance, compile, duration, lit, nextStep, paced, readMs, screen, snapshots } from "./timeline.ts";
+import type { Demo, Mode, Pos, Timeline } from "./types.ts";
 
 /** A panel that only counts, so every expected value below can be worked out by hand. */
 const counter: PanelLogic<{ start: number }, number, { type: "inc"; by: number }> = {
@@ -151,5 +151,122 @@ describe("lit", () => {
   it("lights only the panel that waits for a press", () => {
     expect(lit(t, { beat: 2, n: 3 })).toEqual(["d"]);
     expect(lit(t, { beat: 2, n: 5 })).toEqual(["d", "c"]);
+  });
+});
+
+/** Every position a demo passes through when it is left to play, with what happens next at each. */
+function walk(t: Timeline, mode: Mode): unknown[] {
+  const seen: unknown[] = [];
+  let pos: Pos = { beat: 0, n: 0 };
+  for (;;) {
+    const step = nextStep(t, pos, mode);
+    seen.push([pos.beat, pos.n, pos.ahead === true, step]);
+    if (step.kind === "end") return seen;
+    pos = advance(t, pos, mode);
+  }
+}
+
+describe("explainer", () => {
+  const t = compile(demo);
+  const two: Demo = {
+    ...demo,
+    panels: [
+      { id: "c", type: "counter", label: "Cause", config: { start: 0 } },
+      { id: "d", type: "counter", label: "Effect", config: { start: 0 } },
+    ],
+    beats: [
+      { say: "one", do: [{ on: "c", type: "inc", by: 1 }, { on: "d", type: "inc", by: 1 }] },
+      { say: "two", do: [{ on: "c", type: "inc", by: 1 }] },
+      { wait: "click", do: [{ on: "d", type: "inc", by: 1 }, { on: "c", type: "inc", by: 1 }] },
+    ],
+  };
+
+  it("walks one screen at a time: the card, the screen, then each change on it", () => {
+    expect(walk(t, "explainer")).toEqual([
+      // The card stands alone: 1300 + 3 words x 180.
+      [0, 0, false, { kind: "show", delay: 1840 }],
+      // The counter comes up for the first time: 450 to change screens, 700 before its first change, 1200 to take it in.
+      [0, 0, true, { kind: "cue", delay: 2350 }],
+      // The next change is on the same screen. `after` does not count here.
+      [0, 1, false, { kind: "cue", delay: 1000 }],
+      // The step is over.
+      [0, 2, false, { kind: "beat", delay: 1500 }],
+      // A beat without a caption has no card. Its screen comes up and waits for the press.
+      [1, 2, false, { kind: "show", delay: 0 }],
+      [1, 2, true, { kind: "gate" }],
+      [1, 3, false, { kind: "beat", delay: 1500 }],
+      [2, 3, false, { kind: "end", delay: 0 }],
+    ]);
+  });
+
+  it("changes screens between two changes on different panels, and gives a screen seen before less time", () => {
+    expect(walk(compile(two), "explainer")).toEqual([
+      [0, 0, false, { kind: "show", delay: 1480 }],
+      [0, 0, true, { kind: "cue", delay: 2350 }],
+      // 900 before the screen goes.
+      [0, 1, false, { kind: "show", delay: 900 }],
+      [0, 1, true, { kind: "cue", delay: 2350 }],
+      [0, 2, false, { kind: "beat", delay: 1500 }],
+      [1, 2, false, { kind: "show", delay: 1480 }],
+      // The first counter again: 450 + 700.
+      [1, 2, true, { kind: "cue", delay: 1150 }],
+      [1, 3, false, { kind: "beat", delay: 1500 }],
+      [2, 3, false, { kind: "show", delay: 0 }],
+      [2, 3, true, { kind: "gate" }],
+      [2, 4, false, { kind: "show", delay: 900 }],
+      [2, 4, true, { kind: "cue", delay: 1150 }],
+      [2, 5, false, { kind: "end", delay: 1500 }],
+    ]);
+  });
+
+  it("shows the screen of the change to come while a card stands or the screen leads, else of the last change", () => {
+    const t2 = compile(two);
+    expect(screen(t2, { beat: 0, n: 0 })).toBe("c");
+    expect(screen(t2, { beat: 0, n: 1 })).toBe("c");
+    expect(screen(t2, { beat: 0, n: 1, ahead: true })).toBe("d");
+    expect(screen(t2, { beat: 0, n: 2 })).toBe("d");
+    expect(screen(t2, { beat: 1, n: 2 })).toBe("c");
+  });
+
+  it("gives a change time to be read: 160 ms a word of what it put on screen, ten words at most", () => {
+    const read = (payload: Record<string, unknown>) => compile({ ...demo, beats: [{ do: [{ on: "c", type: "inc", by: 1, ...payload }] }] }).cues[0].read;
+    expect(read({})).toBe(0);
+    // An id or a tone is one word and nobody reads it.
+    expect(read({ note: "Booked for Thursday", id: "dana", tone: "good" })).toBe(480);
+    expect(read({ cells: { name: "Dana Whitfield", status: "New" }, lines: ["One more"] })).toBe(640);
+    expect(read({ text: "one two three four five six seven eight nine ten eleven twelve" })).toBe(1600);
+  });
+
+  it("reads after the change, before the screen goes", () => {
+    const one = compile({ ...demo, beats: [{ do: [{ on: "c", type: "inc", by: 1, note: "Booked for Thursday" }] }] });
+    expect(walk(one, "explainer")).toEqual([
+      [0, 0, false, { kind: "show", delay: 0 }],
+      [0, 0, true, { kind: "cue", delay: 2350 }],
+      [0, 1, false, { kind: "end", delay: 480 + 1500 }],
+    ]);
+  });
+
+  it("asks the panel where the words in an action are not what it puts on screen", () => {
+    // This counter shows its count in words when it goes up by two, and the change comes in along a line.
+    const wordy: PanelLogic<{ start: number }, number, { type: "inc"; by: number }> = {
+      ...counter,
+      pace: (action, state) => (action.by === 2 ? { words: state, travels: true } : undefined),
+    };
+    const own = (type: string) => (type === "counter" ? wordy : undefined);
+    // Before the second change the counter stands at 11: more than ten words, so ten. The line takes 600.
+    expect(paced(t, demo, own, snapshots(demo, own, t)).cues.map((c) => [c.read, c.travel])).toEqual([
+      [0, 0],
+      [1600, 600],
+      [0, 0],
+    ]);
+  });
+
+  it("adds up, leaving out the time a viewer takes to press", () => {
+    expect(duration(t, "explainer")).toBe(8190);
+    expect(duration(t, "fast")).toBe(4620);
+  });
+
+  it("stays put at the end", () => {
+    expect(advance(t, { beat: 2, n: 3 }, "explainer")).toEqual({ beat: 2, n: 3 });
   });
 });

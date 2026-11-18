@@ -56,3 +56,10 @@ it("refuses a step whose earlier steps have not run", () => {
   expect(() => run([{ type: "run", node: "text" }, { type: "run", node: "reply" }])).toThrow('"reply" comes after "read", which has not run yet');
   expect(() => run([{ type: "run", node: "nope" }])).toThrow('there is no node "nope". Nodes: text, read, reply, card, done');
 });
+
+it("says a step is reached along a line when a step before it ran, the first time", () => {
+  const pace = (before: Action[], action: Action) => logic.pace?.(action, run(before), config);
+  expect(pace([], { type: "run", node: "text" })).toBeUndefined();
+  expect(pace([{ type: "run", node: "text" }], { type: "run", node: "read" })).toEqual({ travels: true });
+  expect(pace([{ type: "run", node: "text" }, { type: "run", node: "read" }], { type: "run", node: "read" })).toBeUndefined();
+});

@@ -39,3 +39,16 @@ it("refuses what the inbox cannot show", () => {
   const many = Array.from({ length: 5 }, (_, i): Action => ({ type: "receive", id: `m${i}`, from: "A", subject: "B" }));
   expect(() => run(many)).toThrow("the inbox would hold 6 mails and fits 5");
 });
+
+it("says where a mail's words are read: sender and subject in the list, the rest once it is open", () => {
+  const pace = (before: Action[], action: Action) => logic.pace?.(action, run(before), config);
+  // "Dana Whitfield" and "Re: Quick question".
+  expect(pace([], dana)).toEqual({ words: 5 });
+  // "Yes, send me the details."
+  expect(pace([dana], { type: "open", mail: "dana" })).toEqual({ words: 5 });
+  const reply: Action = { type: "reply", mail: "dana", text: "Great, here they are." };
+  // A reply opens the mail when it was closed, so the mail is read too.
+  expect(pace([dana], reply)).toEqual({ words: 9 });
+  expect(pace([dana, { type: "open", mail: "dana" }], reply)).toEqual({ words: 4 });
+  expect(pace([dana], { type: "tag", mail: "dana", tag: "Interested" })).toBeUndefined();
+});

@@ -29,8 +29,20 @@ export interface State {
 /** More mails than this and the bottom ones fall off the monitor. */
 export const MAILS_MAX = 5;
 
+function words(text = ""): number {
+  return text.split(/\s+/).filter(Boolean).length;
+}
+
 export const logic: PanelLogic<Config, State, Action> = {
   icon: "mail",
+  // In the list a mail is its sender and its subject. What it says is read once it is open.
+  pace(action, state) {
+    const body = (id: string) => words(state.mails.find((mail) => mail.id === id)?.body);
+    if (action.type === "receive") return { words: words(action.from) + words(action.subject) };
+    if (action.type === "open") return { words: body(action.mail) };
+    if (action.type === "reply") return { words: words(action.text) + (state.open === action.mail ? 0 : body(action.mail)) };
+    return undefined;
+  },
   initial: (config) => ({ mails: (config.mails ?? []).map((mail) => ({ ...mail, unread: mail.unread ?? false, rev: 0 })) }),
   reduce(state, action) {
     const find = (id: string) => {

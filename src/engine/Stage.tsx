@@ -4,7 +4,7 @@ import { Icon } from "../panels/icons.tsx";
 import { presets } from "../panels/registry.ts";
 import { Bar } from "./Bar.tsx";
 import { arrange, type Arranged } from "./layout.ts";
-import { compile, snapshots } from "./timeline.ts";
+import { compile, paced, snapshots } from "./timeline.ts";
 import type { Demo, PanelSpec, States, Timeline } from "./types.ts";
 import { usePlayback, type PlaybackOptions } from "./usePlayback.ts";
 
@@ -17,8 +17,10 @@ export interface Ready {
 
 /** Works a demo out in full before anything is drawn. Throws, with its place in demo.json, when it cannot play. */
 export function prepare(demo: Demo): Ready {
-  const timeline = compile(demo);
-  const states = snapshots(demo, (type) => presets[type]?.logic, timeline);
+  const logic = (type: string) => presets[type]?.logic;
+  const laid = compile(demo);
+  const states = snapshots(demo, logic, laid);
+  const timeline = paced(laid, demo, logic, states);
   const arranged = arrange(demo, (type) => presets[type]?.logic.portrait === true);
   return { demo, timeline, states, arranged };
 }

@@ -1,4 +1,7 @@
 /** A demo is data: panels, and the beats that act on them. This is the shape of demo.json. */
+/** How a demo plays: every monitor at once, or one screen at a time with a card before each step. */
+export type Mode = "fast" | "explainer";
+
 export type Layout = "rail" | "quad" | "trio" | "duo";
 
 export interface Demo {
@@ -61,6 +64,10 @@ export interface Cue {
   beat: number;
   at: number;
   action: Action;
+  /** Explainer mode: ms to read what this change put on screen. */
+  read: number;
+  /** Explainer mode: ms the change takes to arrive before it shows, e.g. along a line. */
+  travel: number;
 }
 
 /** A beat's cues are cues[from..to). `length` is the whole beat in ms. */
@@ -82,12 +89,16 @@ export interface Timeline {
 export interface Pos {
   beat: number;
   n: number;
+  /** Explainer mode: the screen of the next change is already up, and the change has not happened yet. */
+  ahead?: boolean;
 }
 
 /** What playback does next from a position. */
 export type Step =
   | { kind: "cue"; delay: number }
   | { kind: "gate" }
+  /** Explainer mode: the next screen comes up. */
+  | { kind: "show"; delay: number }
   | { kind: "beat"; delay: number }
   | { kind: "end"; delay: number };
 

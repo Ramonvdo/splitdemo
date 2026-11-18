@@ -94,7 +94,7 @@ test("a shared demo plays under the headers it is served with, and a wrong link 
     expect(html).toContain("<title>Acme Dental answers a text after closing time</title>");
     expect(html).toContain('<meta property="og:description" content="38 sec to first reply (was 14 h).');
 
-    await page.goto(`${server.url}/${acme}/?autoplay=1`);
+    await page.goto(`${server.url}/${acme}/?mode=fast&autoplay=1`);
     await page.locator(READY).waitFor();
     await expect(page.locator("main.stage[data-done]")).toBeVisible({ timeout: 60_000 });
     await expect(page).toHaveTitle("Acme Dental answers a text after closing time");
