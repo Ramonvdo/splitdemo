@@ -1,7 +1,7 @@
 {
   "name": "splitdemo",
-  "version": "0.1.0",
-  "description": "Scripted split-screen demos of automation systems: one scenario, up to four synced panels.",
+  "version": "0.2.0",
+  "description": "Scripted demos of automation systems: one story told step by step or on up to four synced panels, ending on a results slide.",
   "private": true,
   "type": "module",
   "license": "MIT",

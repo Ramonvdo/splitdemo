@@ -1,7 +1,16 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 (2026-11-18)
 
+- Explainer mode, which is now how a demo opens. The story plays one step at a time: a card with the step's caption alone on the screen, then each screen that step touches at full size, one change at a time. A link, a film and the dev server open in it.
+- Fast mode is the split-screen wall of 0.1.0, a little slower: a caption stands 800 ms before the first action and actions follow 700 ms apart (they were 400 and 500). `?mode=fast` opens it. A switch top left goes between the two modes and keeps the step.
+- A results slide after the last step: the outcome numbers, a title and a text, and with `results.roi` a calculator the viewer fills in, with two bar charts that follow it.
+- New optional fields in `demo.json`: `results`, and `lang` (`"nl"` puts the buttons, the step counter and the results slide in Dutch). `v` stays 1, and a demo written for 0.1.0 plays in both modes unchanged.
+- In explainer mode the workflow's line draws itself from the step before to the step it reaches, and the step lights when it arrives.
+- `npm run check` prints how long each mode plays, and notes a step that asks too much of the viewer: a screen that shows twice, more than three screens, more than one workflow step in a beat, a story past 110 seconds.
+- `npm run shots` shoots both modes, and `--mode` picks one. `npm run record` films the story, or the wall with `--fast`. A gif is always the wall.
+- A panel can say how long one of its changes takes to read, with `pace` in its logic.
+- The three examples are retold step by step, each with a `results` block.
 - Every panel now looks like the kind of app it stands for, so a wall reads as several apps working together. Each has its own colours, typeface and chrome in a `skin.css`: the sheet has column letters, a formula bar and a selected cell, the CRM a board with stage columns and deal cards, the inbox a list next to the open mail.
 - New optional fields: `title` and `tab` on `sheet`, `title` on `calendar`, and `site` on `form`, which puts the form in a browser window with that address.
 - The bar chart on the numbers board is drawn in the dashboard's own colour. The demo's accent now only marks what is live and what changed.

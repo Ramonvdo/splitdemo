@@ -1,22 +1,28 @@
 # splitdemo
 
-Split-screen demos for automation and AI systems. One scripted story plays across up to four app-like screens at once, so a business owner sees what happened and what they got out of it in about 30 seconds.
+Demos of automation and AI systems that a business owner can follow. One scripted story plays step by step: a line of text says what is about to happen, then the screen it happens on shows it at full size. The story ends on a results slide with a calculator the owner fills in with their own numbers. The same story also plays as a split screen, on up to four app-like screens at once.
 
 ![A new patient texts a dental practice after closing time. The automation reads the message, replies with open slots, saves the lead and books the visit, across four screens at once.](docs/speed-to-lead.gif)
+
+The picture shows fast mode, the split screen. A link opens in explainer mode, which tells the same story one screen at a time.
 
 ## Why
 
 Most automation demos show the workflow canvas. The person paying for the system does not read canvases. They want to know what their customer sees, where the lead ends up, and what changed in their numbers.
 
-splitdemo puts those on one wall. The customer's phone, the automation, the CRM and the week's numbers sit next to each other, and a single story moves through all of them. The viewer sends the first message, then watches the reply arrive, the lead land in the pipeline and the reply time drop from 14 hours to 38 seconds.
+splitdemo tells that as a story in steps. A card names what starts everything: "9:14 PM. The practice closed at six." The viewer sends the text themselves. The automation then shows with all its steps, the first one lights up, and every step after it gets a card of its own and the app it wrote to: the reply on the phone, the lead in the pipeline, the reply time going from 14 hours to 38 seconds. One screen changes at a time, so there is time to read it.
+
+Fast mode puts the customer's phone, the automation, the CRM and the week's numbers next to each other on one wall, and the same story moves through all of them at once. It is the short version, for a viewer who already knows the story.
 
 ## What is in the box
 
-- A demo is one JSON file: the panels, a story in beats and the outcome. There is no code per demo, so swapping the CRM for a spreadsheet means changing one `type`.
+- A demo is one JSON file: the panels, a story in steps, the outcome and the numbers for the calculator. There is no code per demo, so swapping the CRM for a spreadsheet means changing one `type`.
+- That one file plays two ways. Explainer shows a card and then one screen at a time, and takes 60 to 100 seconds. Fast shows the whole wall and takes 30 to 50. The switch top left goes between them and keeps the step.
+- A results slide closes the story: the outcome numbers next to what they were, a sentence or two on why that matters, and an ROI calculator with two bar charts that follow the numbers as they are typed.
 - Nine panels come with it: phone, form, inbox, workflow, CRM board, sheet, calendar, email campaign and a numbers board with a chart. Each looks like the kind of app it stands for, with its own colours and typeface: the sheet has column letters and a formula bar, the CRM has a board with deal cards. A panel takes the tool's name as a label, like "CRM in ClickUp", and carries no logo.
-- You can show a demo live on a call from your own machine, send it as a private link, or film it (1920x1080, upright for a phone, or a gif).
-- The Claude Code skills write a demo from a job post, a process description or a call transcript. They check it and look at every frame before they hand it over.
-- Two checks catch a bad demo before a prospect does. One finds an action that cannot happen or a caption that is too long. The other finds text that gets cut off or ends in three dots, on a laptop or a phone.
+- You can show a demo live on a call from your own machine, send it as a private link, or film it (the story or the wall, 1920x1080, upright for a phone, or a gif).
+- The Claude Code skills write a demo from a job post, a process description or a call transcript. They check it and look at every card and every screen before they hand it over.
+- Two checks catch a bad demo before a prospect does. One finds an action that cannot happen or a caption that is too long, prints how long each mode plays, and notes a step that asks too much of the viewer. The other finds text that gets cut off or ends in three dots, in both modes, on a laptop or a phone.
 
 Every demo carries a small "Scripted example" tag. Nothing connects to a real system; it is a simulation of what the system will do.
 
@@ -37,7 +43,7 @@ After that:
 | `/splitdemo <job post or problem>` | Writes the story, picks the panels, builds the demo, checks it and opens it. |
 | `/splitdemo <slug> <change>` | Changes a demo you already have. |
 | `/splitdemo-share <slug>` | Publishes it under a link nobody can guess, after showing you what goes online. |
-| `/splitdemo-video <slug>` | Films it as an mp4, with `--portrait` for a phone and `--gif` for a README or an email. |
+| `/splitdemo-video <slug>` | Films it as an mp4: the story step by step, or the wall with `--fast`. `--portrait` is for a phone and `--gif` for a README or an email. |
 | `/splitdemo panel <what it shows>` | Adds a panel type for a screen the nine cannot show. |
 
 ## Start by hand
@@ -51,9 +57,9 @@ npm ci
 npm run dev
 ```
 
-Open http://localhost:4310 for the three examples. http://localhost:4310/__panels shows every panel on its own.
+Open http://localhost:4310 for the three examples. They open in explainer mode; `?mode=fast` at the end of an address opens the wall. http://localhost:4310/__panels shows every panel on its own.
 
-On a call: space plays and pauses, the arrow keys step through the story, `R` plays it again, `1` to `4` enlarge a panel and `H` hides the bar.
+On a call: the switch top left goes between Explainer and Fast. Space plays and pauses, the arrow keys step through the story, `R` plays it again and `H` hides the bars. In fast mode `1` to `4` enlarge a panel. On the results slide you type the prospect's own numbers into the fields.
 
 ## What a demo looks like
 
@@ -76,11 +82,25 @@ On a call: space plays and pauses, the arrow keys step through the story, `R` pl
       "do": [{ "on": "crm", "type": "add", "id": "dana", "to": "new", "title": "Dana Whitfield" }]
     }
   ],
-  "outcome": [{ "value": "38 sec", "label": "to first reply", "was": "14 h" }]
+  "outcome": [{ "value": "38 sec", "label": "to first reply", "was": "14 h" }],
+  "results": {
+    "title": "What a missed message costs",
+    "roi": {
+      "currency": "USD",
+      "inputs": [
+        { "id": "leads", "label": "After-hours messages a month", "value": 40 },
+        { "id": "won", "label": "Extra ones you book", "value": 30, "kind": "percent" },
+        { "id": "value", "label": "Worth of a new patient", "value": 180, "kind": "money" }
+      ],
+      "gains": [{ "label": "Patients won back", "from": ["leads", "won", "value"] }]
+    }
+  }
 }
 ```
 
-Each beat has a caption and the actions that happen while it is on screen. Timing follows from the text, so you write no numbers unless you want a pause. A beat with `"wait": "click"` holds until the viewer presses the button themselves.
+Each beat is one step: a caption and the actions it brings. In explainer mode the caption is the card, and the actions show one screen at a time in the order they are written. In fast mode they play on the wall while the caption stands under it. Timing follows from the text, so you write no numbers unless you want a pause on the wall. A beat with `"wait": "click"` holds until the viewer presses the button themselves.
+
+`results` is optional. Each gain is its inputs multiplied together, so this one starts at 40 × 30% × $180 = $2,160 a month, and the viewer can change every number.
 
 The full examples are in [`examples/`](examples). The list of panels with their actions is [`src/panels/INDEX.md`](src/panels/INDEX.md), and each panel's folder says how to use it well.
 
@@ -91,11 +111,11 @@ Your own demos live outside this repo, in a workspace folder you choose: `<works
 | Command | What it does |
 | --- | --- |
 | `npm run dev` | Plays every demo at `http://localhost:4310/<slug>/` and reloads when its file changes. |
-| `npm run check -- <slug>` | Says whether the demo can play and where in the file it goes wrong. |
-| `npm run shots -- <slug>` | One picture per beat, and a failure when any text is cut off or shortened. |
+| `npm run check -- <slug>` | Says whether the demo can play, where in the file it goes wrong, and how long each mode plays. |
+| `npm run shots -- <slug>` | A picture of every card, screen and beat in both modes, and a failure when any text is cut off or shortened. `--mode explainer` or `--mode fast` shoots one. |
 | `npm run share -- <slug>` | Publishes the demo to your Cloudflare Worker. `--dry-run` publishes nothing. |
 | `npm run export -- <slug>` | Writes the demo as one plain folder for any static host. |
-| `npm run record -- <slug>` | Films it. `--portrait` and `--gif` as above. Needs ffmpeg. |
+| `npm run record -- <slug>` | Films the story. `--fast` films the wall, `--portrait` and `--gif` as above. Needs ffmpeg. |
 | `npm test`, `npm run e2e` | Unit tests, and the browser tests. |
 
 ## Sharing
@@ -103,6 +123,8 @@ Your own demos live outside this repo, in a workspace folder you choose: `<works
 A shared demo gets its own folder under a name like `harbor-dental-x7k2`. There is no index page, a wrong address returns a real 404, and the pages ask search engines to stay out. One prospect's folder holds nothing of another's.
 
 Every link has an end date. A demo is shared for 30 days unless you say otherwise, and it drops out at the next publish after that. `npm run share -- --stop <slug>` takes one offline sooner.
+
+A link opens in explainer mode. The same link with `?mode=fast` at the end opens the wall.
 
 By default a share shows you what will go online and waits for a yes. Set `"share": "auto"` in the settings to skip the question.
 

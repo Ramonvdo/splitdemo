@@ -22,7 +22,21 @@ Three finished demos to match are in the app: `examples/speed-to-lead`, `example
       "do": [{ "on": "crm", "type": "add", "id": "dana", "to": "new", "title": "Dana Whitfield" }]
     }
   ],
-  "outcome": [{ "value": "38 sec", "label": "to first reply", "was": "14 h" }]
+  "outcome": [{ "value": "38 sec", "label": "to first reply", "was": "14 h" }],
+  "results": {
+    "title": "What a missed message costs",
+    "text": "Every evening message used to wait until morning. By then most people had booked somewhere else.",
+    "roi": {
+      "currency": "USD",
+      "inputs": [
+        { "id": "leads", "label": "After-hours messages a month", "value": 40 },
+        { "id": "won", "label": "Extra ones you book", "value": 30, "kind": "percent" },
+        { "id": "value", "label": "Worth of a new patient", "value": 180, "kind": "money" }
+      ],
+      "gains": [{ "label": "Patients won back", "from": ["leads", "won", "value"] }],
+      "cost": { "monthly": 300, "once": 1500 }
+    }
+  }
 }
 ```
 
@@ -31,20 +45,22 @@ Three finished demos to match are in the app: `examples/speed-to-lead`, `example
 | Field | What it is | Limits |
 | --- | --- | --- |
 | `v` | Always `1`. | |
-| `title` | The story in one line. It opens a film and titles a link preview. | 60 characters |
+| `title` | The story in one line. It is the opening card, and it titles a link preview. | 60 characters |
+| `lang` | `"en"` or `"nl"`: the language of the words around the script (buttons, "Step 2 of 8", the results slide). Leave it out for English. | |
 | `panels` | The screens, in the order they sit on the wall. | 2 to 4 |
 | `panels[].id` | The name actions use for this panel. | lowercase letters, digits, dashes |
 | `panels[].type` | A panel from `src/panels/INDEX.md`. | |
 | `panels[].label` | The small label top left: whose screen or which tool. | 40 characters; about 24 over a tall panel |
 | `panels[].config` | What the screen shows before anything happens. Its shape is the panel's `schema.ts`. | per panel |
-| `beats` | The story, in order. | 1 to 16; five to eight tell it best |
-| `beats[].say` | The caption. | 72 characters |
+| `beats` | The steps of the story, in order. | 1 to 16; six to nine tell it best |
+| `beats[].say` | The caption: the step's card in explainer mode, the line under the wall in both. | 72 characters |
 | `beats[].clock` | The time in the story from this beat on: "21:14", "6:42 PM", "Mon 8 AM", "Day 7". | 8 characters |
-| `beats[].do` | The actions of this beat, in order. | up to 6 |
+| `beats[].do` | The actions of this beat, in order. Explainer mode shows their screens in this order. | up to 6 |
 | `beats[].wait` | `"click"`: the beat waits for the viewer to press its first action. | first action must be pressable |
-| `beats[].hold` | How long the beat stays after its last action, in ms. Leave it out. | |
-| `outcome` | What the business gained, shown when the story ends. | 1 to 3 |
+| `beats[].hold` | How long the beat stays after its last action on the wall, in ms. Leave it out. | |
+| `outcome` | What the business gained: the numbers on the results slide, and under the wall when it ends. | 1 to 3 |
 | `outcome[].value`, `.label`, `.was` | "38 sec", "to first reply", "14 h". `was` is the before, as a number or a few words. | 12, 32, 12 characters |
+| `results` | What the results slide says besides the outcome. See Results. | |
 | `layout` | `rail`, `quad`, `trio` or `duo`. Leave it out. | |
 | `accent` | The demo's one colour, like `#ff5c35`. Use `brand.accent` from the settings when it is set. | |
 | `next` | A link shown when the story ends: `{ "label": "Book a call", "url": "https://..." }`. Add it when the user gives a booking page or an email address. | label 28 characters; `https://` or `mailto:` |
@@ -62,15 +78,44 @@ Two lists sit one folder up, in `src/panels/`. `tones.ts` has the values of ever
 
 An action that cannot happen stops the demo from playing, and `check` says which: moving a card that is not on the board, running a step that does not exist, a fifth card in a column that fits four.
 
+## Results
+
+The example at the top has a whole `results` block. Every part of it is optional, `results` itself too. The slide always shows `outcome`.
+
+| Field | What it is | Limits |
+| --- | --- | --- |
+| `title` | The claim over the numbers. | 60 characters |
+| `text` | Why it is worth money. | 220 characters |
+| `roi.currency` | A currency code: `USD`, `EUR`. | three capitals |
+| `roi.inputs` | The fields the viewer can change. Each has an `id`, a `label` and a starting `value`. `"kind": "percent"` makes 30 count as 0.30, `"kind": "money"` shows it as money. `min` and `max` bound what can be typed; without `max` that is ten times the value, or 100 for a percentage. | 2 to 5; label 44 characters |
+| `roi.gains` | What comes in per month. Each is its `from` inputs multiplied together, and by `times` when it has one (`"times": 0.0167` turns minutes into hours). | 1 to 3; label 24 characters; `from` 1 to 4 ids |
+| `roi.cost` | `monthly`, `once` or both. Leave `cost` out when no price was given. | |
+
+Work the example by hand before you trust it: 40 × 0.30 × 180 = 2,160 a month. With a cost the slide shows the gain next to the cost, what is left per month, the first twelve months added up and the month it pays for itself. Without one it shows the gain and the twelve months.
+
+## Two modes
+
+One file, two ways to watch it. Nothing in `demo.json` chooses: the viewer does, with the switch top left, and an address can ask for one.
+
+| | Explainer | Fast |
+| --- | --- | --- |
+| Shows | A card per step, then one screen at a time, then the results slide | Every panel on one wall, the outcome under it at the end |
+| Opens | By default: the dev server, a shared link, a film | With `?mode=fast` on the address |
+| Timing | Worked out from the script alone | Worked out, and shaped by `after` and `hold` |
+
 ## Timing
 
-Timing is worked out for you, so most beats carry no numbers.
+Timing is worked out for you, so most beats carry no numbers. `npm run check` prints how long each mode plays.
 
-- A caption stands for 400 ms before the first action of its beat.
-- Actions in one beat follow each other 500 ms apart.
+In explainer mode a card stands 1.3 s plus 0.18 s a word. A screen stands a moment before its first change, a second between changes, and long enough to read what a change put on it (0.16 s a word, ten words at most). The first time a screen shows it stands 1.2 s longer, so the viewer can take the app in. A step rests 1.5 s before the next card.
+
+On the wall:
+
+- A caption stands for 800 ms before the first action of its beat.
+- Actions in one beat follow each other 700 ms apart.
 - After its last action a beat stays long enough to read the caption: 1300 ms plus 140 ms a word.
 
-`after` on an action replaces the 500 ms: it is the wait since the action before it in that beat. Use `"after": 0` to make two things land together, or a longer wait where a pause tells the story (a reply that takes a moment to be typed).
+`after` on an action replaces the 700 ms on the wall: it is the wait since the action before it in that beat. Use `"after": 0` to make two things land together, or a longer wait where a pause tells the story (a reply that takes a moment to be typed). Explainer mode ignores `after` and `hold`.
 
 ## Pressing
 
@@ -82,6 +127,8 @@ Leave `layout` out and the wall arranges itself. Four panels make a two by two g
 
 On a phone the viewer sees one panel at a time, and the view follows the action. Nothing to write for that.
 
+In explainer mode the one screen in view takes the whole wall and its content scales up with it. A phone or a form keeps its upright shape, centred. Under 30rem wide (a phone, an upright film) the workflow is a list: its steps light in turn, without the lines between them.
+
 ## What fits
 
-Each screen holds a small amount: a sheet of seven rows, a board column of four cards, four number tiles, a week of four days on a four-panel wall. The limits are in each `schema.ts`. `npm run shots` goes further than the limits: it looks at every beat on a laptop screen and on a phone and fails when any text is cut off or ends in three dots, naming the panel and the text. A state that does not fit on a phone also gets a picture, `<state>-phone.png`. `the page scrolls` names the first text that reaches past the edge. Shorten that text or show less in that panel.
+Each screen holds a small amount: a sheet of seven rows, a board column of four cards, four number tiles, a week of four days on a four-panel wall. The limits are in each `schema.ts`. `npm run shots` goes further than the limits: it looks at every card, every screen and every beat, in both modes, on a laptop screen and on a phone, and fails when any text is cut off or ends in three dots, naming the panel and the text. A state that does not fit on a phone also gets a picture, `<state>-phone.png`. `the page scrolls` names the first text that reaches past the edge. Shorten that text or show less in that panel.

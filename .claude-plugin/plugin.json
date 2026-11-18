@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "splitdemo",
-  "description": "Turn a job post or a process description into a split-screen demo a non-technical owner can watch: one scripted story across up to four app-like panels. Share it as a link or film it.",
-  "version": "0.1.0",
+  "description": "Turn a job post or a process description into a demo a non-technical owner can watch: one scripted story told step by step, or across up to four app-like panels at once, ending on a results slide with an ROI calculator. Share it as a link or film it.",
+  "version": "0.2.0",
   "author": {
     "name": "Ramon",
     "url": "https://github.com/Ramonvdo"

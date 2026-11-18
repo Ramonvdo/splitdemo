@@ -4,7 +4,7 @@ Publishes the demo to the user's own host under a link nobody can guess: `<slug>
 
 Run every command from the `app` folder. Needs `hosting.provider: "cloudflare"` in the settings; without it, do [onboarding.md](onboarding.md) or use the export at the end of this file.
 
-A publish replaces the whole site with every demo that is still shared. So it is always the full list that goes online, and a demo past its end date drops out by itself.
+A publish replaces the whole site with every demo that is still shared. So it is always the full list that goes online, and a demo past its end date drops out by itself. Every demo on the list is rebuilt with the app as it is now, so a link shared before explainer mode existed opens in it after the next publish. Say so in the plan when the list holds older links.
 
 ## Share
 
@@ -28,7 +28,7 @@ A publish replaces the whole site with every demo that is still shared. So it is
 
    **Share mode `auto`:** step 2 already published. Go on to step 4.
 
-4. **Report** the link from the `Published:` lines and its end date. The link is the demo's for good: sharing it again later keeps the same address.
+4. **Report** the link from the `Published:` lines and its end date. The link is the demo's for good: sharing it again later keeps the same address. It opens in explainer mode; the same link with `?mode=fast` at the end opens the wall.
 
    After the very first publish from a workspace the command says to share once more. Do that (`npm run share -- --yes`): the address was not known until then, and the second publish gives each link its preview picture.
 

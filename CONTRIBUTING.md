@@ -26,11 +26,11 @@ The film tests need ffmpeg and skip themselves without it.
 
 | Folder | What is in it |
 | --- | --- |
-| `src/engine/` | The timeline (a demo compiled into timed cues), playback, the stage and the bar. |
+| `src/engine/` | The timeline (a demo compiled into timed cues, and the walk through them in each mode), playback, the stage, the card, the results slide and its sums. |
 | `src/panels/<name>/` | One panel each. `INDEX.md` is generated from them. |
 | `scripts/` | `check`, `shots`, `share`, `export`, `record`, and what they share in `lib/`. |
 | `examples/` | Three finished demos. The tests play them. |
-| `tests/` | Browser tests: playback, layout at four widths, accessibility, sharing, filming. |
+| `tests/` | Browser tests: playback, the two modes, the explainer story, the results slide, layout at four widths, accessibility, sharing, filming. |
 | `.claude/skills/` | The Claude Code skills. |
 
 A demo is data, and the state of every panel at any moment is the result of replaying the actions so far. That is why stepping back, replaying, jumping to a beat for a screenshot and filming all work the same way.
@@ -42,7 +42,7 @@ A panel is a folder in `src/panels/` with seven files.
 | File | What it holds |
 | --- | --- |
 | `schema.ts` | zod schemas for `config` and `action`. Every text and list has a limit that fits the screen. |
-| `reduce.ts` | `logic`: an `icon`, `initial(config)` and a pure `reduce(state, action, config)`. |
+| `reduce.ts` | `logic`: an `icon`, `initial(config)` and a pure `reduce(state, action, config)`. Optional: `pace(action, state, config)`, for a change whose reading time is not in the action's own words. |
 | `reduce.test.ts` | A test for each action, and for each action that cannot happen. |
 | `Panel.tsx` | The view. It draws config and state and keeps no clock of its own. |
 | `skin.css` | The app's look: its colours, typeface and control radius, as values for the design tokens under `[data-app="<name>"]`. |
@@ -55,6 +55,7 @@ The rules:
 - `reduce.ts` and `Panel.tsx` import only types from `schema.ts`, so the validation library stays out of the page a prospect loads.
 - Sizes are in `rem` and colours come from the tokens in `DESIGN.md`. The wall scales with the window. A view names no hex value and no font: both live in the panel's `skin.css`.
 - A panel looks like the kind of tool it stands for, with the tool's name as text in its label. It carries no logo, wordmark or product name.
+- A panel is seen at two sizes: in a slot of the wall, and alone at full size in explainer mode. `npm run shots` shoots both.
 
 After adding or changing a panel, run `npm run panels` to rebuild `INDEX.md`. `npm test` fails when it is out of date. `http://localhost:4310/__panels` plays every panel with its example.
 

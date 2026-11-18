@@ -1,13 +1,16 @@
 ---
 name: splitdemo
-description: Build a split-screen demo that shows a prospect what an automation or AI system does for their business, as one scripted story playing across up to four app-like panels (phone, workflow, CRM, sheet, inbox, calendar, numbers). Use when the user says splitdemo, wants a visual or interactive demo of a system for a client, or wants a job post, process description or call transcript turned into something a non-technical owner can watch. Also shares a demo as a link, films it, and adds a panel type.
+description: Build a demo that shows a prospect what an automation or AI system does for their business. One scripted story plays step by step, a line of text and then one full screen at a time (explainer mode), or across up to four app-like panels at once (fast mode, the split screen), and ends on a results slide with an ROI calculator. Use when the user says splitdemo, wants a visual or interactive demo of a system for a client, or wants a job post, process description or call transcript turned into something a non-technical owner can watch. Also shares a demo as a link, films it, and adds a panel type.
 ---
 
 # splitdemo
 
-A demo is one `demo.json`: a story in beats that plays across two to four panels at once and ends on what the business gained. The app plays it. This skill writes it.
+A demo is one `demo.json`: a story in steps, told on two to four app-like panels, that ends on what the business gained. The app plays that one file two ways. This skill writes it.
 
-The viewer is a business owner who has never opened a workflow canvas. Every picture answers two questions for them: what just happened, and what did I get out of it.
+- **Explainer**, the way a link, a film and the dev server open: a card with the step's text alone on the screen, then each screen that step touches, full size, one change at a time. It ends on the results slide.
+- **Fast**: every panel at once on one wall, the split screen. The switch top left, or `?mode=fast` on the address.
+
+The viewer is a business owner who has never opened a workflow canvas. Every step answers two questions for them: what just happened, and what did I get out of it.
 
 ## Where things are
 
@@ -31,4 +34,4 @@ When the file is missing, or has no `app` or `workspace`, do [jobs/onboarding.md
 
 When the first word after `/splitdemo` is `share`, `video`, `panel` or `onboarding`, it names the job. Anything else is the input for `create`. `/splitdemo-share`, `/splitdemo-video` and `/splitdemo-onboarding` run the same jobs.
 
-Read the one job file and follow it. `create` also reads [story.md](story.md) (what makes a demo land) and [format.md](format.md) (the shape of `demo.json`).
+Read the one job file and follow it. `create` also reads [story.md](story.md) (how to tell it step by step) and [format.md](format.md) (the shape of `demo.json`).

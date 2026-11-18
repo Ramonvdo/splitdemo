@@ -4,9 +4,9 @@ The look of the demo stage and of every panel. Read this before changing a panel
 
 ## Brief
 
-- Subject: a scripted split-screen demo of an automation system.
+- Subject: a scripted demo of an automation system, told one step at a time or on one split screen.
 - Audience: a business owner who is not technical, watching on a call, from a link, or in a short video.
-- Job: within 30 seconds they can say what happened and what they gained from it.
+- Job: after one viewing they can say what started it, what the system did and what they gained from it.
 
 ## Concept
 
@@ -22,6 +22,35 @@ The look of the demo stage and of every panel. Read this before changing a panel
 Anchor: every screen must carry a small label saying what it is. In a broadcast multiview every monitor has exactly that, so the label belongs to the concept.
 
 Rejected: "front of house, back of house" (a light customer side and a dark business side breaks when no panel faces the customer) and "contact sheet" (static, with no notion of which frame is live).
+
+## Two modes
+
+One script, told two ways. The viewer picks with the switch in the strip over the wall.
+
+- Fast is the gallery of the concept: every monitor at once, the tally moving between them. It plays in 30 to 50 seconds.
+- Explainer is the same studio with one source on air. A card names the step, then the wall cuts to each monitor that step touches, one at a time at full size. It plays in 60 to 100 seconds, ends on the results slide, and is what a link and a film open in.
+
+### The card
+
+A step's caption alone on the stage colour: 3.4rem, weight 600, set left in a column of 52rem at most. Over it sits a pill in the tally colour with the step count ("Step 3 of 8") and, when the beat has one, the clock in muted ink. No screen shows behind a card. The monitors stay mounted underneath, so nothing in them starts over when the card leaves. The opening card is the demo's title over the play button.
+
+### One screen
+
+The monitor a change belongs to covers the wall the way an enlarged monitor does, and its content grows by the same factor. The caption stays in the bar under it, so the text is still there while the screen plays. A phone or a form keeps its upright shape, centred. Nothing dims, since the one screen in view is the one to read.
+
+### The strip
+
+A slim row over the wall. On the left the switch, a pill with two segments ("Explainer", "Fast"). Beside it the demo's title in muted ink, once the story runs. Every pixel of the strip comes off the wall, so it is as low as a pointer can still hit. Switching keeps the step. A film keeps the row and leaves the switch out. `H` and `bare` hide it.
+
+### The results slide
+
+The slide after the last step. Explainer mode ends on it. In fast mode a Results button in the bar opens it when the demo has a `results` block.
+
+With a calculator it is a light sheet in the monitor colours, because the charts are drawn for a light window. The left column holds a Results pill in the tally colour, the title, the outcome numbers (each with a tally-coloured edge and what it was before), the text, and at the bottom the calculator on `wash`: up to five number fields in two columns, each under its label and next to its unit. The right column holds the monthly figure at card size, beside it what is left after a monthly cost and the first year, then the month it pays for itself, then the charts.
+
+Without a calculator it is a dark card like a step's, with the outcome numbers at card size.
+
+The charts are two bar charts from the Bklit bar family in `src/components/charts/`. "Each month" has one bar per gain and one for the monthly cost, and is drawn when that makes two bars or more. "The first 12 months, added up" has twelve bars of the running total. Months spent earning the setup back hang under the zero line, which is marked when the first month starts under it. Gains wear `--chart-1`, which is the tally on this slide. The cost wears `muted`. The dataviz validator fails that gray on its chroma floor and warns on the contrast between the two series. Both are accepted on purpose: the cost is context for the gain, and every bar in that chart carries its value as a label, so no reading depends on colour alone. A changed number moves the bars. Nothing draws itself in a second time.
 
 ## Palette
 
@@ -74,7 +103,7 @@ The stage sets `data-app="<type>"` on a monitor, and a panel's `skin.css` gives 
 
 Inside a monitor the tally is a fill, a border or a tint, never the colour of text: an accent picked by a demo's author has no promised contrast on white. Text that sits on a tally fill uses `on-tally`, which the stage works out from the accent (ink or white, whichever reads better).
 
-Charts have one series (`--chart-1`). In the `kpi` monitor it is the dashboard's own graphite, set in its skin. Anywhere else it falls back to the tally. The grid, labels and tooltip use the monitor's own neutrals. The mapping is on `.stage` in `src/index.css`.
+A chart in a monitor has one series (`--chart-1`). In the `kpi` monitor it is the dashboard's own graphite, set in its skin. Anywhere else it falls back to the tally. The grid, labels and tooltip use the monitor's own neutrals. The mapping is on `.stage` in `src/index.css`. The results slide adds a quieter second series for the cost; see Two modes.
 
 ## Type
 
@@ -84,7 +113,8 @@ Charts have one series (`--chart-1`). In the `kpi` monitor it is the dashboard's
 - The stage scales as one picture. The root font size follows the viewport (`clamp(13px, min(1.016vw, 1.806vh), 20px)`), so 1rem is 13 px at 1280x720 and every size is in rem. A recording at 1920x1080 is the same frame, larger.
 - Inside a monitor: `body` 1rem, `meta` 0.923rem as the floor. A count that is digits only uses tabular figures. A value with a comma or a colon keeps the font's own spacing, since the tabular set widens both ("$5 , 400").
 - Monitor labels: `meta`, weight 500.
-- Caption: 1.7rem, weight 600, tracking -0.01em. It is the largest running text on the stage.
+- Caption: 1.7rem, weight 600, tracking -0.01em. It is the largest running text on the wall.
+- Card: 3.4rem, weight 600, tracking -0.02em, and 2.154rem on a phone. A card stands alone, so it is the largest text on the stage.
 - Outcome value: 2.38rem (1.4 times the caption), weight 700.
 
 ## Shape
@@ -102,7 +132,10 @@ A line between two steps of a flow leaves level, turns once and arrives level. T
 - Tally: on is an instant cut, off fades over 240 ms. Waiting monitors dim to 88% brightness over 200 ms. Before the first press nothing waits yet, so the whole wall is lit.
 - A beat lights every monitor it has acted on so far, so the cause stays lit next to its effect. The label light sits on the last one. A press the demo is waiting for lights only the monitor to press. A beat that has not acted yet keeps the picture of the one before.
 - A workflow step is tally-coloured only while the action is on the workflow. Once the story moves to another monitor, or ends, the step takes the colour of what it does and carries its done check, so nothing looks like it is still running.
-- Only `transform`, `opacity` and `filter` animate.
+- Only `transform`, `opacity` and `filter` animate, with one exception: the workflow's line animates `stroke-dashoffset` when it draws.
+- In explainer mode a workflow line that has carried something draws itself from the step before to the step it reaches, in 600 ms on `cubic-bezier(0.65, 0, 0.35, 1)`, and the step lights when the line arrives. The stage hands that time to the panel as `--travel`. On the wall it is zero, and the line fades in.
+- In explainer mode a screen comes in on a 450 ms fade that the stage drives. A jump shows it at once.
+- Explainer pace is one block of constants, `PACE` in `src/engine/timeline.ts`, and all of it follows from the script. A card stands 1300 ms plus 180 ms a word. A screen stands 700 ms before its first change (1200 ms longer the first time it is seen), 1000 ms between two changes, 160 ms a word for what a change put on it with ten words at most, and 900 ms before it leaves. A step rests 1500 ms before the next card.
 - The timeline is the one clock. A seek and a step back show the picture finished: `data-still` on the stage sets every animation and transition to zero length (not `none`, so nothing replays when motion returns), and a panel gets `still` for motion it drives from JavaScript.
 - Reduced motion keeps the story and drops the movement. The demo opens at the start and plays beat by beat, and every animation and transition has zero length, so content cuts in where it would have landed.
 - Charts follow the Bklit motion policy as decorative: the library's reveal, 700 ms, on first show and again when the demo changes the chart. The replay is how a viewer sees that the chart changed.
@@ -124,14 +157,16 @@ rail (a portrait panel first)        quad
 - Under 720 px wide: one monitor at a time, with a row of tabs above the wall. The shown tab is wide and carries its label. The others are round and carry their panel's icon, and the live one takes the tally colour. The wall follows the tally until the viewer picks a tab. Nothing dims here, because the one monitor on screen is always the one to read.
 - Enlarge: click a label, or press 1 to 4. That monitor covers the wall and its content scales up by the same factor the window grew, so it reads from the back of a room. Escape, or the label again, brings the wall back. The other monitors stay mounted and hidden, so nothing restarts. A portrait panel keeps a phone's width when enlarged.
 - Panels size themselves with container queries, never with the viewport.
+- The strip sits over the wall and the bar under it in every layout. The drawings above leave the strip out.
+- Explainer: one monitor covers the wall at a time, and the story picks which. On a phone there are no tabs for the same reason. Under 30rem wide the workflow is a list of steps without lines, so there the steps light in turn.
 
 ## After the last beat
 
-The lower third reads the outcome, each value next to what it was before. A demo that names a `next` step gets one button there: a label and an `https://` or `mailto:` link, opened in a new tab. It is the only link on the stage, and a recording leaves it out.
+On the wall the lower third reads the outcome, each value next to what it was before, and a demo with a `results` block gets a Results button there that opens the results slide. Explainer mode goes to the results slide by itself, and the lower third stays empty under it. A demo that names a `next` step gets one button in the bar, in both modes: a label and an `https://` or `mailto:` link, opened in a new tab. It is the only link on the stage, and a recording leaves it out.
 
 ## Loading
 
-The first picture is the wall, the caption and the play button, and it waits for nothing else. What a browser loads from a panel folder takes only types from `schema.ts`, so the validation library stays with the scripts. The bar chart brings its library in a file of its own: its place in the KPI monitor keeps its size and carries `data-loading` until it lands, and anything that judges a still picture waits for that mark to go. Autoplay waits for it too, and for the fonts, so a demo never starts on a half-drawn wall. A recording then holds that first picture for 1.2 s with the demo's title as its caption: the title card.
+The first picture is the wall, the caption and the play button, and it waits for nothing else. What a browser loads from a panel folder takes only types from `schema.ts`, so the validation library stays with the scripts. The bar chart brings its library in a file of its own: its place in the KPI monitor keeps its size and carries `data-loading` until it lands, and anything that judges a still picture waits for that mark to go. Autoplay waits for it too, and for the fonts, so a demo never starts on a half-drawn wall. A recording then holds that first picture for 1.2 s: the title card. In explainer mode the title is the card itself, and on the wall it is the caption. The charts of the results slide are fetched when the demo opens, so they are there by the last step.
 
 ## Gallery
 
@@ -159,3 +194,4 @@ A second generic answer is every panel in one neutral skin. Four of those next t
 5. Fit the content budget in `panel.md`. A panel never scrolls on its own, except the phone thread, which follows its last message.
 6. Leave the tally to the wall. A skin does not use the accent for its own chrome. The flash is drawn in `::after`, so a skin that needs a pseudo-element on something that flashes uses `::before`.
 7. Chrome that is only there to look like the app (a search field, a toolbar icon) is hidden from screen readers and takes no focus.
+8. A panel reads alone at full size as well as in a slot of the wall. Look at both in the pictures `npm run shots` takes.
