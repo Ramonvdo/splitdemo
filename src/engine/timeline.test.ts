@@ -32,23 +32,23 @@ describe("compile", () => {
 
   it("places a beat's actions in time: a lead-in, then `after`", () => {
     expect(t.cues.map((c) => [c.beat, c.at])).toEqual([
-      [0, 400],
-      [0, 600],
+      [0, 800],
+      [0, 1000],
       [1, 0],
     ]);
   });
 
   it("gives each beat its cues and its length", () => {
     expect(t.beats.map((b) => [b.from, b.to, b.length, b.wait])).toEqual([
-      [0, 2, 2320, false],
+      [0, 2, 2720, false],
       [2, 3, 1000, true],
       [3, 3, 900, false],
     ]);
   });
 
-  it("staggers actions that give no `after` by 500 ms", () => {
+  it("staggers actions that give no `after` by 700 ms", () => {
     const two = compile({ ...demo, beats: [{ hold: 0, do: [{ on: "c", type: "inc", by: 1 }, { on: "c", type: "inc", by: 1 }] }] });
-    expect(two.cues.map((c) => c.at)).toEqual([400, 900]);
+    expect(two.cues.map((c) => c.at)).toEqual([800, 1500]);
   });
 
   it("carries the story clock forward", () => {
@@ -56,7 +56,7 @@ describe("compile", () => {
   });
 
   it("adds up to the whole demo", () => {
-    expect(duration(t)).toBe(4220);
+    expect(duration(t)).toBe(4620);
   });
 });
 
@@ -108,7 +108,7 @@ describe("playback", () => {
       pos = advance(t, pos);
     }
     expect(seen).toEqual([
-      [0, 0, { kind: "cue", delay: 400 }],
+      [0, 0, { kind: "cue", delay: 800 }],
       [0, 1, { kind: "cue", delay: 200 }],
       [0, 2, { kind: "beat", delay: 1720 }],
       [1, 2, { kind: "gate" }],

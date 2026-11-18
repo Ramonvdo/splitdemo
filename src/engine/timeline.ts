@@ -2,9 +2,9 @@ import type { PanelLogic } from "../panels/types.ts";
 import type { BeatSpan, Cue, Demo, Pos, States, Step, Timeline } from "./types.ts";
 
 /** How long a caption stands before its beat's first action. */
-export const LEAD = 400;
+export const LEAD = 800;
 /** Between two actions of one beat, so the eye can follow from panel to panel. */
-export const STAGGER = 500;
+export const STAGGER = 700;
 
 /** Time to read a caption: a base, and a little for every word. */
 export function readMs(say: string | undefined): number {
