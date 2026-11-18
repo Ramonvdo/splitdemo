@@ -116,7 +116,7 @@
       ]
     },
     {
-      "say": "Monday morning the job is on the board. Nobody made a call.",
+      "say": "By Monday morning your crew has the address. Nobody made a call.",
       "clock": "7:00 AM",
       "do": [{ "on": "flow", "type": "run", "node": "brief", "note": "Address and details sent" }]
     }
