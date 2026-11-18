@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, test } from "@playwright/test";
@@ -10,8 +10,9 @@ test.describe.configure({ mode: "serial", timeout: 180_000 });
 
 let ws: string;
 
-function shots(slug: string) {
-  return spawnSync(process.execPath, [join("scripts", "shots.ts"), slug], {
+/** The wall, unless a test asks for the story: both together take three times as long. */
+function shots(slug: string, mode = "fast") {
+  return spawnSync(process.execPath, [join("scripts", "shots.ts"), slug, "--mode", mode], {
     cwd: ROOT,
     encoding: "utf8",
     env: { ...process.env, SPLITDEMO_CONFIG: join(ws, "config.json"), SPLITDEMO_WORKSPACE: ws },
@@ -52,6 +53,29 @@ test("shots of a demo where everything fits end clean", () => {
   expect(run.stdout).not.toContain("does not fit");
   expect(run.status).toBe(0);
   expect(existsSync(join(ws, "demos", "fits", "shots", "00-start.png"))).toBe(true);
+});
+
+test("shots of the story are every card, every screen as it is left, and the slide at the end", () => {
+  const run = shots("fits", "explainer");
+  expect(run.stdout).not.toContain("does not fit");
+  expect(run.status, run.stdout + run.stderr).toBe(0);
+  // Read off examples/intake-to-booking/demo.json: beat, changes made in it, and the card or the screen in view.
+  expect(readdirSync(join(ws, "demos", "fits", "shots")).sort()).toEqual([
+    "explainer-00-start.png",
+    ...["explainer-01-0-card.png", "explainer-01-4-form.png"],
+    ...["explainer-02-0-card.png", "explainer-02-1-form.png", "explainer-02-2-flow.png"],
+    ...["explainer-03-0-card.png", "explainer-03-1-flow.png"],
+    ...["explainer-04-0-card.png", "explainer-04-2-flow.png", "explainer-04-3-week.png"],
+    ...["explainer-05-0-card.png", "explainer-05-1-flow.png", "explainer-05-3-mail.png"],
+    ...["explainer-06-0-card.png", "explainer-06-1-flow.png"],
+    "explainer-07-results.png",
+  ]);
+});
+
+test("asked for a mode there is none of, shots say which there are", () => {
+  const run = shots("fits", "slow");
+  expect(run.stdout).toContain("--mode explainer or --mode fast");
+  expect(run.status).toBe(1);
 });
 
 test("a label of the full 40 characters fits, on a laptop and on a phone", () => {

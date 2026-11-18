@@ -47,7 +47,8 @@ function Tally({ live }: { live: boolean }) {
 
 interface MonitorProps {
   spec: PanelSpec;
-  slot: string;
+  /** Its cell on the wall. Left out on a phone, where every monitor takes the whole wall. */
+  slot?: string;
   live: boolean;
   waiting: boolean;
   /** This monitor fills the wall. */
@@ -82,7 +83,7 @@ function Monitor({ spec, slot, live, waiting, zoom, scale, hidden, portrait, com
       inert={hidden}
       className={cn("flex min-h-0 min-w-0 flex-col gap-[0.45rem] bg-stage", hidden && "invisible")}
       // A monitor that fills the wall lets go of its cell, or the cell would still box it in.
-      style={zoom || compact ? undefined : { gridArea: slot }}
+      style={zoom || !slot ? undefined : { gridArea: slot }}
     >
       {!compact && (
         <h2 className={cn("flex text-meta font-medium transition-opacity duration-200", live ? "text-stage-ink" : "text-stage-muted")}>
@@ -302,7 +303,7 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
             <Monitor
               key={spec.id}
               spec={spec}
-              slot={SLOTS[i]}
+              slot={compact ? undefined : SLOTS[i]}
               live={live}
               // Before the first press every monitor is lit: the opening picture is the whole wall.
               // One screen at a time has nothing next to it to wait.

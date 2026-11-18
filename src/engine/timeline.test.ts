@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PanelLogic } from "../panels/types.ts";
-import { advance, compile, duration, lit, nextStep, paced, readMs, screen, snapshots } from "./timeline.ts";
+import { advance, compile, duration, lit, nextStep, paced, readMs, screen, snapshots, stills } from "./timeline.ts";
 import type { Demo, Mode, Pos, Timeline } from "./types.ts";
 
 /** A panel that only counts, so every expected value below can be worked out by hand. */
@@ -268,5 +268,24 @@ describe("explainer", () => {
 
   it("stays put at the end", () => {
     expect(advance(t, { beat: 2, n: 3 }, "explainer")).toEqual({ beat: 2, n: 3 });
+  });
+
+  it("lists the pictures that show a demo whole: on the wall one a beat, in the story every card and every screen as it is left", () => {
+    expect(stills(compile(two), "fast")).toEqual([{ at: "start" }, { at: 0 }, { at: 1 }, { at: 2 }, { at: "end" }]);
+    expect(stills(compile(two), "explainer")).toEqual([
+      { at: "start" },
+      // The card, then each screen after the last change made on it.
+      { at: 0, n: 0 },
+      { at: 0, n: 1, on: "c" },
+      { at: 0, n: 2, on: "d" },
+      { at: 1, n: 0 },
+      { at: 1, n: 1, on: "c" },
+      // No caption, so no card.
+      { at: 2, n: 1, on: "d" },
+      { at: 2, n: 2, on: "c" },
+      { at: "end" },
+    ]);
+    // Two changes on one screen are one picture, and a beat that says and does nothing has none.
+    expect(stills(t, "explainer")).toEqual([{ at: "start" }, { at: 0, n: 0 }, { at: 0, n: 2, on: "c" }, { at: 1, n: 1, on: "c" }, { at: "end" }]);
   });
 });

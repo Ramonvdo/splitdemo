@@ -161,6 +161,31 @@ function explain(t: Timeline, pos: Pos): Step {
   return t.cues[pos.n].action.on === last.action.on ? { kind: "cue", delay: taken + PACE.between } : { kind: "show", delay: taken + PACE.leave };
 }
 
+/** One picture of a demo: where to open it. A picture with `n: 0` is a step's card; `on` names the screen a story picture shows. */
+export interface Still {
+  at: number | "start" | "end";
+  n?: number;
+  on?: string;
+}
+
+/**
+ * The pictures that show a demo whole. On the wall: the start, the end of each beat, the end.
+ * In the story: the opening, each step's card, each screen as it is left, and the slide at the end.
+ */
+export function stills(t: Timeline, mode: Mode): Still[] {
+  const out: Still[] = [{ at: "start" }];
+  t.beats.forEach((beat, b) => {
+    if (mode === "fast") return void out.push({ at: b });
+    if (beat.say) out.push({ at: b, n: 0 });
+    for (let n = beat.from + 1; n <= beat.to; n++) {
+      const on = t.cues[n - 1].action.on;
+      if (n === beat.to || t.cues[n].action.on !== on) out.push({ at: b, n: n - beat.from, on });
+    }
+  });
+  out.push({ at: "end" });
+  return out;
+}
+
 /** What playback does next from `pos`, and after how long. */
 export function nextStep(t: Timeline, pos: Pos, mode: Mode = "fast"): Step {
   if (mode === "explainer") return explain(t, pos);
