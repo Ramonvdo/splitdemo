@@ -70,19 +70,23 @@
       "do": [{ "on": "phone", "type": "send", "text": "Hi, Dana Whitfield here. I chipped a tooth. Can I come in this week?" }]
     },
     {
-      "say": "Nobody is at the desk. The message gets read anyway.",
-      "do": [
-        { "on": "flow", "type": "run", "node": "text" },
-        { "on": "phone", "type": "typing", "after": 300 },
-        { "on": "flow", "type": "run", "node": "read", "note": "Chipped tooth, wants this week", "after": 900 }
-      ]
+      "say": "Nobody is at the desk. The text starts the automation anyway.",
+      "do": [{ "on": "flow", "type": "run", "node": "text" }]
+    },
+    {
+      "say": "It reads what the patient needs, the way your front desk would.",
+      "do": [{ "on": "flow", "type": "run", "node": "read", "note": "Chipped tooth, wants this week" }]
+    },
+    {
+      "say": "It looks in your calendar for times that are really open.",
+      "do": [{ "on": "flow", "type": "run", "node": "slots", "note": "Thu 10 AM and Fri 2:30 PM free" }]
     },
     {
       "say": "They get a real answer with real times, 38 seconds later.",
       "do": [
-        { "on": "flow", "type": "run", "node": "slots", "note": "Thu 10 AM and Fri 2:30 PM free" },
-        { "on": "flow", "type": "run", "node": "reply", "after": 900 },
-        { "on": "phone", "type": "receive", "text": "Sorry to hear that, Dana! We can see you Thursday at 10 AM or Friday at 2:30 PM. Which works best?", "after": 400 }
+        { "on": "flow", "type": "run", "node": "reply" },
+        { "on": "phone", "type": "typing", "after": 300 },
+        { "on": "phone", "type": "receive", "text": "Sorry to hear that, Dana! We can see you Thursday at 10 AM or Friday at 2:30 PM. Which works best?", "after": 1100 }
       ]
     },
     {

@@ -31,13 +31,14 @@ test("the keyboard steps through, back, and starts over", async ({ page }) => {
   const stage = page.locator("main.stage");
   const dana = page.locator('[data-card="dana"]');
   await stage.waitFor();
-  for (let i = 0; i < 4; i++) await page.keyboard.press("ArrowRight");
-  await expect(stage).toHaveAttribute("data-beat", "3");
+  // Six presses: the sixth beat puts the lead in the pipeline.
+  for (let i = 0; i < 6; i++) await page.keyboard.press("ArrowRight");
+  await expect(stage).toHaveAttribute("data-beat", "5");
   await expect(stage).toHaveAttribute("data-status", "paused");
   await expect(page.locator('[data-column="new"]').locator(dana)).toBeVisible();
 
   await page.keyboard.press("ArrowLeft");
-  await expect(stage).toHaveAttribute("data-beat", "2");
+  await expect(stage).toHaveAttribute("data-beat", "4");
   await expect(dana).toHaveCount(0);
 
   await page.keyboard.press("r");
@@ -75,8 +76,8 @@ test("when it is over no step is still running, and a beat lights its cause next
   await expect(page.locator('[data-panel="flow"] [data-ran]')).toHaveCount(6);
   await expect(page.locator("[data-running]")).toHaveCount(0);
 
-  // Beat 3: the automation answers and the reply lands on the phone. Both are lit; the pipeline waits.
-  await page.goto(`${DEMO}&at=2`);
+  // Beat 5: the automation answers and the reply lands on the phone. Both are lit; the pipeline waits.
+  await page.goto(`${DEMO}&at=4`);
   await page.locator(READY).waitFor();
   const waiting = await page.locator("[data-panel][data-waiting]").evaluateAll((els) => els.map((el) => (el as HTMLElement).dataset.panel));
   expect(waiting).not.toContain("flow");

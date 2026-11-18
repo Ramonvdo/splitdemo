@@ -38,6 +38,8 @@ export function Top({ title, named, mode, onMode, w }: TopProps) {
       )}
       {/* A phone has no room for it next to the switch. */}
       {named && <p className="min-w-0 animate-fade truncate text-meta text-stage-muted compact:hidden">{title}</p>}
+      {/* There it gets the tag the bar has no row for. */}
+      <span className="ml-auto hidden shrink-0 rounded-full border border-stage-line px-[0.7rem] py-[0.2rem] text-meta text-stage-muted compact:block">{w.scripted}</span>
     </header>
   );
 }

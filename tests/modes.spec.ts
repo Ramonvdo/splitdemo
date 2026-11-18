@@ -5,8 +5,8 @@ import { READY } from "../scripts/lib/spills.ts";
 const DEMO = "/speed-to-lead/";
 
 test("the switch goes from the story to the wall and back, and keeps the step", async ({ page }) => {
-  // The end of step 3, in the story: one screen, the phone with the reply on it.
-  await page.goto(`${DEMO}?at=2`);
+  // The end of step 5, in the story: one screen, the phone with the reply on it.
+  await page.goto(`${DEMO}?at=4`);
   const stage = page.locator("main.stage");
   const top = page.locator("[data-top]");
   const story = top.getByRole("button", { name: "Explainer" });
@@ -17,7 +17,7 @@ test("the switch goes from the story to the wall and back, and keeps the step", 
 
   await wall.click();
   await expect(stage).toHaveAttribute("data-mode", "fast");
-  await expect(stage).toHaveAttribute("data-beat", "2");
+  await expect(stage).toHaveAttribute("data-beat", "4");
   await expect(page.locator("[data-panel]:visible")).toHaveCount(4);
   await expect(wall).toHaveAttribute("aria-pressed", "true");
   // What happened stays: the reply is on the phone in both.
@@ -25,7 +25,7 @@ test("the switch goes from the story to the wall and back, and keeps the step", 
 
   await story.click();
   await expect(stage).toHaveAttribute("data-mode", "explainer");
-  await expect(stage).toHaveAttribute("data-beat", "2");
+  await expect(stage).toHaveAttribute("data-beat", "4");
   await expect(page.locator("[data-panel]:visible")).toHaveCount(1);
   await expect(page.locator('[data-panel="phone"]')).toBeVisible();
 });
@@ -77,5 +77,5 @@ test("a Dutch demo has Dutch words around it", async ({ page }) => {
   await expect(bar.getByRole("button", { name: "Stap vooruit" })).toBeVisible();
   await expect(bar).toContainText("Nagespeeld voorbeeld");
   await page.goto(`${DEMO}?at=1&n=0`);
-  await expect(page.locator("[data-slate]")).toContainText("Stap 2 van 6");
+  await expect(page.locator("[data-slate]")).toContainText("Stap 2 van 8");
 });

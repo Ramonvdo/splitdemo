@@ -26,7 +26,8 @@ if (asked !== undefined && asked !== "explainer" && asked !== "fast") {
 }
 const modes: Mode[] = asked ? [asked] : ["explainer", "fast"];
 
-const slug = args.find((arg, i) => !arg.startsWith("--") && i !== flag + 1);
+// The word after --mode is the mode, not the demo.
+const slug = args.find((arg, i) => !arg.startsWith("--") && (flag < 0 || i !== flag + 1));
 const ref = slug ? findDemo(slug) : undefined;
 if (!ref) {
   console.log(`${slug ? `There is no demo "${slug}".` : "Usage: npm run shots -- <slug> [--mode explainer|fast]"} Demos: ${listDemos().map((d) => d.slug).join(", ") || "none"}`);

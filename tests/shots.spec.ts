@@ -10,9 +10,9 @@ test.describe.configure({ mode: "serial", timeout: 180_000 });
 
 let ws: string;
 
-/** The wall, unless a test asks for the story: both together take three times as long. */
-function shots(slug: string, mode = "fast") {
-  return spawnSync(process.execPath, [join("scripts", "shots.ts"), slug, "--mode", mode], {
+/** The wall, unless a test asks for the story or for both: both together take three times as long. */
+function shots(slug: string, mode: string | undefined = "fast") {
+  return spawnSync(process.execPath, [join("scripts", "shots.ts"), slug, ...(mode ? ["--mode", mode] : [])], {
     cwd: ROOT,
     encoding: "utf8",
     env: { ...process.env, SPLITDEMO_CONFIG: join(ws, "config.json"), SPLITDEMO_WORKSPACE: ws },
@@ -65,11 +65,18 @@ test("shots of the story are every card, every screen as it is left, and the sli
     ...["explainer-01-0-card.png", "explainer-01-4-form.png"],
     ...["explainer-02-0-card.png", "explainer-02-1-form.png", "explainer-02-2-flow.png"],
     ...["explainer-03-0-card.png", "explainer-03-1-flow.png"],
-    ...["explainer-04-0-card.png", "explainer-04-2-flow.png", "explainer-04-3-week.png"],
-    ...["explainer-05-0-card.png", "explainer-05-1-flow.png", "explainer-05-3-mail.png"],
-    ...["explainer-06-0-card.png", "explainer-06-1-flow.png"],
-    "explainer-07-results.png",
+    ...["explainer-04-0-card.png", "explainer-04-1-flow.png"],
+    ...["explainer-05-0-card.png", "explainer-05-1-flow.png", "explainer-05-2-week.png"],
+    ...["explainer-06-0-card.png", "explainer-06-1-flow.png", "explainer-06-3-mail.png"],
+    ...["explainer-07-0-card.png", "explainer-07-1-flow.png"],
+    "explainer-08-results.png",
   ]);
+});
+
+test("asked for no mode, shots still know which demo was named", () => {
+  const run = spawnSync(process.execPath, [join("scripts", "shots.ts"), "nowhere"], { cwd: ROOT, encoding: "utf8", env: { ...process.env, SPLITDEMO_CONFIG: join(ws, "config.json"), SPLITDEMO_WORKSPACE: ws } });
+  expect(run.stdout).toContain('There is no demo "nowhere".');
+  expect(run.status).toBe(1);
 });
 
 test("asked for a mode there is none of, shots say which there are", () => {

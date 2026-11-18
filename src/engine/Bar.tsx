@@ -117,7 +117,7 @@ export function Bar({ demo, timeline, play, record, results, onResults }: BarPro
             aria-pressed={results}
             onClick={onResults}
             className={cn(
-              "shrink-0 animate-land rounded-full border px-[1.2rem] py-[0.6rem] font-semibold transition-[transform,background-color,color] duration-200 ease-settle active:scale-[0.97] compact:order-last compact:basis-full",
+              "shrink-0 animate-land rounded-full border px-[1.2rem] py-[0.6rem] font-semibold transition-[transform,background-color,color] duration-200 ease-settle active:scale-[0.97]",
               results ? "border-stage-ink bg-stage-ink text-stage" : "border-stage-line text-stage-ink hover:bg-stage-line",
             )}
             style={{ animationDelay: `${demo.outcome.length * 140}ms` }}
@@ -137,13 +137,14 @@ export function Bar({ demo, timeline, play, record, results, onResults }: BarPro
             {demo.next.label}
           </a>
         )}
-        <div className="flex shrink-0 items-center gap-[0.9rem] text-meta text-stage-muted">
+        {/* On a phone the strip over the wall carries the tag, so this row is the controls and one thing more. */}
+        <div className="flex shrink-0 items-center gap-[0.9rem] text-meta text-stage-muted compact:contents">
           {beat.clock && !done && (
             <time className="text-lead font-medium text-stage-ink" data-clock>
               {beat.clock}
             </time>
           )}
-          <span className="rounded-full border border-stage-line px-[0.7rem] py-[0.2rem]">{w.scripted}</span>
+          <span className="rounded-full border border-stage-line px-[0.7rem] py-[0.2rem] compact:hidden">{w.scripted}</span>
         </div>
       </div>
     </footer>

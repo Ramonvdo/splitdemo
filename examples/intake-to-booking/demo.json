@@ -95,11 +95,14 @@
       "do": [{ "on": "flow", "type": "run", "node": "read", "note": "Active leak, urgent" }]
     },
     {
-      "say": "Your crew's week is checked and the first free slot is taken.",
+      "say": "Your crew's week is checked for the first slot that is free.",
       "clock": "8:41 PM",
+      "do": [{ "on": "flow", "type": "run", "node": "slot", "note": "Mon 8:00 AM is free" }]
+    },
+    {
+      "say": "The inspection is booked. Your crew sees it in their week.",
       "do": [
-        { "on": "flow", "type": "run", "node": "slot", "note": "Mon 8:00 AM is free" },
-        { "on": "flow", "type": "run", "node": "book", "after": 900 },
+        { "on": "flow", "type": "run", "node": "book" },
         { "on": "week", "type": "book", "id": "leak", "day": "mon", "time": "08:00", "title": "Leak, 14 Birch Lane", "tone": "info", "after": 400 }
       ]
     },
@@ -122,5 +125,19 @@
     { "value": "2 min", "label": "from request to booked visit", "was": "2 days" },
     { "value": "0", "label": "phone calls to find a time", "was": "3" },
     { "value": "+1", "label": "urgent job won on a Sunday" }
-  ]
+  ],
+  "results": {
+    "title": "What a slow callback costs",
+    "text": "A homeowner with a leak takes the first roofer who names a time. This names one in two minutes, on a Sunday evening too.",
+    "roi": {
+      "currency": "USD",
+      "inputs": [
+        { "id": "requests", "label": "Quote requests a month", "value": 25 },
+        { "id": "won", "label": "Extra ones you win by being first", "value": 15, "kind": "percent" },
+        { "id": "job", "label": "Worth of an average job", "value": 1800, "kind": "money" }
+      ],
+      "gains": [{ "label": "Jobs won by being first", "from": ["requests", "won", "job"] }],
+      "cost": { "monthly": 350, "once": 2000 }
+    }
+  }
 }

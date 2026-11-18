@@ -16,8 +16,8 @@ test("a demo opens as the story, and as the wall when its link asks for that", a
 test("a step's text stands alone on the wall before anything of the step shows", async ({ page }) => {
   await page.goto(`${DEMO}&at=1&n=0`);
   const slate = page.locator("[data-slate]");
-  await expect(slate).toContainText("Step 2 of 6");
-  await expect(slate).toContainText("Nobody is at the desk. The message gets read anyway.");
+  await expect(slate).toContainText("Step 2 of 8");
+  await expect(slate).toContainText("Nobody is at the desk. The text starts the automation anyway.");
   await expect(page.locator("[data-panel]:visible")).toHaveCount(0);
   // The bar leaves the line to the card.
   await expect(page.locator("[data-caption]")).toHaveCount(0);
@@ -46,7 +46,8 @@ test("the viewer starts the story, reads the first step, and sends the message t
 });
 
 test("left alone, the screens come one at a time in the order the script names them", async ({ page }) => {
-  test.setTimeout(150_000);
+  // The story takes about 80 seconds, and longer while the other tests keep the machine busy.
+  test.setTimeout(240_000);
   // What stands on the wall, noted each time it changes: "card", "results", or the screens in view.
   await page.addInitScript(() => {
     const seen: string[] = [];
@@ -63,11 +64,14 @@ test("left alone, the screens come one at a time in the order the script names t
     requestAnimationFrame(look);
   });
   await page.goto(`${DEMO}&autoplay=1`);
-  await expect(page.locator("main.stage")).toHaveAttribute("data-done", "true", { timeout: 130_000 });
+  await expect(page.locator("main.stage")).toHaveAttribute("data-done", "true", { timeout: 210_000 });
   // Read off examples/speed-to-lead/demo.json: each beat's card, then the panel of each action, a panel acted on twice in a row counted once. The slide closes it.
   expect(await page.evaluate(() => (window as unknown as { seen: string[] }).seen)).toEqual([
     ...["card", "phone"],
-    ...["card", "flow", "phone", "flow"],
+    // Three steps of the automation, one a beat: its card, then the automation again.
+    ...["card", "flow"],
+    ...["card", "flow"],
+    ...["card", "flow"],
     ...["card", "flow", "phone"],
     ...["card", "flow", "crm"],
     ...["card", "phone", "crm"],
@@ -77,7 +81,8 @@ test("left alone, the screens come one at a time in the order the script names t
 });
 
 test("a step reached along a line stays quiet until the line has been drawn to it", async ({ page }) => {
-  await page.goto(`${DEMO}&at=0`);
+  // The step before it has run: the next beat runs the one the line leads to.
+  await page.goto(`${DEMO}&at=1`);
   await page.locator("main.stage").waitFor();
   await page.keyboard.press("ArrowRight");
   await expect(page.locator('[data-node="read"]')).toHaveAttribute("data-ran", "true");
@@ -100,7 +105,7 @@ test("a step reached along a line stays quiet until the line has been drawn to i
 });
 
 test("on the wall a line has no time to travel: the step lights at once", async ({ page }) => {
-  await page.goto("/speed-to-lead/?mode=fast&at=0");
+  await page.goto("/speed-to-lead/?mode=fast&at=1");
   await page.locator("main.stage").waitFor();
   await page.keyboard.press("ArrowRight");
   await expect(page.locator('[data-node="read"]')).toHaveAttribute("data-ran", "true");
