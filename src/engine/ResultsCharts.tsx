@@ -5,9 +5,9 @@ import { Grid } from "@/components/charts/grid";
 import { ChartTooltip, TooltipContent } from "@/components/charts/tooltip";
 import { useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
-import { axisRoom, cn } from "../lib/style.ts";
+import { axisRoom } from "../lib/style.ts";
 import type { Worked } from "./roi.ts";
-import type { Roi } from "./types.ts";
+import type { Lang, Roi } from "./types.ts";
 import type { Words } from "./words.ts";
 
 function Figure({ title, label, wide, children }: { title: string; label: string; wide?: boolean; children: ReactNode }) {
@@ -21,33 +21,54 @@ function Figure({ title, label, wide, children }: { title: string; label: string
   );
 }
 
+export interface ChartsProps {
+  roi: Roi;
+  today: Record<string, number>;
+  system: number;
+  worked: Worked;
+  say: Words;
+  money: (value: number) => string;
+  still: boolean;
+  lang?: Lang;
+}
+
+/** A year as the business works today next to a year with the system, and what the system costs in that year. */
+function Year({ roi, worked, say, money, calm }: ChartsProps & { calm: boolean }) {
+  // What a month comes to counts twelve times in a year, or with `monthly` 1 + 2 + ... + 12 times.
+  const months = roi.monthly ? 78 : 12;
+  const cost = (roi.cost?.monthly ?? 0) * 12 + (roi.cost?.once ?? 0);
+  // One series per bar, so each wears its own colour: today in grey, the system in the demo's accent, the cost outlined.
+  const bars = [
+    { label: say.today, today: worked.before * months, system: 0, cost: 0 },
+    { label: say.system, today: 0, system: worked.after * months, cost: 0 },
+    ...(cost ? [{ label: say.cost, today: 0, system: 0, cost }] : []),
+  ];
+  const title = say.yearly(roi.saving === true);
+  return (
+    <Figure title={title} label={`${title}: ${bars.map((bar) => `${bar.label} ${money(bar.today + bar.system + bar.cost)}`).join(", ")}`}>
+      <BarChart data={bars} xDataKey="label" aspectRatio="auto" className="h-full" margin={{ top: 12, right: 4, bottom: axisRoom(), left: 4 }} barGap={0.35} stacked stackGap={0.01} animationDuration={700}>
+        <Grid horizontal numTicksRows={3} />
+        <Bar dataKey="today" fill="var(--color-muted)" lineCap={4} animate={!calm} showValue valueLabelColor="var(--color-window)" valueLabelFormatter={money} />
+        <Bar dataKey="system" fill="var(--chart-1)" lineCap={4} animate={!calm} showValue valueLabelColor="var(--chart-on-1)" valueLabelFormatter={money} />
+        <Bar dataKey="cost" fill="var(--color-line)" lineCap={4} animate={!calm} showValue valueLabelColor="var(--color-ink)" valueLabelFormatter={money} />
+        <BarXAxis showAllLabels />
+      </BarChart>
+    </Figure>
+  );
+}
+
 /**
- * The two charts of the results slide. What comes in each month next to what it costs, and the first twelve months added up.
- * They follow the calculator: a changed number moves the bars, and nothing draws itself in again.
+ * The charts of the report. They follow the numbers: a changed one moves the marks, and nothing draws itself in again.
  */
-export default function ResultsCharts({ roi, worked, say, money, still }: { roi: Roi; worked: Worked; say: Words; money: (value: number) => string; still: boolean }) {
+export default function ResultsCharts(props: ChartsProps) {
+  const { roi, worked, say, money, still } = props;
   const calm = useReducedMotion() === true || still;
-  // One bar per gain, and one for the monthly cost. Two series, so the cost can wear a quieter colour than what comes in.
-  const each = [...worked.gains.map((gain) => ({ label: gain.label, gain: gain.monthly, cost: 0 })), ...(roi.cost?.monthly ? [{ label: say.cost, gain: 0, cost: roi.cost.monthly }] : [])];
-  const months = worked.running.map((total, i) => ({ label: String(i + 1), total }));
-  const margin = { top: 12, right: 4, bottom: axisRoom(), left: 4 };
+  const months = worked.running.slice(1).map((total, i) => ({ label: String(i + 1), total }));
 
   return (
-    // Three bars or more need the whole width for their names, so the charts go under each other.
-    <div className={cn("flex min-h-[15rem] flex-1 gap-[1rem] compact:order-2 compact:flex-col", each.length > 2 && "flex-col")}>
-      {/* One bar says nothing a number does not say better. */}
-      {each.length > 1 && (
-        <Figure title={say.each} label={`${say.each}: ${each.map((bar) => `${bar.label} ${money(bar.gain + bar.cost)}`).join(", ")}`}>
-          <BarChart data={each} xDataKey="label" aspectRatio="auto" className="h-full" margin={margin} barGap={0.35} stacked stackGap={0.01} animationDuration={700}>
-            <Grid horizontal numTicksRows={3} />
-            <Bar dataKey="gain" fill="var(--chart-1)" lineCap={4} animate={!calm} showValue valueLabelColor="var(--chart-on-1)" valueLabelFormatter={money} />
-            <Bar dataKey="cost" fill="var(--color-muted)" lineCap={4} animate={!calm} showValue valueLabelColor="var(--color-window)" valueLabelFormatter={money} />
-            <BarXAxis showAllLabels />
-          </BarChart>
-        </Figure>
-      )}
+    <div className="flex min-h-[15rem] flex-1 gap-[1rem] compact:order-2 compact:flex-col">
       <Figure wide title={say.added(roi.cost?.once ? money(roi.cost.once) : undefined)} label={`${say.added()}: ${months.map((bar) => `${say.month(bar.label)} ${money(bar.total)}`).join(", ")}`}>
-        <BarChart data={months} xDataKey="label" aspectRatio="auto" className="h-full" margin={margin} barGap={0.3} animationDuration={700}>
+        <BarChart data={months} xDataKey="label" aspectRatio="auto" className="h-full" margin={{ top: 12, right: 4, bottom: axisRoom(), left: 4 }} barGap={0.3} animationDuration={700}>
           {/* Months spent earning the setup back hang under the line; the line is where it has paid for itself. */}
           <Grid horizontal numTicksRows={3} highlightRowValues={worked.running[0] < 0 ? [0] : undefined} />
           <Bar dataKey="total" fill="var(--chart-1)" lineCap={4} animate={!calm} />
@@ -55,6 +76,7 @@ export default function ResultsCharts({ roi, worked, say, money, still }: { roi:
           <ChartTooltip showDatePill={false} content={({ point }) => <TooltipContent title={say.month(String(point.label))} rows={[{ color: "var(--chart-1)", label: say.sum, value: money(Number(point.total)) }]} />} />
         </BarChart>
       </Figure>
+      <Year {...props} calm={calm} />
     </div>
   );
 }

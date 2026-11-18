@@ -64,6 +64,12 @@ export interface Checked {
 
 /** Everything that can be known about a demo without opening a browser. */
 export async function checkDemo(raw: unknown, fresh = false): Promise<Checked> {
+  // The schema would only say "unrecognized key", which does not tell a writer what to write instead.
+  if ((raw as { results?: { roi?: { gains?: unknown } } } | null)?.results?.roi?.gains !== undefined)
+    return {
+      problems: ["results.roi.gains: gone since 0.3.0. A calculator is one chain now: list `inputs` in the order they multiply, and name the one the system changes in `lever` (format.md, Results)"],
+      notes: [],
+    };
   const shape = schema.demo.safeParse(raw);
   if (!shape.success) return { problems: issues("", shape), notes: [] };
   const demo = shape.data as Demo;

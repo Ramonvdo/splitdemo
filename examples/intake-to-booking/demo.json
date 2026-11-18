@@ -132,11 +132,12 @@
     "roi": {
       "currency": "USD",
       "inputs": [
-        { "id": "requests", "label": "Quote requests a month", "value": 25 },
-        { "id": "won", "label": "Extra ones you win by being first", "value": 15, "kind": "percent" },
-        { "id": "job", "label": "Worth of an average job", "value": 1800, "kind": "money" }
+        { "id": "requests", "label": "Quote requests a month", "stage": "Requests", "ask": "How many quote requests do you get in a month?", "value": 25 },
+        { "id": "visit", "label": "Requests that book a visit", "stage": "Visits", "ask": "Of every 100 requests, how many end up booking a visit?", "value": 50, "kind": "percent" },
+        { "id": "won", "label": "Visits that become a job", "stage": "Jobs", "value": 30, "kind": "percent", "note": "ServiceTitan median close rate: 31 to 38%" },
+        { "id": "job", "label": "Worth of an average job", "ask": "What is an average job worth?", "value": 1800, "kind": "money" }
       ],
-      "gains": [{ "label": "Jobs won by being first", "from": ["requests", "won", "job"] }],
+      "lever": { "input": "visit", "add": 20 },
       "cost": { "monthly": 350, "once": 2000 }
     }
   }

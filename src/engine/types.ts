@@ -74,16 +74,25 @@ export interface Results {
   roi?: Roi;
 }
 
-/** A calculator: numbers the viewer can change, and what they come to per month. */
+/**
+ * A calculator: one chain of numbers multiplied together, worked out twice. Once as the business runs today,
+ * once with the one number the system changes. What lies between the two is what the system is worth.
+ */
 export interface Roi {
   /** ISO 4217, e.g. "USD" or "EUR". */
   currency: string;
-  /** What the monthly figure counts, under it. Default: "extra a month". A calculator of hours says "saved a month". */
+  /** What the headline figure counts, under it. Default: "extra a month", or "saved a month" with `saving`. */
   label?: string;
-  /** 2 to 5 numbers, each in a field of its own. */
+  /** 2 to 5 numbers, in the order the chain multiplies them: a count a month first, what one is worth last. */
   inputs: RoiInput[];
-  /** 1 to 3 gains per month. Each is its inputs multiplied together, times `times` when given. */
-  gains: { label: string; from: string[]; times?: number }[];
+  /** The one number the system changes. `to` is the system's own number, whatever the business does today; `add` comes on top of today's. */
+  lever: { input: string; to?: number; add?: number };
+  /** Multiplies the chain, to turn units into a month of money: 1/60 for minutes against an hourly cost, 1/12 for a yearly amount. */
+  times?: number;
+  /** The chain is a cost, and the system brings it down. */
+  saving?: true;
+  /** What is won pays again every month, so each month adds to the ones before it. Not for a yearly amount. */
+  monthly?: true;
   /** What the system costs. Left out, the slide shows what comes in and nothing about paying it back. */
   cost?: { monthly?: number; once?: number };
 }
@@ -91,7 +100,7 @@ export interface Roi {
 export interface RoiInput {
   id: string;
   label: string;
-  /** The number the field starts with. */
+  /** The number as the business has it today: what the field starts with. */
   value: number;
   /** A percentage counts as a share: 30 multiplies by 0.30. */
   kind?: "percent" | "money";
@@ -99,6 +108,12 @@ export interface RoiInput {
   min?: number;
   /** Default: ten times `value`, and 100 for a percentage. */
   max?: number;
+  /** The question the viewer is asked for this number. Without one it is an estimate: not asked, shown, and theirs to change. */
+  ask?: string;
+  /** Where an estimate comes from, or what helps to answer the question. */
+  note?: string;
+  /** What this step of the chain yields, in a word or two ("Replies"). A count and two percentages with a name each make a funnel. */
+  stage?: string;
 }
 
 /** One action with its place in time: `at` ms after its beat starts. */

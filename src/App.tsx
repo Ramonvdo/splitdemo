@@ -18,6 +18,7 @@ function flags(): Flags {
   const q = new URLSearchParams(location.search);
   const at = q.get("at");
   const n = q.get("n");
+  const step = q.get("q");
   return {
     // A demo opens as the story. The wall is for whoever asks for it.
     mode: q.get("mode") === "fast" ? "fast" : "explainer",
@@ -26,6 +27,8 @@ function flags(): Flags {
     bare: q.get("bare") === "1",
     at: at === "start" || at === "end" ? at : at !== null && /^\d+$/.test(at) ? Number(at) : undefined,
     n: n !== null && /^\d+$/.test(n) ? Number(n) : undefined,
+    // The results slide opened at one of its steps: 0 is the card that closes the story, 1 the first question.
+    q: step === "report" ? "report" : step === "0" ? "intro" : step !== null && /^[1-4]$/.test(step) ? Number(step) - 1 : undefined,
   };
 }
 

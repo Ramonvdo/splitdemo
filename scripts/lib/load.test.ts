@@ -69,3 +69,11 @@ describe("notes on a story told one screen at a time", () => {
     expect(await notes([{ say, do: [send] }, { say, do: [run("a")] }])).toEqual([]);
   });
 });
+
+it("says what replaced a calculator written for an older version", async () => {
+  const old = { currency: "USD", inputs: [{ id: "leads", label: "Leads a month", value: 40 }, { id: "worth", label: "Worth of one", value: 180, kind: "money" }], gains: [{ label: "Won back", from: ["leads", "worth"] }] };
+  const checked = await checkDemo({ ...base, beats: [{ say, wait: "click", do: [send] }], results: { roi: old } });
+  expect(checked.problems).toEqual([
+    "results.roi.gains: gone since 0.3.0. A calculator is one chain now: list `inputs` in the order they multiply, and name the one the system changes in `lever` (format.md, Results)",
+  ]);
+});

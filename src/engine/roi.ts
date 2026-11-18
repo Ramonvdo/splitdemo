@@ -1,39 +1,74 @@
 import type { Lang, Roi, RoiInput } from "./types.ts";
 
-/** What a system is worth with one set of numbers filled in. */
+/** What a system is worth with one set of numbers filled in. Every amount is money in a month unless it says otherwise. */
 export interface Worked {
-  /** Each gain, per month. */
-  gains: { label: string; monthly: number }[];
-  /** All gains together, per month. */
-  monthly: number;
-  /** What is left per month after the monthly cost. */
-  net: number;
-  /** The total at the end of each of the first twelve months, the one-time cost paid at the start. */
+  /** The chain as the business runs today. */
+  before: number;
+  /** The chain with the lever at the system's number. */
+  after: number;
+  /** What lies between the two. Never below zero. */
+  effect: number;
+  /** What the system adds in each of the first twelve months, before its cost. */
+  months: number[];
+  /** The running total of that after cost, from month 0 (minus the one-off cost) to month 12. */
   running: number[];
-  /** The first year: the last of `running`. */
+  /** The same run when the system reaches half of the effect. */
+  cautious: number[];
+  /** The first year after cost: where `running` ends. */
   year: number;
-  /** The month the total is no longer below zero. Only with a cost, and only when more comes in than goes out. */
+  /** The first month the running total is at or above zero. Only when there is a cost, and only within the year. */
   payback?: number;
+  /** What one more point on the chain's last share is worth in a year, with the system running. Not for a saving, and not above 100. */
+  point?: { id: string; year: number };
 }
 
-/** Works a calculator out. `values` holds a number per input id; a percentage is a share, so 30 counts as 0.30. */
-export function work(roi: Roi, values: Record<string, number>): Worked {
-  const share = (id: string) => {
-    const input = roi.inputs.find((one) => one.id === id);
-    return input?.kind === "percent" ? values[id] / 100 : values[id];
+/** The number an input multiplies by: a percentage is a share, so 30 counts as 0.30. */
+const factor = (input: RoiInput, value: number) => (input.kind === "percent" ? value / 100 : value);
+
+/** The lever's number with the system, given today's: the system's own, or today's with what the system adds, a share stopping at 100. */
+export function target(roi: Roi, today: Record<string, number>): number {
+  const input = roi.inputs.find((one) => one.id === roi.lever.input);
+  if (roi.lever.to !== undefined || !input) return roi.lever.to ?? 0;
+  const sum = today[input.id] + (roi.lever.add ?? 0);
+  return input.kind === "percent" ? Math.min(sum, 100) : sum;
+}
+
+/** Works a calculator out. `today` holds a number per input id; `lever` is the lever's number with the system, when the viewer set one. */
+export function work(roi: Roi, today: Record<string, number>, lever = target(roi, today)): Worked {
+  const chain = (values: Record<string, number>) => roi.inputs.reduce((product, input) => product * factor(input, values[input.id]), roi.times ?? 1);
+  const before = chain(today);
+  const system = { ...today, [roi.lever.input]: lever };
+  const after = chain(system);
+  const effect = Math.max(0, roi.saving ? before - after : after - before);
+  const { monthly = 0, once = 0 } = roi.cost ?? {};
+  // What one month adds: the effect, or with `monthly` that of every month so far, since what was won keeps paying.
+  const added = (size: number) => Array.from({ length: 12 }, (_, month) => size * (roi.monthly ? month + 1 : 1));
+  const run = (size: number) => added(size).reduce((total, month) => [...total, total[total.length - 1] + month - monthly], [0 - once]);
+  const running = run(effect);
+  const paid = running.findIndex((total, month) => month > 0 && total >= 0);
+  const share = roi.saving ? undefined : roi.inputs.findLast((input) => input.kind === "percent" && system[input.id] < 100);
+  // A year of one point more: twelve months, or with `monthly` 1 + 2 + ... + 12 of them.
+  const more = share && (chain({ ...system, [share.id]: system[share.id] + 1 }) - after) * (roi.monthly ? 78 : 12);
+  return {
+    before,
+    after,
+    effect,
+    months: added(effect),
+    running,
+    cautious: run(effect / 2),
+    year: running[12],
+    ...(monthly + once > 0 && paid > 0 && { payback: paid }),
+    ...(share && more !== undefined && { point: { id: share.id, year: more } }),
   };
-  const gains = roi.gains.map((gain) => ({ label: gain.label, monthly: gain.from.reduce((product, id) => product * share(id), gain.times ?? 1) }));
-  const monthly = gains.reduce((sum, gain) => sum + gain.monthly, 0);
-  const net = monthly - (roi.cost?.monthly ?? 0);
-  const once = roi.cost?.once ?? 0;
-  const running = Array.from({ length: 12 }, (_, month) => net * (month + 1) - once);
-  return { gains, monthly, net, running, year: running[11], payback: roi.cost && net > 0 ? Math.max(1, Math.ceil(once / net)) : undefined };
 }
 
-/** A typed number, kept within what its field allows. Without a `max` that is ten times the starting value, and 100 for a percentage. */
-export function clamp(input: RoiInput, value: number): number {
+/**
+ * A typed number, kept within what its field allows. Without a `max` that is 100 for a percentage, and otherwise ten times
+ * the starting value or what the system reaches (`reach`), whichever is larger: a count that starts at 0 can still be typed over.
+ */
+export function clamp(input: RoiInput, value: number, reach = input.value): number {
   const min = input.min ?? 0;
-  const max = input.max ?? (input.kind === "percent" ? 100 : input.value * 10);
+  const max = input.max ?? (input.kind === "percent" ? 100 : Math.max(input.value, reach) * 10);
   return Number.isFinite(value) ? Math.min(Math.max(value, min), max) : min;
 }
 

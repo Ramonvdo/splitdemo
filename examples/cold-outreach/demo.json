@@ -142,11 +142,14 @@
     "roi": {
       "currency": "USD",
       "inputs": [
-        { "id": "emailed", "label": "Offices emailed a month", "value": 160 },
-        { "id": "signed", "label": "Share that become a client", "value": 1, "kind": "percent" },
-        { "id": "contract", "label": "Worth of a contract's first year", "value": 4800, "kind": "money" }
+        { "id": "emails", "label": "Offices emailed a month", "ask": "How many offices do you email in a month now?", "value": 20 },
+        { "id": "reply", "label": "Offices that reply", "stage": "Replies", "value": 5, "kind": "percent", "note": "Instantly 2025: 3.4% on average, 5.5% for the best quarter" },
+        { "id": "visit", "label": "Replies that lead to a visit", "stage": "Visits", "value": 50, "kind": "percent" },
+        { "id": "client", "label": "Visits that become a client", "stage": "Clients", "value": 20, "kind": "percent" },
+        { "id": "fee", "label": "What a client pays a month", "ask": "What does a cleaning client pay you a month?", "value": 400, "kind": "money" }
       ],
-      "gains": [{ "label": "New cleaning contracts", "from": ["emailed", "signed", "contract"] }],
+      "lever": { "input": "emails", "to": 160 },
+      "monthly": true,
       "cost": { "monthly": 450, "once": 1500 }
     }
   }

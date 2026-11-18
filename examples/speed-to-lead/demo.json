@@ -129,11 +129,11 @@
     "roi": {
       "currency": "USD",
       "inputs": [
-        { "id": "texts", "label": "After-hours texts a month", "value": 40 },
-        { "id": "won", "label": "Share of those you book", "value": 30, "kind": "percent" },
-        { "id": "visit", "label": "Worth of a first visit", "value": 180, "kind": "money" }
+        { "id": "texts", "label": "After-hours texts a month", "ask": "How many texts come in after closing, in a month?", "value": 40 },
+        { "id": "booked", "label": "Share of those that book a visit", "ask": "Of every 100 of those texts, how many book a visit today?", "value": 10, "kind": "percent" },
+        { "id": "visit", "label": "Worth of a first visit", "ask": "What is a first visit worth to you?", "value": 180, "kind": "money" }
       ],
-      "gains": [{ "label": "New patients booked", "from": ["texts", "won", "visit"] }],
+      "lever": { "input": "booked", "add": 20 },
       "cost": { "monthly": 300, "once": 1500 }
     }
   }
