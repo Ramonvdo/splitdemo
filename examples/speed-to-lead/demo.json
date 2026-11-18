@@ -130,7 +130,7 @@
       "currency": "USD",
       "inputs": [
         { "id": "texts", "label": "After-hours texts a month", "value": 40 },
-        { "id": "won", "label": "Share you now book", "value": 30, "kind": "percent" },
+        { "id": "won", "label": "Share of those you book", "value": 30, "kind": "percent" },
         { "id": "visit", "label": "Worth of a first visit", "value": 180, "kind": "money" }
       ],
       "gains": [{ "label": "New patients booked", "from": ["texts", "won", "visit"] }],

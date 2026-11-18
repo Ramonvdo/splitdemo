@@ -12,7 +12,7 @@ Run every command from the `app` folder in the settings.
 
 3. **Pick the panels.** Read `src/panels/INDEX.md`, choose by role per [../story.md](../story.md), then read `panel.md`, `schema.ts` and `example.json` in the folder of each panel you chose, and `tones.ts` and `icon-names.ts` next to those folders.
 
-4. **Write the demo** to `<workspace>/demos/<slug>/demo.json` per [../format.md](../format.md). The slug names the prospect and the system in lowercase with dashes: `harbor-dental-speed-to-lead`. When the input names no business, use the trade and the town: `phoenix-hvac-missed-calls`. Set `accent` from `brand.accent` in the settings when it is there, and `lang` to the language the script is in.
+4. **Write the demo** to `<workspace>/demos/<slug>/demo.json` per [../format.md](../format.md). The slug names the prospect and the system in lowercase with dashes: `harbor-dental-speed-to-lead`. When the input names no business, use the trade and the town: `phoenix-hvac-missed-calls`. When it names neither, use the kind of business and the system: `service-business-lead-follow-up`. Set `accent` from `brand.accent` in the settings when it is there, and `"lang": "nl"` when the script is Dutch.
 
 5. **Check it** until it prints `<slug>: plays.` with no `problem` and no `note` lines:
 
@@ -33,7 +33,7 @@ Run every command from the `app` folder in the settings.
    - the story: `explainer-00-start.png`, then per step its card (`explainer-03-0-card.png`) and each screen as the story leaves it (`explainer-03-1-flow.png`), then `explainer-NN-results.png`;
    - the wall: `00-start.png`, one `NN-beat.png` per beat, `NN-end.png`.
 
-   It fails when text is cut off or ends in three dots, on a laptop screen or a phone. A state that fails on a phone gets a `-phone.png` picture to look at. While you iterate on one way of telling it, `--mode explainer` or `--mode fast` shoots that one alone.
+   It fails when text is cut off or ends in three dots, on a laptop screen or a phone. A state that fails on a phone gets a `-phone.png` picture to look at. Each `does not fit` line ends with the picture that shows it. `on the wall behind it` means a card or the results slide covers that panel in the picture: the text is cut on the wall, so look at the wall picture of the same step. While you iterate on one way of telling it, `--mode explainer` or `--mode fast` shoots that one alone.
 
 7. **Do the cold read** in [../story.md](../story.md) on the story pictures, every one of them. Rewrite the steps that fail it, then repeat from step 5.
 

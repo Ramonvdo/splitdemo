@@ -87,6 +87,7 @@ The example at the top has a whole `results` block. Every part of it is optional
 | `title` | The claim over the numbers. | 60 characters |
 | `text` | Why it is worth money. | 220 characters |
 | `roi.currency` | A currency code: `USD`, `EUR`. | three capitals |
+| `roi.label` | What the monthly figure counts, shown under it. Leave it out for "extra a month". A calculator of hours says "saved a month". | 28 characters |
 | `roi.inputs` | The fields the viewer can change. Each has an `id`, a `label` and a starting `value`. `"kind": "percent"` makes 30 count as 0.30, `"kind": "money"` shows it as money. `min` and `max` bound what can be typed; without `max` that is ten times the value, or 100 for a percentage. | 2 to 5; label 44 characters |
 | `roi.gains` | What comes in per month. Each is its `from` inputs multiplied together, and by `times` when it has one (`"times": 0.0167` turns minutes into hours). | 1 to 3; label 24 characters; `from` 1 to 4 ids |
 | `roi.cost` | `monthly`, `once` or both. Leave `cost` out when no price was given. | |

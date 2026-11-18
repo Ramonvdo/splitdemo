@@ -194,7 +194,14 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
   useLayoutEffect(() => {
     if (!explainer || card || !shown || play.still || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const screen = wall.current?.querySelector(`[data-panel="${shown}"]`);
-    const fade = screen?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: PACE.change, easing: "cubic-bezier(0.16, 1, 0.3, 1)" });
+    // A fade alone looks like a slide swap. A little growth makes it a screen that arrives and settles.
+    const fade = screen?.animate(
+      [
+        { opacity: 0, transform: "scale(0.985)" },
+        { opacity: 1, transform: "none" },
+      ],
+      { duration: PACE.change, easing: "cubic-bezier(0.16, 1, 0.3, 1)" },
+    );
     return () => fade?.cancel();
   }, [explainer, card, shown]);
 

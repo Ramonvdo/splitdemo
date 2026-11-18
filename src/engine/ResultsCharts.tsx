@@ -34,7 +34,7 @@ export default function ResultsCharts({ roi, worked, say, money, still }: { roi:
 
   return (
     // Three bars or more need the whole width for their names, so the charts go under each other.
-    <div className={cn("flex min-h-[15rem] flex-1 gap-[1rem] compact:flex-col", each.length > 2 && "flex-col")}>
+    <div className={cn("flex min-h-[15rem] flex-1 gap-[1rem] compact:order-2 compact:flex-col", each.length > 2 && "flex-col")}>
       {/* One bar says nothing a number does not say better. */}
       {each.length > 1 && (
         <Figure title={say.each} label={`${say.each}: ${each.map((bar) => `${bar.label} ${money(bar.gain + bar.cost)}`).join(", ")}`}>

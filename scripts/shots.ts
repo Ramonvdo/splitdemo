@@ -4,6 +4,7 @@
  * Screenshots of a demo, so it can be judged the way a viewer meets it: by looking.
  * The story (explainer mode): the opening, each step's card, each screen as it is left, and the results slide.
  * The wall (fast mode): the start, one per beat, and the end. Both, unless --mode names one.
+ * The wall is shot first, so a text that is cut on the wall is named with a picture of the wall.
  * Prints the files it wrote, then everything that does not fit where it is, on a laptop screen and on a phone.
  * Anything that does not fit fails it, and a state that does not fit on a phone gets a phone picture to look at.
  */
@@ -24,7 +25,7 @@ if (asked !== undefined && asked !== "explainer" && asked !== "fast") {
   console.log("Use --mode explainer or --mode fast, or leave it out for both.");
   process.exit(1);
 }
-const modes: Mode[] = asked ? [asked] : ["explainer", "fast"];
+const modes: Mode[] = asked ? [asked] : ["fast", "explainer"];
 
 // The word after --mode is the mode, not the demo.
 const slug = args.find((arg, i) => !arg.startsWith("--") && (flag < 0 || i !== flag + 1));
@@ -56,13 +57,14 @@ const tight = new Map<string, string>();
 
 try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1.5 });
-  const open = async (query: string, where: string) => {
+  // A card or the results slide lies over the wall. What is cut in a panel under it is not in that picture, and the line says so.
+  const open = async (query: string, where: string, covered: boolean) => {
     await page.goto(`${server.url}/${ref.slug}/?record=1${query}`);
     // A part that loads on its own, like the chart, marks itself until it has arrived.
     await page.locator(READY).waitFor();
     await page.evaluate(() => document.fonts.ready);
     const found = await spills(page);
-    for (const spill of found) if (!tight.has(spill)) tight.set(spill, where);
+    for (const spill of found) if (!tight.has(spill)) tight.set(spill, covered && !/^(outside the panels|the page scrolls)/.test(spill) ? `${where}, on the wall behind it` : where);
     return found.length;
   };
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -74,10 +76,14 @@ try {
     return `explainer-${pad(still.at + 1)}-${still.n}-${still.n === 0 ? "card" : still.on}`;
   };
   const states = modes.flatMap((mode) =>
-    stills(timeline, mode).map((still) => ({ name: name(still, mode), query: `&mode=${mode}&at=${still.at}${still.n === undefined ? "" : `&n=${still.n}`}` })),
+    stills(timeline, mode).map((still) => ({
+      name: name(still, mode),
+      query: `&mode=${mode}&at=${still.at}${still.n === undefined ? "" : `&n=${still.n}`}`,
+      covered: mode === "explainer" && (typeof still.at === "string" || still.n === 0),
+    })),
   );
   for (const state of states) {
-    await open(state.query, state.name);
+    await open(state.query, state.name, state.covered);
     const file = join(out, `${state.name}.png`);
     await page.screenshot({ path: file });
     console.log(file);
@@ -85,7 +91,7 @@ try {
   // The same states on a phone held upright. A picture only of a state where something does not fit.
   await page.setViewportSize({ width: 390, height: 844 });
   for (const state of states) {
-    if (!(await open(state.query, `${state.name}, on a phone: ${state.name}-phone.png`))) continue;
+    if (!(await open(state.query, `${state.name}, on a phone: ${state.name}-phone.png`, state.covered))) continue;
     const file = join(out, `${state.name}-phone.png`);
     await page.screenshot({ path: file });
     console.log(file);

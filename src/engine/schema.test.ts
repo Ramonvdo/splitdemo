@@ -30,6 +30,9 @@ it("takes a demo without a results slide, and one with a calculator and a langua
   expect(demo.safeParse(example).success).toBe(true);
   expect(demo.safeParse({ ...example, lang: "nl", results: { title: "What a missed message costs", text: "Every evening message used to wait until morning.", roi } }).success).toBe(true);
   expect(demo.safeParse({ ...example, results: {} }).success).toBe(true);
+  // What the monthly figure counts, when "extra a month" would say the wrong thing.
+  expect(demo.safeParse({ ...example, results: { roi: { ...roi, label: "saved a month" } } }).success).toBe(true);
+  expect(demo.safeParse({ ...example, results: { roi: { ...roi, label: "saved every single month of the year" } } }).success).toBe(false);
 });
 
 it("refuses a calculator that cannot be worked out", () => {

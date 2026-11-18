@@ -40,7 +40,7 @@ The monitor a change belongs to covers the wall the way an enlarged monitor does
 
 ### The strip
 
-A slim row over the wall. On the left the switch, a pill with two segments ("Explainer", "Fast"). Beside it the demo's title in muted ink, once the story runs. Every pixel of the strip comes off the wall, so it is as low as a pointer can still hit. Switching keeps the step. A film keeps the row and leaves the switch out. `H` and `bare` hide it.
+A slim row over the wall. On the left the switch, a pill with two segments ("Explainer", "Fast"). Beside it the demo's title in muted ink, once the story runs. Every pixel of the strip comes off the wall, so it is low. A segment takes a press in the empty space just over and under it. The pressed segment is filled with stage ink at 40%, which stands 3.5:1 off the wall, so the state does not rest on brighter text alone. Switching keeps the step. A film keeps the row and leaves the switch out. `H` and `bare` hide it.
 
 ### The results slide
 
@@ -49,6 +49,10 @@ The slide after the last step. Explainer mode ends on it. In fast mode a Results
 With a calculator it is a light sheet in the monitor colours, because the charts are drawn for a light window. The left column holds a Results pill in the tally colour, the title, the outcome numbers (each with a tally-coloured edge and what it was before), the text, and at the bottom the calculator on `wash`: up to five number fields in two columns, each under its label and next to its unit. The right column holds the monthly figure at card size, beside it what is left after a monthly cost and the first year, then the month it pays for itself, then the charts.
 
 Without a calculator it is a dark card like a step's, with the outcome numbers at card size.
+
+Under the monthly figure the slide says "extra a month". `roi.label` replaces that for a calculator that counts something else, such as hours saved.
+
+On a phone the two columns become one, in the order a thumb reads it: the pill, the title, the outcome numbers, the text, the monthly figure with what follows it, the calculator, the charts. The figure stands right above the fields that change it. The slide takes the caption's row in the bar. A phone's strip has no room for the demo's title, so a slide without a title of its own shows the demo's.
 
 The charts are two bar charts from the Bklit bar family in `src/components/charts/`. "Each month" has one bar per gain and one for the monthly cost, and is drawn when that makes two bars or more. "The first 12 months, added up" has twelve bars of the running total. Months spent earning the setup back hang under the zero line, which is marked when the first month starts under it. Gains wear `--chart-1`, which is the tally on this slide. The cost wears `muted`. The dataviz validator fails that gray on its chroma floor and warns on the contrast between the two series. Both are accepted on purpose: the cost is context for the gain, and every bar in that chart carries its value as a label, so no reading depends on colour alone. A changed number moves the bars. Nothing draws itself in a second time.
 

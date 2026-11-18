@@ -86,6 +86,45 @@ test("a demo that gives no calculator still ends on what came of it", async ({ p
   await expect(page.getByRole("button", { name: "Results" })).toHaveCount(0);
 });
 
+test("on a phone the monthly figure is in view when the slide opens, above the fields that change it", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${END}explainer`);
+  const slide = page.locator("[data-results]");
+  const monthly = slide.locator("[data-monthly]");
+  await expect(monthly).toHaveText("$2,160");
+  await expect(monthly).toBeInViewport({ ratio: 1 });
+  const figure = await monthly.boundingBox();
+  const field = await slide.getByLabel("After-hours texts a month").boundingBox();
+  const chart = await slide.getByRole("img", { name: /^Each month/ }).boundingBox();
+  expect(figure!.y).toBeLessThan(field!.y);
+  expect(field!.y).toBeLessThan(chart!.y);
+});
+
+test("a phone has no strip title, so a slide without a title of its own takes the demo's", async ({ page }) => {
+  await page.route("**/speed-to-lead/demo.json", async (route) => {
+    const demo = await (await route.fetch()).json();
+    delete demo.results.title;
+    await route.fulfill({ json: demo });
+  });
+  await page.goto(`${END}explainer`);
+  const heading = page.locator("[data-results]").getByRole("heading");
+  await expect(heading).toHaveCount(0);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(heading).toHaveText("A new patient texts after closing time");
+});
+
+test("a calculator that counts hours says so under its monthly figure", async ({ page }) => {
+  await page.route("**/speed-to-lead/demo.json", async (route) => {
+    const demo = await (await route.fetch()).json();
+    demo.results.roi.label = "saved a month";
+    await route.fulfill({ json: demo });
+  });
+  await page.goto(`${END}explainer`);
+  const slide = page.locator("[data-results]");
+  await expect(slide.getByText("saved a month")).toBeVisible();
+  await expect(slide.getByText("extra a month")).toHaveCount(0);
+});
+
 test("a Dutch demo gets a Dutch slide, with money written the Dutch way", async ({ page }) => {
   await page.route("**/speed-to-lead/demo.json", async (route) => {
     const demo = await (await route.fetch()).json();

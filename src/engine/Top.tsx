@@ -16,7 +16,8 @@ const MODES: Mode[] = ["explainer", "fast"];
 
 /**
  * The strip over the wall: which way the demo is told, and its name. It keeps its row in a film, so a film's wall is the viewer's wall.
- * Every pixel of it comes off the wall, so it is as low as a pointer can still hit, and it sits closer to the wall than the stage's rows do.
+ * Every pixel of it comes off the wall, so it is low, and it sits closer to the wall than the stage's rows do.
+ * A segment takes a press in the empty space over and under it, so a pointer or a thumb does not have to find the low pill itself.
  */
 export function Top({ title, named, mode, onMode, w }: TopProps) {
   return (
@@ -29,7 +30,11 @@ export function Top({ title, named, mode, onMode, w }: TopProps) {
               type="button"
               aria-pressed={mode === m}
               onClick={() => onMode(m)}
-              className={cn("rounded-full px-[0.8rem] text-meta font-medium transition-colors duration-200 compact:px-[1rem]", mode === m ? "bg-stage-line text-stage-ink" : "text-stage-muted hover:text-stage-ink")}
+              className={cn(
+                "relative rounded-full px-[0.8rem] text-meta font-medium transition-colors duration-200 after:absolute after:inset-x-0 after:-top-[0.6rem] after:-bottom-[0.5rem] compact:px-[1rem]",
+                // The pressed segment stands off the wall by its fill, not only by brighter text.
+                mode === m ? "bg-stage-ink/40 text-stage-ink" : "text-stage-muted hover:text-stage-ink",
+              )}
             >
               {w[m]}
             </button>

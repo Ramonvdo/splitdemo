@@ -30,6 +30,18 @@ test("the switch goes from the story to the wall and back, and keeps the step", 
   await expect(page.locator('[data-panel="phone"]')).toBeVisible();
 });
 
+test("the switch takes a press that lands just over or under its low segments", async ({ page }) => {
+  await page.goto(`${DEMO}?at=4`);
+  const stage = page.locator("main.stage");
+  const top = page.locator("[data-top]");
+  const wall = (await top.getByRole("button", { name: "Fast" }).boundingBox())!;
+  await page.mouse.click(wall.x + wall.width / 2, wall.y - 4);
+  await expect(stage).toHaveAttribute("data-mode", "fast");
+  const story = (await top.getByRole("button", { name: "Explainer" }).boundingBox())!;
+  await page.mouse.click(story.x + story.width / 2, story.y + story.height + 4);
+  await expect(stage).toHaveAttribute("data-mode", "explainer");
+});
+
 test("the strip names the demo once the story runs, and leaves that to the opening before", async ({ page }) => {
   await page.goto(`${DEMO}?at=1`);
   await expect(page.locator("[data-top]")).toContainText("A new patient texts after closing time");

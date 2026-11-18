@@ -78,6 +78,8 @@ export interface Results {
 export interface Roi {
   /** ISO 4217, e.g. "USD" or "EUR". */
   currency: string;
+  /** What the monthly figure counts, under it. Default: "extra a month". A calculator of hours says "saved a month". */
+  label?: string;
   /** 2 to 5 numbers, each in a field of its own. */
   inputs: RoiInput[];
   /** 1 to 3 gains per month. Each is its inputs multiplied together, times `times` when given. */

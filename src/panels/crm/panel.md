@@ -9,3 +9,4 @@ Pick it when: the result is a lead, deal or job that reaches a stage: captured, 
 - `add` the story's lead when the system captures it, `move` it when something real happens, and `set` a `tag` that says what: "Thu 10:00", "Quote sent".
 - Put the amount in `value`. A card that reaches the last column with a price on it is the outcome made visible.
 - A column fits four cards.
+- A card on a four-panel wall is narrow, and the schema allows more than it shows. With three columns a `subtitle` of 24 characters and a `tag` of 18 are cut: stay near 20 and 16, and shorter with four columns.

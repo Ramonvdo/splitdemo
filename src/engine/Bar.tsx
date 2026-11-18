@@ -105,8 +105,8 @@ export function Bar({ demo, timeline, play, record, results, onResults }: BarPro
             <Control icon="next" label={w.forward} onClick={play.next} disabled={done} />
           </div>
         )}
-        {/* On a phone the line gets a row of its own, tall enough that the controls under it never move. */}
-        <div className="min-w-0 flex-1 compact:order-first compact:flex compact:min-h-[4.6rem] compact:basis-full compact:items-center" aria-live="polite">
+        {/* On a phone the line gets a row of its own, tall enough that the controls under it never move. The results slide takes that room: it has more to show than the row has to say. */}
+        <div className={cn("min-w-0 flex-1 compact:order-first compact:flex compact:basis-full compact:items-center", !results && "compact:min-h-[4.6rem]")} aria-live="polite">
           <span className="sr-only">{done ? `${w.results}. ` : idle || carded ? "" : `${w.step(pos.beat + 1, timeline.beats.length)}. `}</span>
           {line}
         </div>

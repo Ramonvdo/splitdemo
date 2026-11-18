@@ -22,10 +22,12 @@ One step is one beat in the JSON: a caption (`say`) and the changes it brings (`
 
 - **Step one is the trigger.** Its caption says what starts everything, so the card reads like the first line of a recipe: "Every morning at 6:30, while you are on a job, it finds offices that fit." or "9:14 PM. The practice closed at six. Send the text a new patient would."
   - A customer who sends or submits something: show their screen (a `phone`, a `form`) and let the viewer press it with `wait: "click"`. Step two then runs the first workflow step, with a caption that hands over: "Nobody is at the desk. The text starts the automation anyway."
+  - A `form` takes two beats, because a press opens its beat: in step one the customer fills it in, in step two the viewer presses the button and the first workflow step runs.
   - A time or a schedule: the caption names the time and the step runs the first workflow step.
 - **One workflow step per beat.** The viewer sees the whole workflow at rest, then the line draws from the step before to this one and it lights up. Its card has said what this step does, so run one, and give the next one its own beat.
 - **The workflow first, then what it caused.** Order the `do` list as the eye should travel: the workflow step, then the app it wrote to. Each screen shows full size, in that order.
 - **At most three screens in a beat, each once.** Keep all changes to one screen next to each other in `do`. A screen that leaves and comes back reads as two things happening. `check` notes both.
+- **Show what a person receives.** A reply, a follow-up or an alert that exists only as a `note` on a workflow step is a claim. Land it on the screen of whoever gets it: the customer's `phone` or `inbox`, the owner's `inbox`. A `note` is enough for what the system checks or decides: "No duplicate found".
 - **One step, one gain.** The caption says what the moment means for the business, in the owner's words. "The lead is in your pipeline before you have seen it." beats "Webhook creates a CRM record."
 - **Captions** speak to the owner as "you", in the present tense, in 72 characters or fewer. Write whole sentences: the card shows nothing else.
 - **A beat may be the workflow alone.** "It looks in your calendar for times that are really open." with one workflow step and its `note` is a full step.
@@ -41,12 +43,12 @@ Read `src/panels/INDEX.md` in the app, then pick by role:
 
 | Role | Panels | How many |
 | --- | --- | --- |
-| Where the customer is | `phone`, `form`, `inbox` | one |
+| Where the customer is | `phone`, `form`, `inbox` | one; a `form` and their `inbox` when they ask on one and are answered on the other |
 | The system at work | `workflow` | one, in almost every demo: its steps are the spine the story walks along |
 | Where the owner's work lives | `crm`, `sheet`, `calendar`, `inbox`, `campaign` | one or two |
 | What the owner gains | `kpi` | one, when the gain is a number |
 
-Four panels by default. Use three or two when a fourth would have nothing to do. When the prospect names more screens than four slots hold, keep the customer's screen, the workflow and the screen where the gain shows. Fold each of the others into a workflow step, with its tool in `app` and its result in the step's `note`.
+Four panels by default. Use three or two when a fourth would have nothing to do. When four slots are too few, the `kpi` gives up its slot first: the results slide shows the numbers either way, and the last beat can land on the owner's own screen. When the prospect names more screens than four slots hold, keep the customer's screen, the workflow and the screen where the gain shows. Fold each of the others into a workflow step, with its tool in `app` and its result in the step's `note`.
 
 Name the workflow's steps as things the system does, in the owner's words: "Reads the message", "Finds open slots". The viewer reads all of them when the workflow first shows.
 
@@ -59,9 +61,10 @@ The slide after the last step. It always shows the outcome numbers. A `results` 
 - `title`: the claim in a few words. "What a missed message costs".
 - `text`: why it is worth money, in one or two sentences the owner would repeat to a partner.
 - `roi`: a calculator the owner fills in live. Two to five numbers of their business, and one to three gains that are each the product of some of them: 40 messages a month × 30% you now book × $180 a patient. The slide draws the charts from it and recalculates as they type.
-- `roi.cost`: add it only when the user gave a price. With a cost the slide shows the gain against the cost and the month it pays for itself.
+- `roi.label`: what the monthly figure counts when it is not new income: "saved a month" for a calculator of hours. Left out, the slide says "extra a month".
+- `roi.cost`: add it only when the user, the one who sends this demo, named their price. A budget in a job post is the prospect's number, not a price. With a cost the slide shows the gain against the cost and the month it pays for itself.
 
-Numbers the prospect stated go in as stated. Guess the others low, and list every guess in your report so the user can replace it. A demo with no numbers to stand on gets `title` and `text` and no `roi`.
+Numbers the prospect stated go in as stated. Guess the others low, also when the input states none: the fields are there for the owner to type their own, and your report lists every guess so the user can replace it. Leave `roi` out only when the gain cannot be counted, in money or in hours.
 
 ## Numbers and names
 

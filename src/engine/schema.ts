@@ -59,6 +59,7 @@ const roiInput = z.strictObject({
 export const roi = z
   .strictObject({
     currency: z.string().regex(/^[A-Z]{3}$/, "use a currency code like USD or EUR"),
+    label: z.string().min(1).max(28).optional(),
     inputs: z.array(roiInput).min(2).max(5),
     gains: z
       .array(z.strictObject({ label: z.string().min(1).max(24), from: z.array(id).min(1).max(4), times: z.number().positive().max(1000).optional() }))

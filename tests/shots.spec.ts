@@ -93,8 +93,12 @@ test("a label of the full 40 characters fits, on a laptop and on a phone", () =>
 
 test("a text that ends in three dots does not fit either", () => {
   const run = shots("long-cells");
-  expect(run.stdout).toContain("does not fit  leads, cut short: Kestrel Family Law Partners");
+  expect(run.stdout).toContain("does not fit  leads, cut short: Kestrel Family Law Partners (00-start)");
   expect(run.status).toBe(1);
+  // The story opens on a card, with the wall under it. The name is cut there too, where that picture does not show it, and the line says so.
+  const story = shots("long-cells", "explainer");
+  expect(story.stdout).toContain("does not fit  leads, cut short: Kestrel Family Law Partners (explainer-00-start, on the wall behind it)");
+  expect(story.status).toBe(1);
 });
 
 test("shots say what does not fit, by panel, and fail", () => {

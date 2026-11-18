@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1 (2026-11-18)
+
+- On a phone the results slide shows the monthly figure before the calculator and the charts, uses the caption's row in the bar, and takes the demo's title when it has none of its own.
+- `results.roi.label` says what the monthly figure counts when it is not new income: "saved a month".
+- The mode switch takes a press just over or under it, and its pressed segment is filled.
+- `npm run shots` shoots the wall first, and says `on the wall behind it` when a cut text sits under a card or the results slide. Each line now names a picture that shows the problem.
+- In explainer mode a screen grows slightly as it fades in.
+- Skill files: a form trigger takes two beats, a calculator starts from low guesses when the input states no numbers, a prospect's budget is not a price, and a message a person receives is shown on their screen.
+
 ## 0.2.0 (2026-11-18)
 
 - Explainer mode, which is now how a demo opens. The story plays one step at a time: a card with the step's caption alone on the screen, then each screen that step touches at full size, one change at a time. A link, a film and the dev server open in it.
