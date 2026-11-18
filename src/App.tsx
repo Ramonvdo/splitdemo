@@ -51,7 +51,9 @@ export function App() {
     load().then(setView, (e) => setView({ kind: "problems", problems: [String(e)] }));
   }, []);
   useEffect(() => {
-    if (view.kind === "demo") document.title = view.ready.demo.title;
+    if (view.kind !== "demo") return;
+    document.title = view.ready.demo.title;
+    document.documentElement.lang = view.ready.demo.lang ?? "en";
   }, [view]);
 
   if (view.kind === "loading") return null;

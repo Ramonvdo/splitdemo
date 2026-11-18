@@ -7,8 +7,10 @@ import { Card } from "./Card.tsx";
 import { arrange, type Arranged } from "./layout.ts";
 import { Results } from "./Results.tsx";
 import { PACE, compile, paced, snapshots } from "./timeline.ts";
-import type { Demo, PanelSpec, States, Timeline } from "./types.ts";
+import { Top } from "./Top.tsx";
+import type { Demo, Mode, PanelSpec, States, Timeline } from "./types.ts";
 import { usePlayback, type PlaybackOptions } from "./usePlayback.ts";
+import { words, type Words } from "./words.ts";
 
 export interface Ready {
   demo: Demo;
@@ -63,10 +65,11 @@ interface MonitorProps {
   compact: boolean;
   /** Enlarge this monitor, or put it back. Left out while recording. */
   onZoom?: () => void;
+  w: Words;
   children: ReactNode;
 }
 
-function Monitor({ spec, slot, live, waiting, zoom, scale, hidden, portrait, compact, onZoom, children }: MonitorProps) {
+function Monitor({ spec, slot, live, waiting, zoom, scale, hidden, portrait, compact, onZoom, w, children }: MonitorProps) {
   const name = (
     <>
       <Tally live={live} />
@@ -88,7 +91,7 @@ function Monitor({ spec, slot, live, waiting, zoom, scale, hidden, portrait, com
       {!compact && (
         <h2 className={cn("flex text-meta font-medium transition-opacity duration-200", live ? "text-stage-ink" : "text-stage-muted")}>
           {onZoom ? (
-            <button type="button" onClick={onZoom} aria-label={`${spec.label}: ${zoom ? "show all panels" : "enlarge"}`} title={zoom ? "Show all panels" : "Enlarge"} className="group flex min-h-[1.75rem] min-w-0 items-center gap-[0.55rem] rounded-control text-left transition-colors duration-200 hover:text-stage-ink">
+            <button type="button" onClick={onZoom} aria-label={`${spec.label}: ${(zoom ? w.all : w.enlarge).toLowerCase()}`} title={zoom ? w.all : w.enlarge} className="group flex min-h-[1.75rem] min-w-0 items-center gap-[0.55rem] rounded-control text-left transition-colors duration-200 hover:text-stage-ink">
               {name}
               <svg viewBox="0 0 24 24" className={cn("size-[0.95rem] shrink-0 transition-opacity duration-200", zoom ? "opacity-100" : "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100")} fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 {zoom ? <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" /> : <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />}
@@ -120,7 +123,7 @@ function Monitor({ spec, slot, live, waiting, zoom, scale, hidden, portrait, com
 const COMPACT = "(width < 720px)";
 
 /** Explainer mode: how much a phone-shaped screen's picture grows. It already stands as tall as the wall, so it cannot be measured into growing. */
-const PORTRAIT_GROWS = 1.3;
+const PORTRAIT_GROWS = 1.25;
 
 /** How long a recording holds the opening picture, with the demo's title under it, before the story starts. */
 export const TITLE_CARD_MS = 1200;
@@ -137,10 +140,11 @@ function useCompact(): boolean {
   return compact;
 }
 
-/** The whole screen: the wall of monitors, and the bar under it. */
+/** The whole screen: the strip that says which way the demo is told, the wall of monitors, and the bar under it. */
 export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
   const { demo, timeline, states, arranged } = ready;
   const play = usePlayback(timeline, flags);
+  const w = words(demo.lang);
   const [bare, setBare] = useState(flags.bare);
   const compact = useCompact();
   /** The monitor that fills the wall, and how much its picture grows to do so. */
@@ -171,6 +175,13 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
     if (compact) return setZoom({ id, scale: 1 });
     if (zoom?.id === id) return setZoom(undefined);
     setZoom({ id, scale: grown(id) });
+  };
+
+  /** Tells the demo the other way, from the step it is on. A monitor enlarged for the one way is not carried into the other. */
+  const tell = (mode: Mode) => {
+    if (mode === play.mode) return;
+    setZoom(undefined);
+    play.setMode(mode);
   };
 
   // Explainer mode shows one screen, and the story picks it. Set before the browser paints, so a still never shows the wall first.
@@ -259,7 +270,8 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
 
   return (
     <main
-      className={cn("stage grid h-dvh gap-[0.9rem] p-[0.9rem]", tabs ? "grid-rows-[auto_minmax(0,1fr)_auto]" : "grid-rows-[minmax(0,1fr)_auto]", flags.record && "cursor-none")}
+      // Over the wall: the strip, and on a phone the tabs. Under it: the bar.
+      className={cn("stage grid h-dvh gap-[0.9rem] p-[0.9rem]", ["grid-rows-[minmax(0,1fr)_auto]", "grid-rows-[auto_minmax(0,1fr)_auto]", "grid-rows-[auto_auto_minmax(0,1fr)_auto]"][Number(!bare) + Number(tabs)], flags.record && "cursor-none")}
       style={style}
       data-mode={play.mode}
       data-status={play.status}
@@ -268,8 +280,9 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
       data-done={play.status === "done" || undefined}
     >
       <h1 className="sr-only">{demo.title}</h1>
+      {!bare && <Top title={demo.title} named={play.status !== "idle"} mode={play.mode} onMode={flags.record ? undefined : tell} w={w} />}
       {tabs && (
-        <div role="tablist" aria-label="Panels" className="flex min-w-0 gap-[0.4rem]">
+        <div role="tablist" aria-label={w.panels} className="flex min-w-0 gap-[0.4rem]">
           {arranged.slots.map((spec) => {
             const on = shown === spec.id;
             const live = play.focus === spec.id;
@@ -314,6 +327,7 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
               portrait={logic.portrait === true}
               compact={tabs}
               onZoom={flags.record || explainer ? undefined : () => pick(spec.id)}
+              w={w}
             >
               <View config={spec.config} state={now[spec.id]} pending={pending} onTrigger={pending ? play.press : undefined} clock={beat.clock} still={play.still} live={live} />
             </Monitor>
@@ -327,12 +341,12 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
                   <svg viewBox="0 0 24 24" className="size-[1.25rem]" aria-hidden="true">
                     <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
                   </svg>
-                  Play the demo
+                  {w.start}
                 </button>
               )}
             </Card>
           ) : (
-            <Card key={play.pos.beat} tag={`Step ${play.pos.beat + 1} of ${timeline.beats.length}`} clock={beat.clock} text={beat.say ?? ""} />
+            <Card key={play.pos.beat} tag={w.step(play.pos.beat + 1, timeline.beats.length)} clock={beat.clock} text={beat.say ?? ""} />
           ))}
         {results && <Results demo={demo} still={play.still} />}
       </div>

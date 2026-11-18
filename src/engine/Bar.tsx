@@ -53,9 +53,10 @@ interface BarProps {
   onResults?: () => void;
 }
 
-/** The one strip of chrome: where the demo is, what the moment means, and at the end what came of it. */
+/** The strip under the wall: where the demo is, what the moment means, and at the end what came of it. */
 export function Bar({ demo, timeline, play, record, results, onResults }: BarProps) {
   const { pos, status } = play;
+  const w = words(demo.lang);
   const beat = timeline.beats[pos.beat];
   const done = status === "done";
   const idle = status === "idle";
@@ -72,16 +73,17 @@ export function Bar({ demo, timeline, play, record, results, onResults }: BarPro
             <dd className="text-outcome font-bold tracking-tight compact:text-big">{o.value}</dd>
             <dt className="pb-[0.2rem] text-lead leading-tight text-stage-muted compact:text-meta">
               {o.label}
-              {o.was && <span className="block text-body font-medium text-stage-ink/75 compact:text-meta">was {o.was}</span>}
+              {o.was && <span className="block text-body font-medium text-stage-ink/75 compact:text-meta">{w.was} {o.was}</span>}
             </dt>
           </div>
         ))}
       </dl>
     );
-  } else if (!carded) {
+  } else if (!carded && !done) {
+    // Under the results slide the line is empty: the slide says what came of it, and the strip over the wall names the demo.
     line = (
-      <p key={idle || done ? "title" : pos.beat} className="animate-land text-balance text-caption font-semibold tracking-[-0.01em] compact:text-lead" data-caption>
-        {idle || done ? demo.title : captionAt(timeline, pos.beat)}
+      <p key={idle ? "title" : pos.beat} className="animate-land text-balance text-caption font-semibold tracking-[-0.01em] compact:text-lead" data-caption>
+        {idle ? demo.title : captionAt(timeline, pos.beat)}
       </p>
     );
   }
@@ -98,14 +100,14 @@ export function Bar({ demo, timeline, play, record, results, onResults }: BarPro
       <div className="flex min-h-[3.6rem] items-center gap-[1.2rem] compact:flex-wrap compact:justify-between compact:gap-y-[0.6rem]">
         {!record && (
           <div className="flex items-center gap-1">
-            <Control icon={status === "playing" ? "pause" : done ? "replay" : "play"} label={status === "playing" ? "Pause" : done ? "Play again" : "Play"} onClick={play.toggle} primary />
-            <Control icon="prev" label="Step back" onClick={play.prev} disabled={idle} />
-            <Control icon="next" label="Step forward" onClick={play.next} disabled={done} />
+            <Control icon={status === "playing" ? "pause" : done ? "replay" : "play"} label={status === "playing" ? w.pause : done ? w.again : w.play} onClick={play.toggle} primary />
+            <Control icon="prev" label={w.back} onClick={play.prev} disabled={idle} />
+            <Control icon="next" label={w.forward} onClick={play.next} disabled={done} />
           </div>
         )}
         {/* On a phone the line gets a row of its own, tall enough that the controls under it never move. */}
         <div className="min-w-0 flex-1 compact:order-first compact:flex compact:min-h-[4.6rem] compact:basis-full compact:items-center" aria-live="polite">
-          <span className="sr-only">{done ? "Result. " : idle || carded ? "" : `Step ${pos.beat + 1} of ${timeline.beats.length}. `}</span>
+          <span className="sr-only">{done ? `${w.results}. ` : idle || carded ? "" : `${w.step(pos.beat + 1, timeline.beats.length)}. `}</span>
           {line}
         </div>
         {done && !record && onResults && (
@@ -120,7 +122,7 @@ export function Bar({ demo, timeline, play, record, results, onResults }: BarPro
             )}
             style={{ animationDelay: `${demo.outcome.length * 140}ms` }}
           >
-            {words(demo.lang).results}
+            {w.results}
           </button>
         )}
         {done && !record && demo.next && SAFE_LINK.test(demo.next.url) && (
@@ -141,7 +143,7 @@ export function Bar({ demo, timeline, play, record, results, onResults }: BarPro
               {beat.clock}
             </time>
           )}
-          <span className="rounded-full border border-stage-line px-[0.7rem] py-[0.2rem]">Scripted example</span>
+          <span className="rounded-full border border-stage-line px-[0.7rem] py-[0.2rem]">{w.scripted}</span>
         </div>
       </div>
     </footer>

@@ -28,7 +28,7 @@ export function Results({ demo, still }: { demo: Demo; still: boolean }) {
           <p>
             <span className="rounded-full bg-tally px-[0.9rem] py-[0.25rem] text-lead font-semibold text-on-tally">{say.results}</span>
           </p>
-          {/* Without a title of its own the slide starts at the numbers; the bar under it carries the demo's title. */}
+          {/* Without a title of its own the slide starts at the numbers; the strip over the wall carries the demo's title. */}
           {demo.results?.title && <h2 className="text-balance text-huge font-semibold tracking-[-0.02em]">{demo.results.title}</h2>}
           <dl className={cn("flex flex-wrap gap-y-[1rem]", roi ? "gap-x-[2rem]" : "gap-x-[3.4rem] gap-y-[1.6rem]")} data-outcome>
             {demo.outcome.map((o, i) => (

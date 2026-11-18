@@ -50,12 +50,12 @@ test("every control is reachable and named from the keyboard", async ({ page }) 
   await page.goto("/speed-to-lead/?mode=fast");
   await page.locator(READY).waitFor();
   const names: string[] = [];
-  // Four panel labels, the phone's send button and the three transport buttons.
-  for (let i = 0; i < 8; i++) {
+  // The two ways to tell it, four panel labels, the phone's send button and the three transport buttons.
+  for (let i = 0; i < 10; i++) {
     await page.keyboard.press("Tab");
     names.push(await page.evaluate(() => document.activeElement?.getAttribute("aria-label") ?? document.activeElement?.textContent ?? ""));
   }
-  expect(names).toEqual(expect.arrayContaining(["Send", "Play", "Step forward", "Patient pipeline: enlarge"]));
+  expect(names).toEqual(expect.arrayContaining(["Explainer", "Fast", "Send", "Play", "Step forward", "Patient pipeline: enlarge"]));
 });
 
 test("a click on a label enlarges that panel, and the same click or Escape brings the wall back", async ({ page }) => {
