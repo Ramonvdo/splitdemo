@@ -1,23 +1,52 @@
+import { Band } from "@/components/charts/band";
 import { Bar } from "@/components/charts/bar";
 import { BarChart } from "@/components/charts/bar-chart";
 import { BarXAxis } from "@/components/charts/bar-x-axis";
 import { Grid } from "@/components/charts/grid";
+import { Line, LineChart } from "@/components/charts/line-chart";
+import { StaticChartPreviewProvider } from "@/components/charts/static-chart-preview-context";
 import { ChartTooltip, TooltipContent } from "@/components/charts/tooltip";
+import { XAxis } from "@/components/charts/x-axis";
+import { curveLinear } from "d3-shape";
 import { useReducedMotion } from "motion/react";
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { axisRoom } from "../lib/style.ts";
 import type { Worked } from "./roi.ts";
 import type { Lang, Roi } from "./types.ts";
 import type { Words } from "./words.ts";
 
-function Figure({ title, label, wide, children }: { title: string; label: string; wide?: boolean; children: ReactNode }) {
+function Figure({ title, label, wide, legend, children }: { title: string; label: string; wide?: boolean; legend?: ReactNode; children: ReactNode }) {
   return (
-    <figure className="flex min-h-0 min-w-0 flex-col gap-[0.3rem] rounded-control border border-line px-[0.9rem] pt-[0.7rem] compact:h-[15rem] compact:flex-none" style={{ flex: wide ? 3 : 2 }}>
+    <figure className="flex min-h-0 min-w-0 flex-col gap-[0.35rem] rounded-control border border-line px-[0.9rem] pt-[0.7rem] compact:h-[17rem] compact:flex-none" style={{ flex: wide ? 3 : 2 }}>
       <figcaption className="text-meta font-medium leading-tight">{title}</figcaption>
+      {legend}
       <div className="min-h-0 flex-1" role="img" aria-label={label}>
         {children}
       </div>
     </figure>
+  );
+}
+
+interface End {
+  label: string;
+  value: string;
+  stroke: string;
+  dashed?: boolean;
+}
+
+/** What each line is and where it ends. The words stay in the text's own colours; the stroke beside them says which line. */
+function Legend({ ends }: { ends: End[] }) {
+  return (
+    <ul data-legend className="flex flex-wrap gap-x-[1rem] gap-y-[0.1rem] text-meta text-muted">
+      {ends.map((end) => (
+        <li key={end.label} className="flex items-center gap-[0.35rem] whitespace-nowrap">
+          <svg aria-hidden width="18" height="6" className="shrink-0">
+            <line x1="1" y1="3" x2="17" y2="3" stroke={end.stroke} strokeWidth="2.5" strokeLinecap="round" strokeDasharray={end.dashed ? "4 4" : undefined} />
+          </svg>
+          {end.label} <b className="font-semibold text-ink">{end.value}</b>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -58,25 +87,58 @@ function Year({ roi, worked, say, money, calm }: ChartsProps & { calm: boolean }
 }
 
 /**
+ * What the system adds, month by month, after what it costs. Carrying on as today is the flat line at nothing: on two rising
+ * totals the setup and the month it is earned back would vanish, and a saving would run the other way up.
+ */
+function Months({ roi, worked, say, money, calm }: ChartsProps & { calm: boolean }) {
+  const rows = worked.running.map((system, month) => ({ month, system, half: worked.cautious[month], today: 0 }));
+  const title = say.added(roi.saving === true, roi.cost !== undefined);
+  const ends: End[] = [
+    { label: say.system, value: money(worked.year), stroke: "var(--chart-1)" },
+    { label: say.half, value: money(worked.cautious[12]), stroke: "var(--chart-1)", dashed: true },
+    { label: say.carry, value: money(0), stroke: "var(--color-muted)" },
+  ];
+  return (
+    <Figure wide title={title} legend={<Legend ends={ends} />} label={`${title}: ${ends.map((end) => `${end.label} ${end.value}`).join(", ")}`}>
+      <LineChart data={rows} xDataKey="month" aspectRatio="auto" className="h-full" margin={{ top: 10, right: 10, bottom: axisRoom(), left: 10 }} animationDuration={calm ? 0 : 700} yDomainTween={!calm}>
+        <Grid horizontal numTicksRows={3} />
+        {/* Between the lines: grey while the setup is still being earned back, the accent from the month it has paid for itself. */}
+        <Band upperKey="system" lowerKey="today" curve={curveLinear} fill="var(--chart-1)" negativeFill="var(--color-muted)" fillOpacity={0.14} upperStroke={false} lowerStroke={false} showInTooltip={false} />
+        <Line dataKey="today" stroke="var(--color-muted)" strokeWidth={2} curve={curveLinear} animate={!calm} fadeEdges={false} showHighlight={false} />
+        <Line dataKey="half" stroke="var(--chart-1)" strokeWidth={2} curve={curveLinear} animate={!calm} fadeEdges={false} showHighlight={false} dashFromIndex={0} dashArray="4,4" />
+        <Line dataKey="system" stroke="var(--chart-1)" curve={curveLinear} animate={!calm} fadeEdges={false} showHighlight={false} />
+        <XAxis numTicks={7} labels={rows.map((row) => String(row.month))} />
+        <ChartTooltip
+          showDatePill={false}
+          content={({ point }) => (
+            <TooltipContent
+              title={say.month(String(point.month))}
+              rows={[
+                { color: "var(--chart-1)", label: say.system, value: money(Number(point.system)) },
+                { color: "var(--chart-1)", label: say.half, value: money(Number(point.half)) },
+                { color: "var(--color-muted)", label: say.carry, value: money(0) },
+              ]}
+            />
+          )}
+        />
+      </LineChart>
+    </Figure>
+  );
+}
+
+/**
  * The charts of the report. They follow the numbers: a changed one moves the marks, and nothing draws itself in again.
+ * A picture or a viewer who asked for less motion gets them as they end.
  */
 export default function ResultsCharts(props: ChartsProps) {
-  const { roi, worked, say, money, still } = props;
-  const calm = useReducedMotion() === true || still;
-  const months = worked.running.slice(1).map((total, i) => ({ label: String(i + 1), total }));
-
+  const calm = useReducedMotion() === true || props.still;
+  const Still = calm ? StaticChartPreviewProvider : Fragment;
   return (
     <div className="flex min-h-[15rem] flex-1 gap-[1rem] compact:order-2 compact:flex-col">
-      <Figure wide title={say.added(roi.cost?.once ? money(roi.cost.once) : undefined)} label={`${say.added()}: ${months.map((bar) => `${say.month(bar.label)} ${money(bar.total)}`).join(", ")}`}>
-        <BarChart data={months} xDataKey="label" aspectRatio="auto" className="h-full" margin={{ top: 12, right: 4, bottom: axisRoom(), left: 4 }} barGap={0.3} animationDuration={700}>
-          {/* Months spent earning the setup back hang under the line; the line is where it has paid for itself. */}
-          <Grid horizontal numTicksRows={3} highlightRowValues={worked.running[0] < 0 ? [0] : undefined} />
-          <Bar dataKey="total" fill="var(--chart-1)" lineCap={4} animate={!calm} />
-          <BarXAxis showAllLabels />
-          <ChartTooltip showDatePill={false} content={({ point }) => <TooltipContent title={say.month(String(point.label))} rows={[{ color: "var(--chart-1)", label: say.sum, value: money(Number(point.total)) }]} />} />
-        </BarChart>
-      </Figure>
-      <Year {...props} calm={calm} />
+      <Still>
+        <Months {...props} calm={calm} />
+        <Year {...props} calm={calm} />
+      </Still>
     </div>
   );
 }

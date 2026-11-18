@@ -48,6 +48,19 @@ test("the report lists every number it used, today and with the system, and mark
   await expect(table.locator("caption")).toContainText("Your numbers");
 });
 
+test("the first chart is the year the system adds, against carrying on as today and against half the effect", async ({ page }) => {
+  await page.goto(`${END}explainer`);
+  const slide = page.locator("[data-results]");
+  const chart = slide.locator("figure").first();
+  await expect(chart.locator("figcaption")).toHaveText("What the system adds over 12 months, after costs");
+  // -1,500, then +1,140 a month. At half the effect 720 comes in a month: -1,500, then +420 a month. Carrying on adds nothing.
+  await expect(chart.locator("[data-legend] li")).toHaveText(["With the system $12,180", "Half the effect $3,540", "Carry on as today $0"]);
+  await expect(chart.getByRole("img")).toHaveAttribute("aria-label", "What the system adds over 12 months, after costs: With the system $12,180, Half the effect $3,540, Carry on as today $0");
+  // A typed number moves the lines' ends with it: 50 texts are 1,800 a month, 900 at half.
+  await slide.getByLabel("After-hours texts a month", { exact: true }).fill("50");
+  await expect(chart.locator("[data-legend] li")).toHaveText(["With the system $16,500", "Half the effect $5,700", "Carry on as today $0"]);
+});
+
 test("the viewer changes a number and the report works it out again", async ({ page }) => {
   await page.goto(`${END}explainer`);
   const slide = page.locator("[data-results]");

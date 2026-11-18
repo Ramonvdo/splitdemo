@@ -4,7 +4,7 @@ splitdemo is MIT licensed (see `LICENSE`). It includes code from the projects be
 
 ## Bklit UI
 
-The chart components in `src/components/charts/` come from the Bklit UI registry (https://ui.bklit.com, https://github.com/bklit/bklit-ui), installed with the shadcn CLI and otherwise unchanged. `src/lib/utils.ts` is the helper that install writes.
+The chart components in `src/components/charts/` and `src/components/shimmering-text.tsx` come from the Bklit UI registry (https://ui.bklit.com, https://github.com/bklit/bklit-ui), installed with the shadcn CLI and otherwise unchanged. `src/lib/utils.ts` is the helper that install writes.
 
 ```
 MIT License

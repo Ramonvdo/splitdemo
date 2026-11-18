@@ -45,9 +45,10 @@ const WORDS = {
     nothing: "With these numbers the system has nothing left to win. Change one to see where it does.",
     cost: "What it costs",
     yearly: (saving: boolean): string => (saving ? "What this costs in a year, today and with the system" : "A year as you work today, and a year with the system"),
-    added: (once?: string) => (once ? `The first 12 months added up, after ${once} to set up` : "The first 12 months, added up"),
+    added: (saving: boolean, cost: boolean) => `What the system ${saving ? "saves" : "adds"} over 12 months${cost ? ", after costs" : ""}`,
+    carry: "Carry on as today",
+    half: "Half the effect",
     month: (n: string) => `Month ${n}`,
-    sum: "Added up",
   },
   nl: {
     explainer: "Uitleg",
@@ -89,9 +90,10 @@ const WORDS = {
     nothing: "Met deze cijfers valt er niets meer te winnen. Pas er een aan om te zien waar wel.",
     cost: "Wat het kost",
     yearly: (saving: boolean): string => (saving ? "Wat dit in een jaar kost, nu en met het systeem" : "Een jaar zoals nu, en een jaar met het systeem"),
-    added: (once?: string) => (once ? `De eerste 12 maanden opgeteld, na ${once} eenmalig` : "De eerste 12 maanden, opgeteld"),
+    added: (saving: boolean, cost: boolean) => `Wat het systeem in 12 maanden ${saving ? "bespaart" : "oplevert"}${cost ? ", na kosten" : ""}`,
+    carry: "Doorgaan zoals nu",
+    half: "De helft van het effect",
     month: (n: string) => `Maand ${n}`,
-    sum: "Opgeteld",
   },
 };
 
