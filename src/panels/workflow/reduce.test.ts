@@ -43,9 +43,16 @@ it("remembers what ran, which ran last, and what it found", () => {
   expect(run([{ type: "run", node: "text" }, { type: "run", node: "read", note: "Urgent, new patient" }])).toEqual({
     ran: ["text", "read"],
     last: "read",
+    // "read" follows "text", which had run.
+    along: true,
     runs: 2,
     notes: { read: "Urgent, new patient" },
   });
+});
+
+it("knows whether the last step was reached along a line: not the step that starts the flow, and not a step that runs again", () => {
+  expect(run([{ type: "run", node: "text" }]).along).toBe(false);
+  expect(run([{ type: "run", node: "text" }, { type: "run", node: "read" }, { type: "run", node: "read" }]).along).toBe(false);
 });
 
 it("runs a step that follows two others once either has run", () => {

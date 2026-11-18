@@ -64,3 +64,35 @@ test("left alone, the screens come one at a time in the order the script names t
     ...["card", "flow", "numbers"],
   ]);
 });
+
+test("a step reached along a line stays quiet until the line has been drawn to it", async ({ page }) => {
+  await page.goto(`${DEMO}&at=0`);
+  await page.locator("main.stage").waitFor();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator('[data-node="read"]')).toHaveAttribute("data-ran", "true");
+  // Every motion on the page, held at one moment after the step ran.
+  const at = (ms: number) =>
+    page.evaluate((ms) => {
+      for (const motion of document.getAnimations()) {
+        motion.pause();
+        motion.currentTime = ms;
+      }
+      const line = getComputedStyle(document.querySelector('[data-edge="text>read"]')!);
+      const lit = getComputedStyle(document.querySelector('[data-node="read"] [data-lit]')!);
+      return { drawn: 1 - parseFloat(line.strokeDashoffset), lit: Number(lit.opacity) };
+    }, ms);
+  // A line takes 600 ms: half-way it is half drawn, and the step it runs to is still at rest.
+  const half = await at(300);
+  expect(half.drawn).toBeCloseTo(0.5, 2);
+  expect(half.lit).toBe(0);
+  expect(await at(1000)).toEqual({ drawn: 1, lit: 1 });
+});
+
+test("on the wall a line has no time to travel: the step lights at once", async ({ page }) => {
+  await page.goto("/speed-to-lead/?mode=fast&at=0");
+  await page.locator("main.stage").waitFor();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.locator('[data-node="read"]')).toHaveAttribute("data-ran", "true");
+  const delay = await page.locator('[data-node="read"] [data-lit]').evaluate((el) => getComputedStyle(el).animationDelay);
+  expect(parseFloat(delay)).toBe(0);
+});

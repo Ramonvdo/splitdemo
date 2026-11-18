@@ -6,20 +6,24 @@ export interface State {
   ran: string[];
   /** The step that ran most recently. */
   last?: string;
+  /** That step was reached along the line from a step before it. */
+  along?: boolean;
   /** How many times a step has run, so the same step running twice still shows. */
   runs: number;
   /** What a step found or did, by step id. */
   notes: Record<string, string>;
 }
 
+/** A step that follows one that ran is reached along the line between them, the first time it runs. */
+function along(state: State, id: string, config: Config): boolean {
+  const after = config.nodes.find((node) => node.id === id)?.after ?? [];
+  return !state.ran.includes(id) && after.some((from) => state.ran.includes(from));
+}
+
 export const logic: PanelLogic<Config, State, Action> = {
   icon: "branch",
   initial: () => ({ ran: [], runs: 0, notes: {} }),
-  // A step that follows one that ran is reached along the line between them, the first time it runs.
-  pace(action, state, config) {
-    const after = config.nodes.find((node) => node.id === action.node)?.after ?? [];
-    return !state.ran.includes(action.node) && after.some((id) => state.ran.includes(id)) ? { travels: true } : undefined;
-  },
+  pace: (action, state, config) => (along(state, action.node, config) ? { travels: true } : undefined),
   reduce(state, action, config) {
     const node = config.nodes.find((n) => n.id === action.node);
     if (!node) throw new Error(`there is no node "${action.node}". Nodes: ${config.nodes.map((n) => n.id).join(", ")}`);
@@ -29,6 +33,7 @@ export const logic: PanelLogic<Config, State, Action> = {
     return {
       ran: state.ran.includes(node.id) ? state.ran : [...state.ran, node.id],
       last: node.id,
+      along: along(state, node.id, config),
       runs: state.runs + 1,
       notes: action.note ? { ...state.notes, [node.id]: action.note } : state.notes,
     };

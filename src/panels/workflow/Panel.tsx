@@ -1,5 +1,5 @@
 import "./skin.css";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { cn } from "../../lib/style.ts";
 import { Icon } from "../icons.tsx";
 import type { PanelProps } from "../types.ts";
@@ -18,13 +18,14 @@ function Mark({ node, state, running }: { node: Node; state: State; running: boo
   const ran = state.ran.includes(node.id);
   const live = running && state.last === node.id;
   return (
-    <span
-      key={live ? state.runs : "rest"}
-      data-kind={node.icon ?? "bolt"}
-      data-state={live ? "live" : ran ? "ran" : "rest"}
-      className={cn("relative grid size-[2.5rem] shrink-0 place-items-center rounded-control border", live ? "animate-pop border-tally bg-tally text-on-tally" : "border-line bg-window text-muted")}
-    >
+    <span data-kind={node.icon ?? "bolt"} data-state={live ? "live" : ran ? "ran" : "rest"} className="relative grid size-[2.5rem] shrink-0 place-items-center rounded-control border border-line bg-window text-muted">
       <Icon name={node.icon ?? "bolt"} className="size-[1.3rem]" />
+      {/* The tally lies over the step, so a step reached along a line stays quiet until the line is there (--arrive). */}
+      {live && (
+        <span key={state.runs} data-lit className="absolute -inset-px grid animate-pop place-items-center rounded-control bg-tally text-on-tally [animation-delay:var(--arrive,0ms)]">
+          <Icon name={node.icon ?? "bolt"} className="size-[1.3rem]" />
+        </span>
+      )}
       {ran && !live && (
         <span className="absolute -right-[0.35rem] -top-[0.35rem] grid size-[1rem] animate-pop place-items-center rounded-full bg-good text-wash ring-2 ring-wash">
           <Icon name="check" className="size-[0.65rem] stroke-[3.5]" />
@@ -37,7 +38,7 @@ function Mark({ node, state, running }: { node: Node; state: State; running: boo
 function Label({ node, ran }: { node: Node; ran: boolean }) {
   return (
     // One weight, done or not: a label that turns bold gets wider, wraps, and moves everything under it.
-    <span className={cn("rounded-control bg-wash px-[0.25rem] font-medium leading-tight", !ran && "text-muted")}>
+    <span className={cn("rounded-control bg-wash px-[0.25rem] font-medium leading-tight transition-colors duration-0 [transition-delay:var(--arrive,0ms)]", !ran && "text-muted")}>
       {node.label}
       {node.app && <span className="block text-meta font-normal text-muted">{node.app}</span>}
       <span className="sr-only">{ran ? " (done)" : " (not yet)"}</span>
@@ -47,7 +48,7 @@ function Label({ node, ran }: { node: Node; ran: boolean }) {
 
 function Note({ text }: { text: string }) {
   return (
-    <span key={text} className="flash animate-land rounded-control border border-line bg-window px-[0.5rem] py-[0.2rem] text-meta leading-tight">
+    <span key={text} className="flash animate-land rounded-control border border-line bg-window px-[0.5rem] py-[0.2rem] text-meta leading-tight [animation-delay:var(--arrive,0ms)] after:[animation-delay:var(--arrive,0ms)]">
       {text}
     </span>
   );
@@ -96,7 +97,8 @@ export default function Panel({ config, state, live: running = false }: PanelPro
                   // The turn sits on the line between the last two columns: labels stop short of it on both sides.
                   const d = elbow(px(from), px(to), px(to).x - size.w / cols / 2, 14);
                   return solid ? (
-                    <path key={`${from}>${to}`} d={d} data-edge={`${from}>${to}`} className="animate-fade stroke-good" vectorEffect="non-scaling-stroke" />
+                    // Drawn from the step before to the step it reached (skin.css), in the time the stage gives a line.
+                    <path key={`${from}>${to}`} d={d} data-edge={`${from}>${to}`} pathLength={1} className="stroke-good" vectorEffect="non-scaling-stroke" />
                   ) : (
                     <path key={`${from}>${to}`} d={d} className="stroke-line" strokeDasharray="1 5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
                   );
@@ -118,7 +120,8 @@ export default function Panel({ config, state, live: running = false }: PanelPro
                 data-running={(running && state.last === node.id) || undefined}
                 className="absolute flex w-[8.6rem] -translate-x-1/2 -translate-y-[1.25rem] flex-col items-center gap-[0.4rem] text-center"
                 // A little narrower than its column, so the line between two columns stays free for the turns.
-                style={{ left: `${x(node.id)}%`, top: `${y(node.id)}%`, maxWidth: `calc(${100 / cols}% - 0.6rem)` }}
+                // A step reached along a line shows that it ran once the line is there.
+                style={{ left: `${x(node.id)}%`, top: `${y(node.id)}%`, maxWidth: `calc(${100 / cols}% - 0.6rem)`, "--arrive": state.along && state.last === node.id ? "var(--travel, 0ms)" : "0ms" } as CSSProperties}
               >
                 <Mark node={node} state={state} running={running} />
                 <Label node={node} ran={ran} />
