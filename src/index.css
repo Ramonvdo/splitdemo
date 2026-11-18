@@ -53,6 +53,9 @@
   --text-caption--line-height: 1.15;
   --text-outcome: 2.38rem;
   --text-outcome--line-height: 1;
+  /* A card: one text alone on the wall. */
+  --text-card: 3.4rem;
+  --text-card--line-height: 1.08;
 
   --radius-*: initial;
   --radius-monitor: 0.77rem;

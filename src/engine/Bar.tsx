@@ -47,6 +47,8 @@ export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Ti
   const beat = timeline.beats[pos.beat];
   const done = status === "done";
   const idle = status === "idle";
+  // Explainer mode: a card on the wall is saying the line.
+  const carded = play.mode === "explainer" && (play.card || idle);
 
   let line: ReactNode;
   if (done) {
@@ -64,7 +66,7 @@ export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Ti
         ))}
       </dl>
     );
-  } else {
+  } else if (!carded) {
     line = (
       <p key={idle ? "title" : pos.beat} className="animate-land text-balance text-caption font-semibold tracking-[-0.01em] compact:text-lead" data-caption>
         {idle ? demo.title : captionAt(timeline, pos.beat)}
@@ -91,7 +93,7 @@ export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Ti
         )}
         {/* On a phone the line gets a row of its own, tall enough that the controls under it never move. */}
         <div className="min-w-0 flex-1 compact:order-first compact:flex compact:min-h-[4.6rem] compact:basis-full compact:items-center" aria-live="polite">
-          <span className="sr-only">{done ? "Result. " : idle ? "" : `Step ${pos.beat + 1} of ${timeline.beats.length}. `}</span>
+          <span className="sr-only">{done ? "Result. " : idle || carded ? "" : `Step ${pos.beat + 1} of ${timeline.beats.length}. `}</span>
           {line}
         </div>
         {done && !record && demo.next && SAFE_LINK.test(demo.next.url) && (

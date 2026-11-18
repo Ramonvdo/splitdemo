@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { cn, onColor } from "../lib/style.ts";
 import { Icon } from "../panels/icons.tsx";
 import { presets } from "../panels/registry.ts";
 import { Bar } from "./Bar.tsx";
+import { Card } from "./Card.tsx";
 import { arrange, type Arranged } from "./layout.ts";
-import { compile, paced, snapshots } from "./timeline.ts";
+import { PACE, compile, paced, snapshots } from "./timeline.ts";
 import type { Demo, PanelSpec, States, Timeline } from "./types.ts";
 import { usePlayback, type PlaybackOptions } from "./usePlayback.ts";
 
@@ -116,6 +117,9 @@ function Monitor({ spec, slot, live, waiting, zoom, scale, hidden, portrait, com
 
 const COMPACT = "(width < 720px)";
 
+/** Explainer mode: how much a phone-shaped screen's picture grows. It already stands as tall as the wall, so it cannot be measured into growing. */
+const PORTRAIT_GROWS = 1.3;
+
 /** How long a recording holds the opening picture, with the demo's title under it, before the story starts. */
 export const TITLE_CARD_MS = 1200;
 
@@ -143,27 +147,48 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
   const beat = timeline.beats[play.pos.beat];
   const now = states[play.pos.n];
   const ids = arranged.slots.map((spec) => spec.id);
+  const explainer = play.mode === "explainer";
   // A phone always shows one monitor: the one picked, and before any pick the first.
   const shown = compact ? (zoom?.id ?? ids[0]) : zoom?.id;
+  // Explainer mode: a text stands alone on the wall. Before the story starts it is the demo's title.
+  const card = explainer && (play.card || play.status === "idle");
+
+  /** How much a monitor's picture grows to fill the wall. Measured while it is still in its cell: as far as the wall allows both ways. */
+  const grown = (id: string) => {
+    const cell = wall.current?.querySelector(`[data-panel="${id}"]`)?.getBoundingClientRect();
+    const all = wall.current?.getBoundingClientRect();
+    return cell && all ? Math.max(1, Math.min(all.width / cell.width, all.height / cell.height)) : 1;
+  };
 
   /** Enlarges a monitor, or puts it back when it is the enlarged one. On a phone it only switches. */
   const pick = (id: string) => {
     if (compact) return setZoom({ id, scale: 1 });
     if (zoom?.id === id) return setZoom(undefined);
-    // Measured while the monitor is still in its cell: the picture grows as far as the wall allows both ways.
-    const cell = wall.current?.querySelector(`[data-panel="${id}"]`)?.getBoundingClientRect();
-    const all = wall.current?.getBoundingClientRect();
-    setZoom({ id, scale: cell && all ? Math.max(1, Math.min(all.width / cell.width, all.height / cell.height)) : 1 });
+    setZoom({ id, scale: grown(id) });
   };
+
+  // Explainer mode shows one screen, and the story picks it. Set before the browser paints, so a still never shows the wall first.
+  useLayoutEffect(() => {
+    if (!explainer || !play.screen || zoom?.id === play.screen) return;
+    const portrait = presets[demo.panels.find((spec) => spec.id === play.screen)?.type ?? ""]?.logic.portrait;
+    setZoom({ id: play.screen, scale: compact ? 1 : portrait ? PORTRAIT_GROWS : grown(play.screen) });
+  }, [explainer, compact, play.screen, zoom?.id]);
+  // The screen comes in under no motion of its own, so the stage brings it in. A jump shows it at once.
+  useLayoutEffect(() => {
+    if (!explainer || card || !shown || play.still || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const screen = wall.current?.querySelector(`[data-panel="${shown}"]`);
+    const fade = screen?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: PACE.change, easing: "cubic-bezier(0.16, 1, 0.3, 1)" });
+    return () => fade?.cancel();
+  }, [explainer, card, shown]);
 
   // Back on a wide screen the whole wall shows again.
   useEffect(() => {
-    if (!compact) setZoom(undefined);
-  }, [compact]);
+    if (!compact && !explainer) setZoom(undefined);
+  }, [compact, explainer]);
   // On a phone the wall follows the action; a tab the viewer picks holds until the action moves on.
   useEffect(() => {
-    if (compact && play.focus) setZoom({ id: play.focus, scale: 1 });
-  }, [compact, play.focus]);
+    if (compact && !explainer && play.focus) setZoom({ id: play.focus, scale: 1 });
+  }, [compact, explainer, play.focus]);
 
   // Left to play on its own, the story starts once the picture is whole: every part loaded, every letter in its font.
   // A recording first holds the opening picture for a moment, as its title card.
@@ -190,12 +215,15 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
-      const onControl = e.target instanceof HTMLElement && e.target.closest("button, a, input, textarea, select");
+      // A key typed into a field is for the field.
+      if (e.target instanceof HTMLElement && e.target.closest("input, textarea, select")) return;
+      const onControl = e.target instanceof HTMLElement && e.target.closest("button, a");
       if (e.key === " " && !onControl) play.toggle();
       else if (e.key === "ArrowRight") play.next();
       else if (e.key === "ArrowLeft") play.prev();
       else if (e.key === "r" || e.key === "R") play.replay();
       else if (e.key === "h" || e.key === "H") setBare((on) => !on);
+      else if (explainer) return;
       else if (e.key === "Escape" && !compact) setZoom(undefined);
       else if (/^[1-4]$/.test(e.key) && ids[Number(e.key) - 1]) pick(ids[Number(e.key) - 1]);
       else return;
@@ -206,19 +234,25 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
   }, [play, compact, zoom, ids.join()]);
 
   const accent = demo.accent;
-  const style = accent ? ({ "--color-tally": accent, "--color-on-tally": onColor(accent) } as CSSProperties) : undefined;
+  const style = {
+    ...(accent && { "--color-tally": accent, "--color-on-tally": onColor(accent) }),
+    // How long a change takes to come in along a line. The wall has no time for that.
+    "--travel": `${explainer ? PACE.travel : 0}ms`,
+  } as CSSProperties;
+  const tabs = compact && !explainer;
 
   return (
     <main
-      className={cn("stage grid h-dvh gap-[0.9rem] p-[0.9rem]", compact ? "grid-rows-[auto_minmax(0,1fr)_auto]" : "grid-rows-[minmax(0,1fr)_auto]", flags.record && "cursor-none")}
+      className={cn("stage grid h-dvh gap-[0.9rem] p-[0.9rem]", tabs ? "grid-rows-[auto_minmax(0,1fr)_auto]" : "grid-rows-[minmax(0,1fr)_auto]", flags.record && "cursor-none")}
       style={style}
+      data-mode={play.mode}
       data-status={play.status}
       data-beat={play.pos.beat}
       data-still={play.still || undefined}
       data-done={play.status === "done" || undefined}
     >
       <h1 className="sr-only">{demo.title}</h1>
-      {compact && (
+      {tabs && (
         <div role="tablist" aria-label="Panels" className="flex min-w-0 gap-[0.4rem]">
           {arranged.slots.map((spec) => {
             const on = shown === spec.id;
@@ -256,18 +290,34 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
               slot={SLOTS[i]}
               live={live}
               // Before the first press every monitor is lit: the opening picture is the whole wall.
-              waiting={play.status !== "idle" && play.lit.length > 0 && !play.lit.includes(spec.id) && !compact}
+              // One screen at a time has nothing next to it to wait.
+              waiting={play.status !== "idle" && play.lit.length > 0 && !play.lit.includes(spec.id) && !compact && !explainer}
               zoom={shown === spec.id}
               scale={zoom?.id === spec.id ? zoom.scale : 1}
-              hidden={shown !== undefined && shown !== spec.id}
+              hidden={card || (shown !== undefined && shown !== spec.id)}
               portrait={logic.portrait === true}
-              compact={compact}
-              onZoom={flags.record ? undefined : () => pick(spec.id)}
+              compact={tabs}
+              onZoom={flags.record || explainer ? undefined : () => pick(spec.id)}
             >
               <View config={spec.config} state={now[spec.id]} pending={pending} onTrigger={pending ? play.press : undefined} clock={beat.clock} still={play.still} live={live} />
             </Monitor>
           );
         })}
+        {card &&
+          (play.status === "idle" ? (
+            <Card text={demo.title}>
+              {!flags.record && (
+                <button type="button" onClick={play.toggle} className="flex animate-land items-center gap-[0.6rem] rounded-full bg-tally py-[0.7rem] pl-[1.1rem] pr-[1.4rem] text-lead font-semibold text-on-tally transition-transform duration-200 ease-settle hover:scale-[1.05] active:scale-[0.97]" style={{ animationDelay: "140ms" }}>
+                  <svg viewBox="0 0 24 24" className="size-[1.25rem]" aria-hidden="true">
+                    <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+                  </svg>
+                  Play the demo
+                </button>
+              )}
+            </Card>
+          ) : (
+            <Card key={play.pos.beat} tag={`Step ${play.pos.beat + 1} of ${timeline.beats.length}`} clock={beat.clock} text={beat.say ?? ""} />
+          ))}
       </div>
       {!bare && <Bar demo={demo} timeline={timeline} play={play} record={flags.record} />}
     </main>
