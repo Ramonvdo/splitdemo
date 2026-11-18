@@ -1,22 +1,25 @@
 /**
- * npm run record -- <slug> [--portrait] [--gif]
+ * npm run record -- <slug> [--fast] [--portrait] [--gif]
  *
  * Plays the demo by itself and films it: an mp4 at 1920x1080, or with --portrait at 1080x1920 in the
- * phone layout. With --gif also a small gif, for a README or an email. Needs ffmpeg. Prints the files.
+ * phone layout. It films the story (explainer mode); --fast films the wall instead, as <slug>-fast.mp4.
+ * With --gif also a small gif, for a README or an email. A gif is always the wall: the story is too long
+ * to stay light. Needs ffmpeg. Prints the files.
  */
 import { spawnSync } from "node:child_process";
 import { mkdirSync, rmSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { chromium } from "@playwright/test";
-import { compile, duration } from "../src/engine/timeline.ts";
+import { duration } from "../src/engine/timeline.ts";
+import type { Mode } from "../src/engine/types.ts";
 import { checkFile } from "./lib/load.ts";
 import { BUILD_DIR, buildApp, serveDir, writeSite } from "./lib/site.ts";
 import { findDemo, listDemos } from "./lib/workspace.ts";
 
 /** The same 1200 ms the stage holds its opening picture for a recording (TITLE_CARD_MS in Stage.tsx). */
 const TITLE_CARD_S = 1.2;
-/** How long the outcome stays on screen before the film ends. */
-const HOLD_MS = 3000;
+/** How long the end stays on screen before the film ends. The results slide has more on it than the wall's last line. */
+const HOLD_MS = { explainer: 5000, fast: 3000 };
 /** A gif over this is too heavy for a README or an email, so it is made smaller until it fits. */
 const GIF_MAX_BYTES = 8e6;
 const GIF_STEPS = [
@@ -35,12 +38,13 @@ const args = process.argv.slice(2);
 const slug = args.find((arg) => !arg.startsWith("--"));
 const portrait = args.includes("--portrait");
 const gif = args.includes("--gif");
+const mode: Mode = args.includes("--fast") ? "fast" : "explainer";
 
 const ref = slug ? findDemo(slug) : undefined;
-if (!ref) stop(`${slug ? `There is no demo "${slug}".` : "Usage: npm run record -- <slug> [--portrait] [--gif]"} Demos: ${listDemos().map((d) => d.slug).join(", ") || "none"}`);
+if (!ref) stop(`${slug ? `There is no demo "${slug}".` : "Usage: npm run record -- <slug> [--fast] [--portrait] [--gif]"} Demos: ${listDemos().map((d) => d.slug).join(", ") || "none"}`);
 
-const { demo, problems } = await checkFile(ref.file);
-if (!demo) stop(`${ref.slug} cannot play, so there is nothing to film.\n${problems.map((p) => `  problem  ${p}`).join("\n")}`);
+const { demo, timeline, problems } = await checkFile(ref.file);
+if (!demo || !timeline) stop(`${ref.slug} cannot play, so there is nothing to film.\n${problems.map((p) => `  problem  ${p}`).join("\n")}`);
 
 const tool = (name: string, list: string[]) => spawnSync(name, list, { encoding: "utf8" });
 if (tool("ffmpeg", ["-version"]).status !== 0) {
@@ -57,26 +61,37 @@ writeSite(await buildApp(), [{ folder: ref.slug, file: ref.file }], join(work, "
 const server = await serveDir(join(work, "site"));
 const browser = await chromium.launch(portrait ? { args: ["--force-device-scale-factor=2", "--window-size=540,960"] } : {});
 
-let raw: string;
-let length: number;
-try {
-  const context = await browser.newContext({ viewport: portrait ? null : frame, recordVideo: { dir: join(work, "raw"), size: frame } });
+interface Take {
+  raw: string;
+  length: number;
+}
+
+/** Plays the demo once in `mode` and films it. */
+async function film(mode: Mode): Promise<Take> {
+  const context = await browser.newContext({ viewport: portrait ? null : frame, recordVideo: { dir: join(work, "raw", mode), size: frame } });
   // A film shows only what is in the demo's own folder.
   await context.route("**/*", (route) => (new URL(route.request().url()).hostname === "127.0.0.1" ? route.continue() : route.abort()));
   const page = await context.newPage();
-  await page.goto(`${server.url}/${ref.slug}/?autoplay=1&record=1`);
+  await page.goto(`${server.url}/${ref!.slug}/?autoplay=1&record=1&mode=${mode}`);
   await page.locator('main.stage[data-status="playing"]').waitFor({ timeout: 30_000 });
   const playing = Date.now();
   // Every press the demo waits for is made for it after 1.2 s; the rest is the timeline itself.
-  const longest = duration(compile(demo)) + demo.beats.length * 1500 + 30_000;
+  const longest = duration(timeline!, mode) + demo!.beats.length * 1500 + 30_000;
   await page.locator("main.stage[data-done]").waitFor({ timeout: longest });
-  await page.waitForTimeout(HOLD_MS);
+  await page.waitForTimeout(HOLD_MS[mode]);
   const ended = Date.now();
   const video = page.video();
   await context.close();
   if (!video) throw new Error("the browser made no film");
-  raw = await video.path();
-  length = (ended - playing) / 1000 + TITLE_CARD_S;
+  return { raw: await video.path(), length: (ended - playing) / 1000 + TITLE_CARD_S };
+}
+
+let take: Take;
+/** The wall, filmed for the gif when the film itself is the story. */
+let wall: Take | undefined;
+try {
+  take = await film(mode);
+  if (gif && mode !== "fast") wall = await film("fast");
 } finally {
   await browser.close();
   await server.close();
@@ -85,32 +100,39 @@ try {
 // An example's film stays out of the repo; your own demo's film sits next to its demo.json.
 const out = ref.source === "example" ? join(BUILD_DIR, "video") : dirname(ref.file);
 mkdirSync(out, { recursive: true });
-const name = `${ref.slug}${portrait ? "-portrait" : ""}`;
-const mp4 = join(out, `${name}.mp4`);
+const upright = portrait ? "-portrait" : "";
+const mp4 = join(out, `${ref.slug}${mode === "fast" ? "-fast" : ""}${upright}.mp4`);
 
 const run = (list: string[]) => {
   const done = tool("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", ...list]);
   if (done.status !== 0) stop(`ffmpeg could not write the film.\n${done.stderr}`);
 };
 
-// The raw film starts at the page's first paint, whenever that was, and ends when the browser closed.
-// So the part to keep is measured back from its end: the title card, the story and the hold.
-const whole = Number(tool("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", raw]).stdout);
-if (!(whole > 0)) stop("ffprobe could not read the raw film, so it cannot be cut. It comes with ffmpeg: check that both are on the path.");
-const lead = Math.max(whole - length, 0);
+/** Cuts a take to its story and writes it as an mp4. */
+function cut({ raw, length }: Take, file: string) {
+  // The raw film starts at the page's first paint, whenever that was, and ends when the browser closed.
+  // So the part to keep is measured back from its end: the title card, the story and the hold.
+  const whole = Number(tool("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", raw]).stdout);
+  if (!(whole > 0)) stop("ffprobe could not read the raw film, so it cannot be cut. It comes with ffmpeg: check that both are on the path.");
+  const lead = Math.max(whole - length, 0);
+  // yuv420p and faststart: it plays in every browser, chat and mail app, and starts before it has fully loaded.
+  run(["-ss", lead.toFixed(2), "-i", raw, "-t", length.toFixed(2), "-an", "-r", "30", "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-pix_fmt", "yuv420p", "-movflags", "+faststart", file]);
+}
 
-// yuv420p and faststart: it plays in every browser, chat and mail app, and starts before it has fully loaded.
-run(["-ss", lead.toFixed(2), "-i", raw, "-t", length.toFixed(2), "-an", "-r", "30", "-c:v", "libx264", "-preset", "slow", "-crf", "18", "-pix_fmt", "yuv420p", "-movflags", "+faststart", mp4]);
+cut(take, mp4);
 const size = (file: string) => `${(statSync(file).size / 1e6).toFixed(1)} MB`;
 console.log(mp4);
-console.log(`${frame.width}x${frame.height}, ${Math.round(length)} s, ${size(mp4)}.`);
+console.log(`${frame.width}x${frame.height}, ${Math.round(take.length)} s, ${size(mp4)}.`);
 
 if (gif) {
-  const file = join(out, `${name}.gif`);
+  // The wall's film is the gif's source. Filmed for the gif alone, it stays in the work folder and goes with it.
+  let source = mp4;
+  if (wall) cut(wall, (source = join(work, "wall.mp4")));
+  const file = join(out, `${ref.slug}${upright}.gif`);
   for (const [i, step] of GIF_STEPS.entries()) {
     // Upright, the same steps count for the long side.
     const scale = portrait ? `scale=-2:${step.width}` : `scale=${step.width}:-2`;
-    run(["-i", mp4, "-vf", `fps=${step.fps},${scale}:flags=lanczos,split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle`, file]);
+    run(["-i", source, "-vf", `fps=${step.fps},${scale}:flags=lanczos,split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle`, file]);
     if (statSync(file).size <= GIF_MAX_BYTES || i === GIF_STEPS.length - 1) break;
   }
   console.log(file);

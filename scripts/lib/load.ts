@@ -3,12 +3,15 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { ZodType } from "zod";
 import * as schema from "../../src/engine/schema.ts";
-import { compile, paced, snapshots } from "../../src/engine/timeline.ts";
+import { compile, duration, paced, snapshots } from "../../src/engine/timeline.ts";
 import type { Demo, Timeline } from "../../src/engine/types.ts";
 import type { PanelLogic } from "../../src/panels/types.ts";
 import { ROOT } from "./workspace.ts";
 
 export const PANELS_DIR = join(ROOT, "src", "panels");
+
+/** A story told one screen at a time holds a viewer about this long. */
+const EXPLAINER_MAX_S = 110;
 
 export interface Preset {
   name: string;
@@ -113,6 +116,19 @@ export async function checkDemo(raw: unknown, fresh = false): Promise<Checked> {
   } catch (e) {
     return { problems: [e instanceof Error ? e.message : String(e)], notes };
   }
+
+  // Explainer mode shows one screen at a time, so how a step moves between screens is how well it can be followed.
+  demo.beats.forEach((beat, b) => {
+    // The screens of the step in the order they come up: a new one each time the action moves to another panel.
+    const screens = beat.do.map((action) => action.on).filter((on, i, all) => on !== all[i - 1]);
+    const again = screens.find((on, i) => screens.indexOf(on) < i);
+    if (again) notes.push(`beats[${b}]: "${again}" shows twice in this step (${screens.join(", ")}). A screen that leaves and comes back reads as two things happening: put its changes together, or split the step.`);
+    if (screens.length > 3) notes.push(`beats[${b}]: ${screens.length} screens in one step. A viewer follows three at most: split the step.`);
+    const runs = beat.do.filter((action) => action.type === "run" && byId.get(action.on)?.name === "workflow").length;
+    if (runs > 1) notes.push(`beats[${b}]: ${runs} workflow steps run in this step. One a beat, so its card can say what that step does.`);
+  });
+  const seconds = Math.round(duration(timeline, "explainer") / 1000);
+  if (seconds > EXPLAINER_MAX_S) notes.push(`explainer: about ${seconds} s. Past ${EXPLAINER_MAX_S} s a viewer stops watching: cut a step, or show less in each.`);
 
   for (const spec of demo.panels)
     if (!demo.beats.some((beat) => beat.do.some((action) => action.on === spec.id)))

@@ -19,7 +19,8 @@ function flags(): Flags {
   const at = q.get("at");
   const n = q.get("n");
   return {
-    mode: q.get("mode") === "explainer" ? "explainer" : "fast",
+    // A demo opens as the story. The wall is for whoever asks for it.
+    mode: q.get("mode") === "fast" ? "fast" : "explainer",
     autoplay: q.get("autoplay") === "1",
     record: q.get("record") === "1",
     bare: q.get("bare") === "1",

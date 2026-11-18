@@ -3,6 +3,16 @@ import { expect, test } from "@playwright/test";
 // Explainer mode: a step's text alone, then one screen at a time.
 const DEMO = "/speed-to-lead/?mode=explainer";
 
+test("a demo opens as the story, and as the wall when its link asks for that", async ({ page }) => {
+  await page.goto("/speed-to-lead/");
+  await expect(page.locator("main.stage")).toHaveAttribute("data-mode", "explainer");
+  await expect(page.locator("[data-slate]")).toContainText("A new patient texts after closing time");
+  await expect(page.locator("[data-panel]:visible")).toHaveCount(0);
+  await page.goto("/speed-to-lead/?mode=fast");
+  await expect(page.locator("main.stage")).toHaveAttribute("data-mode", "fast");
+  await expect(page.locator("[data-panel]:visible")).toHaveCount(4);
+});
+
 test("a step's text stands alone on the wall before anything of the step shows", async ({ page }) => {
   await page.goto(`${DEMO}&at=1&n=0`);
   const slate = page.locator("[data-slate]");

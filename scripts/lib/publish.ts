@@ -169,7 +169,8 @@ async function posters(entries: Entry[], out: string): Promise<void> {
   try {
     const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
     for (const { folder } of entries) {
-      await page.goto(`${server.url}/${folder}/?record=1&at=end`);
+      // The wall, whole, with what came of it in the bar under it.
+      await page.goto(`${server.url}/${folder}/?record=1&mode=fast&at=end`);
       await page.locator(READY).waitFor();
       await page.evaluate(() => document.fonts.ready);
       await page.screenshot({ path: join(out, folder, "poster.png") });
