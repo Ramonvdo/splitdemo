@@ -5,6 +5,7 @@ import { presets } from "../panels/registry.ts";
 import { Bar } from "./Bar.tsx";
 import { Card } from "./Card.tsx";
 import { arrange, type Arranged } from "./layout.ts";
+import { Results } from "./Results.tsx";
 import { PACE, compile, paced, snapshots } from "./timeline.ts";
 import type { Demo, PanelSpec, States, Timeline } from "./types.ts";
 import { usePlayback, type PlaybackOptions } from "./usePlayback.ts";
@@ -143,6 +144,8 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
   const compact = useCompact();
   /** The monitor that fills the wall, and how much its picture grows to do so. */
   const [zoom, setZoom] = useState<{ id: string; scale: number }>();
+  /** Fast mode: the viewer asked for the results slide. Explainer mode ends on it by itself. */
+  const [sheet, setSheet] = useState(false);
   const wall = useRef<HTMLDivElement>(null);
   const beat = timeline.beats[play.pos.beat];
   const now = states[play.pos.n];
@@ -152,6 +155,8 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
   const shown = compact ? (zoom?.id ?? ids[0]) : zoom?.id;
   // Explainer mode: a text stands alone on the wall. Before the story starts it is the demo's title.
   const card = explainer && (play.card || play.status === "idle");
+  // The slide after the story lies over the wall the same way.
+  const results = play.status === "done" && (explainer || sheet);
 
   /** How much a monitor's picture grows to fill the wall. Measured while it is still in its cell: as far as the wall allows both ways. */
   const grown = (id: string) => {
@@ -180,6 +185,15 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
     const fade = screen?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: PACE.change, easing: "cubic-bezier(0.16, 1, 0.3, 1)" });
     return () => fade?.cancel();
   }, [explainer, card, shown]);
+
+  // A story that plays again starts without the slide.
+  useEffect(() => {
+    if (play.status !== "done") setSheet(false);
+  }, [play.status]);
+  // The slide's charts come in a file of their own. Asked for early, they are there when the story ends.
+  useEffect(() => {
+    if (demo.results?.roi) void import("./ResultsCharts.tsx");
+  }, []);
 
   // Back on a wide screen the whole wall shows again.
   useEffect(() => {
@@ -223,6 +237,7 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
       else if (e.key === "ArrowLeft") play.prev();
       else if (e.key === "r" || e.key === "R") play.replay();
       else if (e.key === "h" || e.key === "H") setBare((on) => !on);
+      else if (e.key === "Escape" && sheet) setSheet(false);
       else if (explainer) return;
       else if (e.key === "Escape" && !compact) setZoom(undefined);
       else if (/^[1-4]$/.test(e.key) && ids[Number(e.key) - 1]) pick(ids[Number(e.key) - 1]);
@@ -231,7 +246,7 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [play, compact, zoom, ids.join()]);
+  }, [play, compact, zoom, sheet, ids.join()]);
 
   const accent = demo.accent;
   const style = {
@@ -294,7 +309,7 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
               waiting={play.status !== "idle" && play.lit.length > 0 && !play.lit.includes(spec.id) && !compact && !explainer}
               zoom={shown === spec.id}
               scale={zoom?.id === spec.id ? zoom.scale : 1}
-              hidden={card || (shown !== undefined && shown !== spec.id)}
+              hidden={card || results || (shown !== undefined && shown !== spec.id)}
               portrait={logic.portrait === true}
               compact={tabs}
               onZoom={flags.record || explainer ? undefined : () => pick(spec.id)}
@@ -318,8 +333,9 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
           ) : (
             <Card key={play.pos.beat} tag={`Step ${play.pos.beat + 1} of ${timeline.beats.length}`} clock={beat.clock} text={beat.say ?? ""} />
           ))}
+        {results && <Results demo={demo} still={play.still} />}
       </div>
-      {!bare && <Bar demo={demo} timeline={timeline} play={play} record={flags.record} />}
+      {!bare && <Bar demo={demo} timeline={timeline} play={play} record={flags.record} results={results} onResults={!explainer && demo.results ? () => setSheet((on) => !on) : undefined} />}
     </main>
   );
 }

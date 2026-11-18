@@ -46,6 +46,51 @@ export const next = z.strictObject({
     .regex(/^(https:\/\/[^\s/]+\.[^\s]+|mailto:[^\s@]+@[^\s@]+)$/, "use an https:// or a mailto: link"),
 });
 
+const roiInput = z.strictObject({
+  id,
+  label: z.string().min(1).max(44),
+  value: z.number().min(0).max(1e9),
+  kind: z.enum(["percent", "money"]).optional(),
+  min: z.number().min(0).optional(),
+  max: z.number().max(1e9).optional(),
+});
+
+/** A calculator on the results slide. Every gain is a product of its inputs, so each id it names must be a field. */
+export const roi = z
+  .strictObject({
+    currency: z.string().regex(/^[A-Z]{3}$/, "use a currency code like USD or EUR"),
+    inputs: z.array(roiInput).min(2).max(5),
+    gains: z
+      .array(z.strictObject({ label: z.string().min(1).max(24), from: z.array(id).min(1).max(4), times: z.number().positive().max(1000).optional() }))
+      .min(1)
+      .max(3),
+    cost: z
+      .strictObject({ monthly: z.number().positive().max(1e9).optional(), once: z.number().positive().max(1e9).optional() })
+      .refine((cost) => cost.monthly !== undefined || cost.once !== undefined, "give a monthly cost, a one-time cost, or both")
+      .optional(),
+  })
+  .superRefine((value, ctx) => {
+    const ids = value.inputs.map((input) => input.id);
+    ids.forEach((one, i) => {
+      if (ids.indexOf(one) !== i) ctx.addIssue({ code: "custom", path: ["inputs", i, "id"], message: `"${one}" is used twice` });
+    });
+    value.inputs.forEach((input, i) => {
+      if (input.max !== undefined && input.max < (input.min ?? 0)) ctx.addIssue({ code: "custom", path: ["inputs", i, "max"], message: "max is below min" });
+    });
+    value.gains.forEach((gain, g) =>
+      gain.from.forEach((one, i) => {
+        if (!ids.includes(one)) ctx.addIssue({ code: "custom", path: ["gains", g, "from", i], message: `no input is called "${one}"` });
+      }),
+    );
+  });
+
+/** The slide after the story. */
+export const results = z.strictObject({
+  title: z.string().min(1).max(60).optional(),
+  text: z.string().min(1).max(220).optional(),
+  roi: roi.optional(),
+});
+
 export const demo = z.strictObject({
   v: z.literal(1),
   title: z.string().min(1).max(60),
@@ -54,6 +99,8 @@ export const demo = z.strictObject({
   panels: z.array(panelSpec).min(2).max(4),
   beats: z.array(beat).min(1).max(16),
   outcome: z.array(outcome).min(1).max(3),
+  results: results.optional(),
+  lang: z.enum(["en", "nl"]).optional(),
   next: next.optional(),
   expires: z.iso.date().optional(),
 });

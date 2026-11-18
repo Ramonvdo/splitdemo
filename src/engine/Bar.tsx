@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { cn } from "../lib/style.ts";
 import type { Demo, Timeline } from "./types.ts";
 import type { Playback } from "./usePlayback.ts";
+import { words } from "./words.ts";
 
 const ICONS = {
   play: <path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none" />,
@@ -41,8 +42,19 @@ function captionAt(t: Timeline, beat: number): string | undefined {
 /** A link a demo may put on the page. The check script holds demo.json to this too; here it guards a file nobody checked. */
 const SAFE_LINK = /^(https:\/\/|mailto:)/;
 
+interface BarProps {
+  demo: Demo;
+  timeline: Timeline;
+  play: Playback;
+  record: boolean;
+  /** The results slide is on the wall, and it says what came of the story. */
+  results: boolean;
+  /** Shows the results slide, or takes it away again. Left out where the story ends on the slide by itself. */
+  onResults?: () => void;
+}
+
 /** The one strip of chrome: where the demo is, what the moment means, and at the end what came of it. */
-export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Timeline; play: Playback; record: boolean }) {
+export function Bar({ demo, timeline, play, record, results, onResults }: BarProps) {
   const { pos, status } = play;
   const beat = timeline.beats[pos.beat];
   const done = status === "done";
@@ -51,7 +63,7 @@ export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Ti
   const carded = play.mode === "explainer" && (play.card || idle);
 
   let line: ReactNode;
-  if (done) {
+  if (done && !results) {
     line = (
       // On a phone the numbers share one column, so the three lines of what they mean start at the same place.
       <dl key="outcome" className="flex flex-wrap items-end gap-x-[2.6rem] gap-y-2 compact:grid compact:w-full compact:grid-cols-[max-content_1fr] compact:gap-x-3" data-outcome>
@@ -68,8 +80,8 @@ export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Ti
     );
   } else if (!carded) {
     line = (
-      <p key={idle ? "title" : pos.beat} className="animate-land text-balance text-caption font-semibold tracking-[-0.01em] compact:text-lead" data-caption>
-        {idle ? demo.title : captionAt(timeline, pos.beat)}
+      <p key={idle || done ? "title" : pos.beat} className="animate-land text-balance text-caption font-semibold tracking-[-0.01em] compact:text-lead" data-caption>
+        {idle || done ? demo.title : captionAt(timeline, pos.beat)}
       </p>
     );
   }
@@ -96,6 +108,21 @@ export function Bar({ demo, timeline, play, record }: { demo: Demo; timeline: Ti
           <span className="sr-only">{done ? "Result. " : idle || carded ? "" : `Step ${pos.beat + 1} of ${timeline.beats.length}. `}</span>
           {line}
         </div>
+        {done && !record && onResults && (
+          <button
+            type="button"
+            data-results-toggle
+            aria-pressed={results}
+            onClick={onResults}
+            className={cn(
+              "shrink-0 animate-land rounded-full border px-[1.2rem] py-[0.6rem] font-semibold transition-[transform,background-color,color] duration-200 ease-settle active:scale-[0.97] compact:order-last compact:basis-full",
+              results ? "border-stage-ink bg-stage-ink text-stage" : "border-stage-line text-stage-ink hover:bg-stage-line",
+            )}
+            style={{ animationDelay: `${demo.outcome.length * 140}ms` }}
+          >
+            {words(demo.lang).results}
+          </button>
+        )}
         {done && !record && demo.next && SAFE_LINK.test(demo.next.url) && (
           <a
             href={demo.next.url}

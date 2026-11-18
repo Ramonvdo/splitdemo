@@ -37,7 +37,7 @@ test("the viewer starts the story, reads the first step, and sends the message t
 
 test("left alone, the screens come one at a time in the order the script names them", async ({ page }) => {
   test.setTimeout(150_000);
-  // What stands on the wall, noted each time it changes: "card", or the screens in view.
+  // What stands on the wall, noted each time it changes: "card", "results", or the screens in view.
   await page.addInitScript(() => {
     const seen: string[] = [];
     Object.assign(window, { seen });
@@ -45,7 +45,7 @@ test("left alone, the screens come one at a time in the order the script names t
       const stage = document.querySelector("main.stage");
       if (stage) {
         const screens = [...stage.querySelectorAll<HTMLElement>("[data-panel]:not([inert])")].map((el) => el.dataset.panel);
-        const now = stage.querySelector("[data-slate]") ? "card" : screens.join("+");
+        const now = stage.querySelector("[data-slate]") ? "card" : stage.querySelector("[data-results]") ? "results" : screens.join("+");
         if (now !== seen[seen.length - 1]) seen.push(now);
       }
       requestAnimationFrame(look);
@@ -54,7 +54,7 @@ test("left alone, the screens come one at a time in the order the script names t
   });
   await page.goto(`${DEMO}&autoplay=1`);
   await expect(page.locator("main.stage")).toHaveAttribute("data-done", "true", { timeout: 130_000 });
-  // Read off examples/speed-to-lead/demo.json: each beat's card, then the panel of each action, a panel acted on twice in a row counted once.
+  // Read off examples/speed-to-lead/demo.json: each beat's card, then the panel of each action, a panel acted on twice in a row counted once. The slide closes it.
   expect(await page.evaluate(() => (window as unknown as { seen: string[] }).seen)).toEqual([
     ...["card", "phone"],
     ...["card", "flow", "phone", "flow"],
@@ -62,6 +62,7 @@ test("left alone, the screens come one at a time in the order the script names t
     ...["card", "flow", "crm"],
     ...["card", "phone", "crm"],
     ...["card", "flow", "numbers"],
+    "results",
   ]);
 });
 

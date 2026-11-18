@@ -13,3 +13,11 @@ export function onColor(hex: string): string {
   // Contrast with white is 1.05 / (L + 0.05); with the ink (L about 0.009) it is (L + 0.05) / 0.059.
   return 1.05 / (luminance + 0.05) > (luminance + 0.05) / 0.059 ? "#ffffff" : "#16181d";
 }
+
+/**
+ * The room in px a chart leaves under its bars for the names on its axis. The chart library puts a name 12 px
+ * from the bottom and takes its margins in px, while the type on the stage grows with the screen.
+ */
+export function axisRoom(): number {
+  return Math.round(12 + parseFloat(getComputedStyle(document.documentElement).fontSize) * 1.4);
+}

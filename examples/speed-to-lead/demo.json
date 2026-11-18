@@ -118,5 +118,19 @@
     { "value": "38 sec", "label": "to first reply", "was": "14 h" },
     { "value": "$180", "label": "booked while you were closed", "was": "$0" },
     { "value": "+1", "label": "patient booked overnight" }
-  ]
+  ],
+  "results": {
+    "title": "What a missed evening text costs",
+    "text": "A new patient who texts after closing books with whoever answers first. This answers in under a minute, every night, and puts the visit in the calendar.",
+    "roi": {
+      "currency": "USD",
+      "inputs": [
+        { "id": "texts", "label": "After-hours texts a month", "value": 40 },
+        { "id": "won", "label": "Share you now book", "value": 30, "kind": "percent" },
+        { "id": "visit", "label": "Worth of a first visit", "value": 180, "kind": "money" }
+      ],
+      "gains": [{ "label": "New patients booked", "from": ["texts", "won", "visit"] }],
+      "cost": { "monthly": 300, "once": 1500 }
+    }
+  }
 }

@@ -4,6 +4,9 @@ export type Mode = "fast" | "explainer";
 
 export type Layout = "rail" | "quad" | "trio" | "duo";
 
+/** The language of the words the stage itself says: its buttons, "Step 2 of 6", the results slide. */
+export type Lang = "en" | "nl";
+
 export interface Demo {
   v: 1;
   /** Shown in the bar before the demo starts, and as the page title. */
@@ -16,6 +19,10 @@ export interface Demo {
   beats: Beat[];
   /** 1 to 3 results, shown in the bar when the last beat is over. */
   outcome: Outcome[];
+  /** The slide after the story: why the results matter, and a calculator the viewer can fill in. */
+  results?: Results;
+  /** Default: "en". */
+  lang?: Lang;
   /** The one thing the viewer can do when the demo is over, e.g. book a call. An https:// or mailto: link. */
   next?: { label: string; url: string };
   /** ISO date. A demo past this date is left out of a share. */
@@ -57,6 +64,39 @@ export interface Outcome {
   label: string;
   /** What it was before, e.g. "4 h". */
   was?: string;
+}
+
+export interface Results {
+  /** Default: "Results". */
+  title?: string;
+  /** One or two sentences on why a system like this pays. */
+  text?: string;
+  roi?: Roi;
+}
+
+/** A calculator: numbers the viewer can change, and what they come to per month. */
+export interface Roi {
+  /** ISO 4217, e.g. "USD" or "EUR". */
+  currency: string;
+  /** 2 to 5 numbers, each in a field of its own. */
+  inputs: RoiInput[];
+  /** 1 to 3 gains per month. Each is its inputs multiplied together, times `times` when given. */
+  gains: { label: string; from: string[]; times?: number }[];
+  /** What the system costs. Left out, the slide shows what comes in and nothing about paying it back. */
+  cost?: { monthly?: number; once?: number };
+}
+
+export interface RoiInput {
+  id: string;
+  label: string;
+  /** The number the field starts with. */
+  value: number;
+  /** A percentage counts as a share: 30 multiplies by 0.30. */
+  kind?: "percent" | "money";
+  /** Default: 0. */
+  min?: number;
+  /** Default: ten times `value`, and 100 for a percentage. */
+  max?: number;
 }
 
 /** One action with its place in time: `at` ms after its beat starts. */
