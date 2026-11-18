@@ -18,6 +18,9 @@
   --color-wash: #f3f4f6;
   --color-ink: #16181d;
   --color-muted: #5d626e;
+  /* The names the vendored funnel asks for: its share pill is ink with the sheet's white on it. */
+  --color-foreground: var(--color-ink);
+  --color-background: var(--color-window);
   --color-line: #e2e4e9;
   --color-tally: #ff5c35;
   --color-on-tally: #16181d;

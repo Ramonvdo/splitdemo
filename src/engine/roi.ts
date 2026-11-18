@@ -62,6 +62,45 @@ export function work(roi: Roi, today: Record<string, number>, lever = target(roi
   };
 }
 
+/** One level of the chain as a count over a year: as the business works today, and with the system. */
+export interface Stage {
+  name: string;
+  today: number;
+  after: number;
+}
+
+export interface Stages {
+  /** First stages left out of the drawing because the next is a tenth of them or less. They are said in a sentence. */
+  lead: Stage[];
+  drawn: Stage[];
+  /** Today and the system start from the same count and no level is empty, so two funnels side by side compare. */
+  pair: boolean;
+}
+
+/**
+ * The chain as a funnel: every input that names a `stage`, up to the first amount of money, counted over a year.
+ * Nothing when fewer than three levels are left to draw, or when one of them is empty with the system.
+ */
+export function stages(roi: Roi, today: Record<string, number>, lever = target(roi, today)): Stages | undefined {
+  const system = { ...today, [roi.lever.input]: lever };
+  const all: Stage[] = [];
+  let before = 12;
+  let after = 12;
+  for (const input of roi.inputs) {
+    if (input.kind === "money") break;
+    before *= factor(input, today[input.id]);
+    after *= factor(input, system[input.id]);
+    if (input.stage) all.push({ name: input.stage, today: before, after });
+  }
+  // A first stage that dwarfs the next draws as a spike and a sliver.
+  let from = 0;
+  while (from < all.length - 1 && all[from + 1].after <= all[from].after / 10) from++;
+  const drawn = all.slice(from);
+  if (drawn.length < 3 || drawn.some((stage) => stage.after <= 0)) return undefined;
+  const level = Math.abs(drawn[0].today - drawn[0].after) < 1e-9;
+  return { lead: all.slice(0, from), drawn, pair: level && drawn.every((stage) => stage.today > 0) };
+}
+
 /**
  * A typed number, kept within what its field allows. Without a `max` that is 100 for a percentage, and otherwise ten times
  * the starting value or what the system reaches (`reach`), whichever is larger: a count that starts at 0 can still be typed over.

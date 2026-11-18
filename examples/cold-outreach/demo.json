@@ -142,7 +142,7 @@
     "roi": {
       "currency": "USD",
       "inputs": [
-        { "id": "emails", "label": "Offices emailed a month", "ask": "How many offices do you email in a month now?", "value": 20 },
+        { "id": "emails", "label": "Offices emailed a month", "stage": "Emails", "ask": "How many offices do you email in a month now?", "value": 20 },
         { "id": "reply", "label": "Offices that reply", "stage": "Replies", "value": 5, "kind": "percent", "note": "Instantly 2025: 3.4% on average, 5.5% for the best quarter" },
         { "id": "visit", "label": "Replies that lead to a visit", "stage": "Visits", "value": 50, "kind": "percent" },
         { "id": "client", "label": "Visits that become a client", "stage": "Clients", "value": 20, "kind": "percent" },

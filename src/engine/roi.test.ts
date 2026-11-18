@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { clamp, field, shown, sign, target, typed, work } from "./roi.ts";
+import { clamp, field, shown, sign, stages, target, typed, work } from "./roi.ts";
 import type { Roi } from "./types.ts";
 
 // A dentist: 40 messages a month after closing, 10 in 100 book today, a first visit is $180. The system adds 20 points.
@@ -84,7 +84,7 @@ it("names a month it pays for itself only when there is something to pay back", 
 const outreach: Roi = {
   currency: "USD",
   inputs: [
-    { id: "emails", label: "Offices emailed a month", ask: "How many offices do you email in a month now?", value: 20 },
+    { id: "emails", label: "Offices emailed a month", stage: "Emails", ask: "How many offices do you email in a month now?", value: 20 },
     { id: "reply", label: "Offices that reply", stage: "Replies", value: 5, kind: "percent" },
     { id: "visit", label: "Replies that take a visit", stage: "Visits", value: 50, kind: "percent" },
     { id: "client", label: "Visits that become a client", stage: "Clients", value: 20, kind: "percent" },
@@ -120,6 +120,56 @@ it("says what one more point on the last share is worth in a year", () => {
   expect(work(screening, desk).point).toBeUndefined();
   // Nothing lies above 100 in 100.
   expect(work(roi, { ...today, booked: 90 }).point).toBeUndefined();
+});
+
+// A plumber: 25 requests a month, half book a visit today and the system adds 20 points, 3 visits in 10 become a job of 1,800.
+const intake: Roi = {
+  currency: "USD",
+  inputs: [
+    { id: "requests", label: "Quote requests a month", stage: "Requests", ask: "How many quote requests do you get in a month?", value: 25 },
+    { id: "visit", label: "Requests that book a visit", stage: "Visits", ask: "Of every 100 requests, how many book a visit?", value: 50, kind: "percent" },
+    { id: "won", label: "Visits that become a job", stage: "Jobs", value: 30, kind: "percent" },
+    { id: "job", label: "Worth of an average job", ask: "What is an average job worth?", value: 1800, kind: "money" },
+  ],
+  lever: { input: "visit", add: 20 },
+};
+const plumbing = { requests: 25, visit: 50, won: 30, job: 1800 };
+
+it("lays the chain out as a funnel over a year, today next to the system", () => {
+  // 25 x 12 requests; half of them and 7 in 10 of them visit; 3 in 10 visits become a job. Money is not a stage.
+  expect(stages(intake, plumbing)).toEqual({
+    lead: [],
+    drawn: [
+      { name: "Requests", today: 300, after: 300 },
+      { name: "Visits", today: 150, after: 210 },
+      { name: "Jobs", today: 45, after: 63 },
+    ],
+    pair: true,
+  });
+});
+
+it("leaves a first stage that dwarfs the next out of the funnel, and draws one funnel when the system changes how much goes in", () => {
+  // 160 x 12 emails, 5 in 100 reply: a spike and a sliver. The emails become a sentence; the funnel starts at the replies.
+  const funnel = stages(outreach, mailing)!;
+  expect(funnel.lead).toEqual([{ name: "Emails", today: 240, after: 1920 }]);
+  expect(funnel.drawn.map((stage) => stage.name)).toEqual(["Replies", "Visits", "Clients"]);
+  // 1,920 x 0.05, x 0.5, x 0.2 with the system; 240 x the same today.
+  [96, 48, 9.6].forEach((count, i) => expect(funnel.drawn[i].after).toBeCloseTo(count, 6));
+  [12, 6, 1.2].forEach((count, i) => expect(funnel.drawn[i].today).toBeCloseTo(count, 6));
+  // 12 replies a year against 96: the two do not start level, so they are not drawn side by side.
+  expect(funnel.pair).toBe(false);
+});
+
+it("draws no funnel where there is none to see", () => {
+  // No stage names at all.
+  expect(stages(roi, today)).toBeUndefined();
+  // Two levels are a bar chart's work.
+  const two: Roi = { ...intake, inputs: intake.inputs.map((input) => (input.id === "won" ? { ...input, stage: undefined } : input)) };
+  expect(stages(two, plumbing)).toBeUndefined();
+  // The viewer sets the system at nothing: a stage of zero has no width.
+  expect(stages(intake, plumbing, 0)).toBeUndefined();
+  // Nothing books today: the system's funnel is drawn alone, with today's zeros beside its counts.
+  expect(stages(intake, { ...plumbing, visit: 0 })).toMatchObject({ pair: false, drawn: [{ after: 300 }, { today: 0, after: 60 }, { today: 0, after: 18 }] });
 });
 
 it("keeps a typed number within what the field allows", () => {

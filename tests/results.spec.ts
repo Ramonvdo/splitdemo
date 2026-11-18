@@ -61,6 +61,40 @@ test("the first chart is the year the system adds, against carrying on as today 
   await expect(chart.locator("[data-legend] li")).toHaveText(["With the system $16,500", "Half the effect $5,700", "Carry on as today $0"]);
 });
 
+test("a chain of two levels gets bars beside it: a year today, a year with the system, and what the system costs", async ({ page }) => {
+  await page.goto(`${END}explainer`);
+  const chart = page.locator("[data-results] figure").nth(1);
+  await expect(chart.locator("figcaption")).toHaveText("A year as you work today, and a year with the system");
+  // 720 and 2,160 a month, twelve times; 12 x 300 and 1,500 once.
+  await expect(chart.locator("[data-legend] li")).toHaveText(["Today $8,640", "With the system $25,920", "What it costs $5,100"]);
+  await expect(chart.locator("[data-funnel]")).toHaveCount(0);
+});
+
+test("a chain of three levels is drawn as two funnels, today over the system", async ({ page }) => {
+  await page.goto("/intake-to-booking/?at=end&mode=explainer");
+  const chart = page.locator("[data-results] figure").nth(1);
+  await expect(chart.locator("figcaption")).toHaveText("From requests to jobs, over a year");
+  // 25 x 12 requests; 50 in 100 visit today and 70 in 100 with the system; 30 in 100 visits become a job.
+  await expect(chart.getByRole("img")).toHaveAttribute("aria-label", "From requests to jobs, over a year. Today: Requests 300, Visits 150, Jobs 45. With the system: Requests 300, Visits 210, Jobs 63.");
+  await expect(chart.locator("[data-funnel]")).toHaveCount(2);
+  await expect(chart.locator("[data-lead]")).toHaveCount(0);
+  // More requests widen both funnels alike: 40 x 12, of which 240 and 336 visit.
+  await page.locator("[data-results]").getByLabel("Quote requests a month", { exact: true }).fill("40");
+  await expect(chart.getByRole("img")).toHaveAttribute("aria-label", /Today: Requests 480, Visits 240, Jobs 72\. With the system: Requests 480, Visits 336, Jobs 101\.$/);
+});
+
+test("a system that changes how much goes in gets one funnel, with today's count under each level", async ({ page }) => {
+  await page.goto("/cold-outreach/?at=end&mode=explainer");
+  const chart = page.locator("[data-results] figure").nth(1);
+  await expect(chart.locator("figcaption")).toHaveText("From replies to clients, over a year");
+  await expect(chart.locator("[data-funnel]")).toHaveCount(1);
+  // 160 x 12 emails against 20 x 12: too many beside 96 replies to draw, so they are said.
+  await expect(chart.locator("[data-lead]")).toHaveText("Emails a year: 1,920 (today 240)");
+  // 5 in 100 reply, half of those take a visit, 1 visit in 5 signs: 96, 48 and 9.6 a year; today 12, 6 and 1.2.
+  await expect(chart.getByRole("img")).toHaveAttribute("aria-label", "From replies to clients, over a year. With the system: Replies 96, Visits 48, Clients 10. Today: Replies 12, Visits 6, Clients 1.");
+  await expect(chart.locator("[data-before] li")).toHaveText(["today 12", "today 6", "today 1"]);
+});
+
 test("the viewer changes a number and the report works it out again", async ({ page }) => {
   await page.goto(`${END}explainer`);
   const slide = page.locator("[data-results]");
