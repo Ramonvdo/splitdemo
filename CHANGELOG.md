@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.3.0 (2026-11-19)
+
+- The results slide asks before it shows. The story ends on the outcome with one button, "Work it out for your business". Each number an owner knows from memory gets a screen of its own, with our estimate already in the field. "See your ROI" opens the report on their answers, and "Change my answers" leads back.
+- The report shows what the system adds a month and over the first year, the month it pays for itself, and what one more point on a rate is worth in a year. Under that is a table of the numbers behind it, with a "Today" and a "With the system" column. Every number can be typed over, and one nobody gave is tagged "estimate".
+- Two new charts replace the two bar charts. The first draws twelve months of what the system adds, after costs, against carrying on as today, with a dashed line for half the effect. The second is a funnel when the calculator has three stages or more, today's over the system's, so the stage that widens shows. Without stages it is bars: a year today against a year with the system.
+- Breaking: `results.roi` is now one chain and one lever, and `gains` and `from` are gone. `inputs` multiply in the order written. `lever` names the one input the system changes: `add` for points on top of the viewer's answer, `to` for the system's own number. A `roi` block written for 0.2 has to be rewritten, and `npm run check` says what is missing.
+- New optional fields: `ask`, `note` and `stage` on an input, `saving` and `monthly` on the calculator. `roi.label`, `roi.times` and `roi.cost` stay.
+- A result never goes below zero. An answer that leaves the system nothing to win shows zero and says so.
+- `?q=report` on a link opens the slide on the report with the example numbers. A film and a picture always end there.
+- `npm run check` refuses a calculator with no question or with more than four, a lever that is missing or points at no input, `saving` together with `monthly`, and example numbers that show no effect.
+- `npm run shots` pictures the slide's card, each question and the report, on a laptop and a phone, and checks each for cut text.
+- Skill files: how to choose the chain, the lever and what to ask, and a new `benchmarks.md` with sourced numbers per trade and the places where no source exists.
+- The three examples are rewritten to the new block, with lower figures. Speed to lead starts at $1,440 a month where it showed $2,160, because it now asks what the practice books today.
+
 ## 0.2.1 (2026-11-18)
 
 - On a phone the results slide shows the monthly figure before the calculator and the charts, uses the caption's row in the bar, and takes the demo's title when it has none of its own.

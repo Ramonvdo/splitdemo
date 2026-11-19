@@ -8,7 +8,7 @@ Run every command from the `app` folder in the settings.
 
 1. **Read the input.** Pull out the prospect and their trade, who their customer is, what goes wrong today and what it costs them, what starts the process, what the system does about it step by step, and every number they stated. For a change to an existing demo, read `<workspace>/demos/<slug>/demo.json` and go to step 4 with the change.
 
-2. **Write the story** as the seven lines in [../story.md](../story.md), in the chat. Done when step one is the trigger, each step after it names one thing the system does and what the owner gets from it, the outcome has a number with what it was, and the results line says where the money comes from.
+2. **Write the story** as the seven lines in [../story.md](../story.md), in the chat. Done when step one is the trigger, each step after it names one thing the system does and what the owner gets from it, the outcome has a number with what it was, and the results line names the chain, in order, and the one number in it the system changes.
 
 3. **Pick the panels.** Read `src/panels/INDEX.md`, choose by role per [../story.md](../story.md), then read `panel.md`, `schema.ts` and `example.json` in the folder of each panel you chose, and `tones.ts` and `icon-names.ts` next to those folders.
 
@@ -30,7 +30,8 @@ Run every command from the `app` folder in the settings.
 
    It writes to `<workspace>/demos/<slug>/shots/`:
 
-   - the story: `explainer-00-start.png`, then per step its card (`explainer-03-0-card.png`) and each screen as the story leaves it (`explainer-03-1-flow.png`), then `explainer-NN-results.png`;
+   - the story: `explainer-00-start.png`, then per step its card (`explainer-03-0-card.png`) and each screen as the story leaves it (`explainer-03-1-flow.png`);
+   - the slide at the end, with a calculator: its card (`explainer-NN-0-ask.png`), one picture per question named after its input (`explainer-NN-1-requests.png`), and the report on the example numbers (`explainer-NN-results.png`);
    - the wall: `00-start.png`, one `NN-beat.png` per beat, `NN-end.png`.
 
    It fails when text is cut off or ends in three dots, on a laptop screen or a phone. A state that fails on a phone gets a `-phone.png` picture to look at. Each `does not fit` line ends with the picture that shows it. `on the wall behind it` means a card or the results slide covers that panel in the picture: the text is cut on the wall, so look at the wall picture of the same step. While you iterate on one way of telling it, `--mode explainer` or `--mode fast` shoots that one alone.
@@ -39,7 +40,7 @@ Run every command from the `app` folder in the settings.
 
 8. **Open it.** The dev server plays every demo at `http://localhost:4310/<slug>/` and reloads when its file changes. When nothing answers on port 4310, start `npm run dev` from the app in the background.
 
-9. **Report** in a few lines: the address, the story in one sentence, both play times as `check` printed them, the outcome numbers, and every number you invented, the calculator's included. Say whether the results slide has a cost. Then offer the two next steps by name: a link (`/splitdemo-share <slug>`) or a film (`/splitdemo-video <slug>`).
+9. **Report** in a few lines: the address, the story in one sentence, both play times as `check` printed them, and the outcome numbers. For the calculator: the chain with the lever, what it comes to a month on the example numbers, the questions it asks, and every number in it you guessed, each marked as a guess or with its source. Say whether it has a cost and whether the slide has a `next` to press. Then offer the two next steps by name: a link (`/splitdemo-share <slug>`) or a film (`/splitdemo-video <slug>`).
 
 ## On the call
 
@@ -48,4 +49,5 @@ Worth telling the user once:
 - The switch top left goes between Explainer and Fast and keeps the step. `?mode=fast` on the address opens the wall directly.
 - Space plays and pauses, the arrow keys step through the story, `R` plays it again, `H` hides the bars.
 - In fast mode `1` to `4` enlarge a panel.
-- On the results slide the owner's own numbers go straight into the fields.
+- The results slide asks the owner's numbers one question at a time and then shows the report; every number in the report can still be typed over. On a call, ask the questions aloud and type the answers.
+- A link that ends in `?q=report` opens the slide on the report first, for a reader who should see the figure before any question.

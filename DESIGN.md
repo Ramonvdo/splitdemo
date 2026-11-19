@@ -44,17 +44,27 @@ A slim row over the wall. On the left the switch, a pill with two segments ("Exp
 
 ### The results slide
 
-The slide after the last step. Explainer mode ends on it. In fast mode a Results button in the bar opens it when the demo has a `results` block.
+The slide after the last step. Explainer mode ends on it. In fast mode a Results button in the bar opens it when the demo has a `results` block. It has three surfaces: a closing card, a question, and the report.
 
-With a calculator it is a light sheet in the monitor colours, because the charts are drawn for a light window. The left column holds a Results pill in the tally colour, the title, the outcome numbers (each with a tally-coloured edge and what it was before), the text, and at the bottom the calculator on `wash`: up to five number fields in two columns, each under its label and next to its unit. The right column holds the monthly figure at card size, beside it what is left after a monthly cost and the first year, then the month it pays for itself, then the charts.
+The closing card is dark like a step's card. It holds a Results pill in the tally colour, the title, the outcome numbers at card size (each with a tally-coloured edge and what it was before) and the text. A demo with a calculator adds one tally button under them, "Work it out for your business". A demo without one ends here.
 
-Without a calculator it is a dark card like a step's, with the outcome numbers at card size.
+A question stays on the dark of the stage, so the questions read as part of the story. There is one per screen: "1 of 3" in muted ink, the question at title size, one field at card height that holds our estimate, the estimate's source when it has one, "Not sure? Leave our estimate.", then Back and Next. The field has the focus and its content is selected, so typing replaces the estimate. Enter moves on. The last button reads "See your ROI". Only an input with an `ask` gets a screen.
 
-Under the monthly figure the slide says "extra a month". `roi.label` replaces that for a calculator that counts something else, such as hours saved.
+The report is a light sheet in the monitor colours, because the charts are drawn for a light window. The left column holds the pill, the title, the outcome numbers, and at the bottom the numbers table on `wash`. The table has a row per input, a "Today" column of fields and a "With the system" column. Only the lever's row has a field there, bordered in the tally colour. The other rows repeat today's number in muted ink. The caption reads "Example numbers" until the viewer has answered and "Your numbers" after, with "Change my answers" beside it. An input that was not asked and not typed over wears an "estimate" tag, and so does the lever's number. The right column holds the monthly figure at card size, beside it what is left after a monthly cost (for `monthly`, what month 12 runs at) and the first year. Under those, one line gives the month it pays for itself and what one more point on a rate is worth in a year. Then the charts. Numbers that leave the system nothing to win show zero and a sentence that says so.
 
-On a phone the two columns become one, in the order a thumb reads it: the pill, the title, the outcome numbers, the text, the monthly figure with what follows it, the calculator, the charts. The figure stands right above the fields that change it. The slide takes the caption's row in the bar. A phone's strip has no room for the demo's title, so a slide without a title of its own shows the demo's.
+A film or a still has nobody to answer, so it shows the report on the example numbers. `?q=report` does the same on a live link and still offers the questions.
 
-The charts are two bar charts from the Bklit bar family in `src/components/charts/`. "Each month" has one bar per gain and one for the monthly cost, and is drawn when that makes two bars or more. "The first 12 months, added up" has twelve bars of the running total. Months spent earning the setup back hang under the zero line, which is marked when the first month starts under it. Gains wear `--chart-1`, which is the tally on this slide. The cost wears `muted`. The dataviz validator fails that gray on its chroma floor and warns on the contrast between the two series. Both are accepted on purpose: the cost is context for the gain, and every bar in that chart carries its value as a label, so no reading depends on colour alone. A changed number moves the bars. Nothing draws itself in a second time.
+Under the monthly figure the slide says "extra a month", "saved a month" with `saving`, or "more a month, every month again" with `monthly`. `roi.label` replaces any of the three.
+
+On a phone the report's two columns become one, in the order a thumb reads it: the pill, the title, the outcome numbers, the monthly figure with what follows it, the numbers table, the charts. The figure stands right above the fields that change it. The "Today" column takes a third of the width there, so an amount of five digits fits its field. The slide takes the caption's row in the bar. A phone's strip has no room for the demo's title, so a slide without a title of its own shows the demo's.
+
+The report draws two charts, both from the Bklit registry in `src/components/charts/`.
+
+The first is a line chart, "What the system adds over 12 months". It plots the running total of what the system adds, after costs. A setup cost starts the line under zero, and the month it crosses is the month the system has paid for itself. There are three lines: "With the system" solid in `--chart-1`, "Half the effect" dashed in the same colour, and "Carry on as today" flat at zero in `muted`. The band between them is tinted in the series colour above zero and in grey below it. The segments are straight. With `monthly` the line bends upward, because each month adds to the ones before. It plots what is added, and not two rising totals, because on a large base the setup cost and the crossing would disappear.
+
+The second is a funnel when the calculator has three stages or more to draw, counted over a year. Today's funnel in `muted` stands over the system's in `--chart-1` when both start from the same count, so the stage that widens shows. When the lever changes the count that goes in, the system's funnel stands alone with "today N" under each stage. A first stage ten times the next or more is left out of the drawing and written as a sentence. Without stages the second chart is three bars: a year as you work today, a year with the system, and what the system costs in `--color-stage-muted`.
+
+No chart has a y axis or a second scale. Each has a legend in HTML with every series' name and end value in text ink, because Bklit draws no end labels. `--chart-1` is the tally on this slide. The dataviz validator, run on `#5d626e,#ff5c35,#9aa0ac` against the sheet, passes lightness, colour-blind separation (worst pair 14.6) and normal-vision separation (21.9). It fails the two greys on its chroma floor and warns on contrast for the accent (2.99) and the cost (2.56). Both are accepted on purpose: grey keeps "today" and the cost as context for the gain, and the legend states each value, so no reading depends on colour alone. A typed number moves the marks. Nothing draws itself in a second time.
 
 ## Palette
 
@@ -107,7 +117,7 @@ The stage sets `data-app="<type>"` on a monitor, and a panel's `skin.css` gives 
 
 Inside a monitor the tally is a fill, a border or a tint, never the colour of text: an accent picked by a demo's author has no promised contrast on white. Text that sits on a tally fill uses `on-tally`, which the stage works out from the accent (ink or white, whichever reads better).
 
-A chart in a monitor has one series (`--chart-1`). In the `kpi` monitor it is the dashboard's own graphite, set in its skin. Anywhere else it falls back to the tally. The grid, labels and tooltip use the monitor's own neutrals. The mapping is on `.stage` in `src/index.css`. The results slide adds a quieter second series for the cost; see Two modes.
+A chart in a monitor has one series (`--chart-1`). In the `kpi` monitor it is the dashboard's own graphite, set in its skin. Anywhere else it falls back to the tally. The grid, labels and tooltip use the monitor's own neutrals. The mapping is on `.stage` in `src/index.css`. The report on the results slide adds two quieter series, grey for today and a lighter grey for the cost; see The results slide.
 
 ## Type
 
@@ -143,6 +153,7 @@ A line between two steps of a flow leaves level, turns once and arrives level. T
 - The timeline is the one clock. A seek and a step back show the picture finished: `data-still` on the stage sets every animation and transition to zero length (not `none`, so nothing replays when motion returns), and a panel gets `still` for motion it drives from JavaScript.
 - Reduced motion keeps the story and drops the movement. The demo opens at the start and plays beat by beat, and every animation and transition has zero length, so content cuts in where it would have landed.
 - Charts follow the Bklit motion policy as decorative: the library's reveal, 700 ms, on first show and again when the demo changes the chart. The replay is how a viewer sees that the chart changed.
+- The results slide's card, each question and the report come in on the stage's fade. The report's charts reveal once. A number typed after that moves the marks with no replay.
 
 ## Layout
 

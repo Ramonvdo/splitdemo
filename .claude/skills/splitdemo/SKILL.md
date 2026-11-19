@@ -1,13 +1,13 @@
 ---
 name: splitdemo
-description: Build a demo that shows a prospect what an automation or AI system does for their business. One scripted story plays step by step, a line of text and then one full screen at a time (explainer mode), or across up to four app-like panels at once (fast mode, the split screen), and ends on a results slide with an ROI calculator. Use when the user says splitdemo, wants a visual or interactive demo of a system for a client, or wants a job post, process description or call transcript turned into something a non-technical owner can watch. Also shares a demo as a link, films it, and adds a panel type.
+description: Build a demo that shows a prospect what an automation or AI system does for their business. One scripted story plays step by step, a line of text and then one full screen at a time (explainer mode), or across up to four app-like panels at once (fast mode, the split screen), and ends on a results slide that asks the viewer's own numbers and shows the ROI on them. Use when the user says splitdemo, wants a visual or interactive demo of a system for a client, or wants a job post, process description or call transcript turned into something a non-technical owner can watch. Also shares a demo as a link, films it, and adds a panel type.
 ---
 
 # splitdemo
 
 A demo is one `demo.json`: a story in steps, told on two to four app-like panels, that ends on what the business gained. The app plays that one file two ways. This skill writes it.
 
-- **Explainer**, the way a link, a film and the dev server open: a card with the step's text alone on the screen, then each screen that step touches, full size, one change at a time. It ends on the results slide.
+- **Explainer**, the way a link, a film and the dev server open: a card with the step's text alone on the screen, then each screen that step touches, full size, one change at a time. It ends on the results slide, which asks the owner's numbers one question a screen and then shows what the system is worth on them.
 - **Fast**: every panel at once on one wall, the split screen. The switch top left, or `?mode=fast` on the address.
 
 The viewer is a business owner who has never opened a workflow canvas. Every step answers two questions for them: what just happened, and what did I get out of it.

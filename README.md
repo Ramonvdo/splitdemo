@@ -1,6 +1,6 @@
 # splitdemo
 
-Demos of automation and AI systems that a business owner can follow. One scripted story plays step by step: a line of text says what is about to happen, then the screen it happens on shows it at full size. The story ends on a results slide with a calculator the owner fills in with their own numbers. The same story also plays as a split screen, on up to four app-like screens at once.
+Demos of automation and AI systems that a business owner can follow. One scripted story plays step by step: a line of text says what is about to happen, then the screen it happens on shows it at full size. The story ends on a results slide that asks the owner a few of their own numbers and shows what the system is worth on them. The same story also plays as a split screen, on up to four app-like screens at once.
 
 ![A new patient texts a dental practice after closing time. The automation reads the message, replies with open slots, saves the lead and books the visit, across four screens at once.](docs/speed-to-lead.gif)
 
@@ -18,7 +18,7 @@ Fast mode puts the customer's phone, the automation, the CRM and the week's numb
 
 - A demo is one JSON file: the panels, a story in steps, the outcome and the numbers for the calculator. There is no code per demo, so swapping the CRM for a spreadsheet means changing one `type`.
 - That one file plays two ways. Explainer shows a card and then one screen at a time, and takes 60 to 100 seconds. Fast shows the whole wall and takes 30 to 50. The switch top left goes between them and keeps the step.
-- A results slide closes the story: the outcome numbers next to what they were, a sentence or two on why that matters, and an ROI calculator with two bar charts that follow the numbers as they are typed.
+- A results slide closes the story. It shows the outcome numbers next to what they were, then asks the owner up to four of their own numbers, one question a screen. The report works out what the system adds a month and over the first year, and draws it: twelve months against carrying on as today, and a funnel where the business has a pipeline, so the stage that widens shows.
 - Nine panels come with it: phone, form, inbox, workflow, CRM board, sheet, calendar, email campaign and a numbers board with a chart. Each looks like the kind of app it stands for, with its own colours and typeface: the sheet has column letters and a formula bar, the CRM has a board with deal cards. A panel takes the tool's name as a label, like "CRM in ClickUp", and carries no logo.
 - You can show a demo live on a call from your own machine, send it as a private link, or film it (the story or the wall, 1920x1080, upright for a phone, or a gif).
 - The Claude Code skills write a demo from a job post, a process description or a call transcript. They check it and look at every card and every screen before they hand it over.
@@ -88,11 +88,11 @@ On a call: the switch top left goes between Explainer and Fast. Space plays and 
     "roi": {
       "currency": "USD",
       "inputs": [
-        { "id": "leads", "label": "After-hours messages a month", "value": 40 },
-        { "id": "won", "label": "Extra ones you book", "value": 30, "kind": "percent" },
-        { "id": "value", "label": "Worth of a new patient", "value": 180, "kind": "money" }
+        { "id": "texts", "label": "After-hours texts a month", "ask": "How many texts come in after closing, in a month?", "value": 40 },
+        { "id": "booked", "label": "Share of those that book a visit", "ask": "Of every 100 of those texts, how many book a visit today?", "value": 10, "kind": "percent" },
+        { "id": "visit", "label": "Worth of a first visit", "ask": "What is a first visit worth to you?", "value": 180, "kind": "money" }
       ],
-      "gains": [{ "label": "Patients won back", "from": ["leads", "won", "value"] }]
+      "lever": { "input": "booked", "add": 20 }
     }
   }
 }
@@ -100,7 +100,7 @@ On a call: the switch top left goes between Explainer and Fast. Space plays and 
 
 Each beat is one step: a caption and the actions it brings. In explainer mode the caption is the card, and the actions show one screen at a time in the order they are written. In fast mode they play on the wall while the caption stands under it. Timing follows from the text, so you write no numbers unless you want a pause on the wall. A beat with `"wait": "click"` holds until the viewer presses the button themselves.
 
-`results` is optional. Each gain is its inputs multiplied together, so this one starts at 40 × 30% × $180 = $2,160 a month, and the viewer can change every number.
+`results` is optional. The calculator is one chain of numbers that multiply, and a lever: the one number in the chain the system changes. Here 40 texts × 10% booked × $180 is $720 a month today. With 20 points more booked it is $2,160, so the slide starts at $1,440 extra a month. An input with an `ask` is a question the slide puts to the viewer. The rest are your estimates, and the viewer can change every number in the report.
 
 The full examples are in [`examples/`](examples). The list of panels with their actions is [`src/panels/INDEX.md`](src/panels/INDEX.md), and each panel's folder says how to use it well.
 
@@ -124,7 +124,7 @@ A shared demo gets its own folder under a name like `harbor-dental-x7k2`. There 
 
 Every link has an end date. A demo is shared for 30 days unless you say otherwise, and it drops out at the next publish after that. `npm run share -- --stop <slug>` takes one offline sooner.
 
-A link opens in explainer mode. The same link with `?mode=fast` at the end opens the wall.
+A link opens in explainer mode. The same link with `?mode=fast` at the end opens the wall. With `?q=report` the results slide opens on the report with your example numbers, and offers the questions from there.
 
 By default a share shows you what will go online and waits for a yes. Set `"share": "auto"` in the settings to skip the question.
 
