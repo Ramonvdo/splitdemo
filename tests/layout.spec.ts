@@ -23,6 +23,30 @@ for (const demo of DEMOS) {
     });
   }
 
+  for (const size of SIZES) {
+    test(`${demo}: the slide at the end fits at ${size.width}x${size.height}: its card, a question and the report`, async ({ page }) => {
+      await page.setViewportSize(size);
+      for (const q of ["0", "1", "report"]) {
+        await page.goto(`/${demo}/?mode=explainer&at=end&q=${q}`);
+        await page.locator(READY).waitFor();
+        await page.locator("[data-results]").waitFor();
+        expect(await spills(page), `q=${q}`).toEqual([]);
+      }
+    });
+  }
+
+  test(`${demo}: no serious accessibility problems on the slide at the end: its card, a question and the report`, async ({ page }) => {
+    for (const q of ["0", "1", "report"]) {
+      await page.goto(`/${demo}/?mode=explainer&at=end&q=${q}`);
+      await page.locator(READY).waitFor();
+      await page.locator("[data-results]").waitFor();
+      await settle(page);
+      const { violations } = await new AxeBuilder({ page }).analyze();
+      const serious = violations.filter((v) => v.impact === "serious" || v.impact === "critical");
+      expect(serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(" | ")}`), `q=${q}`).toEqual([]);
+    }
+  });
+
   test(`${demo}: every panel still fits when it is enlarged`, async ({ page }) => {
     await page.goto(`/${demo}/?mode=fast&at=end`);
     await page.locator(READY).waitFor();
