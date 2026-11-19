@@ -2,7 +2,7 @@
 
 Demos of automation and AI systems that a business owner can follow. One scripted story plays step by step: a line of text says what is about to happen, then the screen it happens on shows it at full size. The story ends on a results slide that asks the owner a few of their own numbers and shows what the system is worth on them. The same story also plays as a split screen, on up to four app-like screens at once.
 
-![A new patient texts a dental practice after closing time. The automation reads the message, replies with open slots, saves the lead and books the visit, across four screens at once.](docs/speed-to-lead.gif)
+![A new patient texts a dental practice after closing time. The system reads the message, answers with open times, puts the patient on the list and books the visit, across four screens at once.](docs/speed-to-lead.gif)
 
 The picture shows fast mode, the split screen. A link opens in explainer mode, which tells the same story one screen at a time.
 
@@ -10,7 +10,7 @@ The picture shows fast mode, the split screen. A link opens in explainer mode, w
 
 Most automation demos show the workflow canvas. The person paying for the system does not read canvases. They want to know what their customer sees, where the lead ends up, and what changed in their numbers.
 
-splitdemo tells that as a story in steps. A card names what starts everything: "9:14 PM. The practice closed at six." The viewer sends the text themselves. The automation then shows with all its steps, the first one lights up, and every step after it gets a card of its own and the app it wrote to: the reply on the phone, the lead in the pipeline, the reply time going from 14 hours to 38 seconds. One screen changes at a time, so there is time to read it.
+splitdemo tells that as a story in steps. The first card says what is at stake: "A $180 new patient sends this text. Your practice closed at six." The text goes out on the patient's phone. One card and one diagram show what the system does while nobody is at the desk. The screens after that show what came of it: the reply on the phone, the patient on your list, the reply time going from 14 hours to 38 seconds. One screen changes at a time, so there is time to read it.
 
 Fast mode puts the customer's phone, the automation, the CRM and the week's numbers next to each other on one wall, and the same story moves through all of them at once. It is the short version, for a viewer who already knows the story.
 
@@ -69,7 +69,7 @@ On a call: the switch top left goes between Explainer and Fast. Space plays and 
   "title": "A new patient texts after closing time",
   "panels": [
     { "id": "phone", "type": "phone", "label": "Patient's phone", "config": { "contact": "Harbor Dental" } },
-    { "id": "crm", "type": "crm", "label": "Patient pipeline", "config": { "columns": [{ "id": "new", "title": "New" }, { "id": "booked", "title": "Booked" }] } }
+    { "id": "crm", "type": "crm", "label": "Your patient list", "config": { "columns": [{ "id": "new", "title": "New" }, { "id": "booked", "title": "Booked" }] } }
   ],
   "beats": [
     {
@@ -78,7 +78,7 @@ On a call: the switch top left goes between Explainer and Fast. Space plays and 
       "do": [{ "on": "phone", "type": "send", "text": "Hi, I chipped a tooth. Can I come in this week?" }]
     },
     {
-      "say": "The lead is in your pipeline before you have seen it.",
+      "say": "Dana is on your patient list before you have seen her text.",
       "do": [{ "on": "crm", "type": "add", "id": "dana", "to": "new", "title": "Dana Whitfield" }]
     }
   ],

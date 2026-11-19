@@ -1,8 +1,11 @@
 import { expect, test } from "@playwright/test";
 import { READY } from "../scripts/lib/spills.ts";
+import { STORY, story } from "./story.ts";
 
 // These tests are about the wall: every monitor at once.
-const DEMO = "/speed-to-lead/?mode=fast";
+const DEMO = `${STORY}?mode=fast`;
+
+test.beforeEach(async ({ page }) => story(page));
 
 test("left alone, it plays to the end and shows what the business gained", async ({ page }) => {
   await page.goto(`${DEMO}&autoplay=1`);
@@ -58,10 +61,7 @@ test("with reduced motion the story still plays from the start, and nothing move
 });
 
 test("when it is over the viewer is offered the next step the demo names", async ({ page }) => {
-  await page.route("**/speed-to-lead/demo.json", async (route) => {
-    const demo = await (await route.fetch()).json();
-    await route.fulfill({ json: { ...demo, next: { label: "Book a call", url: "https://example.com/call" } } });
-  });
+  await story(page, (demo) => void (demo.next = { label: "Book a call", url: "https://example.com/call" }));
   await page.goto(`${DEMO}&at=3`);
   await expect(page.getByRole("link", { name: "Book a call" })).toHaveCount(0);
   await page.goto(`${DEMO}&at=end`);

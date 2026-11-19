@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { READY } from "../scripts/lib/spills.ts";
+import { STORY as DEMO, story } from "./story.ts";
 
 // The strip over the wall: the switch between the story and the wall, and the demo's title.
-const DEMO = "/speed-to-lead/";
+test.beforeEach(async ({ page }) => story(page));
 
 test("the switch goes from the story to the wall and back, and keeps the step", async ({ page }) => {
   // The end of step 5, in the story: one screen, the phone with the reply on it.
@@ -73,11 +74,7 @@ test("shown bare, the strip goes with the bar", async ({ page }) => {
 });
 
 test("a Dutch demo has Dutch words around it", async ({ page }) => {
-  await page.route("**/speed-to-lead/demo.json", async (route) => {
-    const demo = await (await route.fetch()).json();
-    demo.lang = "nl";
-    await route.fulfill({ json: demo });
-  });
+  await story(page, (demo) => void (demo.lang = "nl"));
   await page.goto(DEMO);
   await expect(page.locator("html")).toHaveAttribute("lang", "nl");
   await expect(page.locator("[data-slate]").getByRole("button", { name: "Demo afspelen" })).toBeVisible();

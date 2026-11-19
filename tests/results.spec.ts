@@ -1,21 +1,22 @@
 import { expect, test, type Page } from "@playwright/test";
+import { STORY, story } from "./story.ts";
 
-// The slide after the story. speed-to-lead's calculator: 40 texts a month after closing, 10 in 100 book a visit today and the system adds 20 points,
+// The slide after the story. The story's calculator: 40 texts a month after closing, 10 in 100 book a visit today and the system adds 20 points,
 // $180 a visit, against $300 a month and $1,500 once. Opened as a picture of the end there is nobody to ask, so the slide is the report.
-const END = "/speed-to-lead/?at=end&mode=";
+const END = `${STORY}?at=end&mode=`;
+
+test.beforeEach(async ({ page }) => story(page));
 
 /** The same demo as its author would have left it without a `results` block. */
 async function withoutResults(page: Page) {
-  await page.route("**/speed-to-lead/demo.json", async (route) => {
-    const demo = await (await route.fetch()).json();
+  await story(page, (demo) => {
     delete demo.results;
-    await route.fulfill({ json: demo });
   });
 }
 
 /** The end of the story as a viewer gets there, stepping on from the last step: somebody is watching, so there is somebody to ask. */
 async function watched(page: Page, mode = "explainer", more = "") {
-  await page.goto(`/speed-to-lead/?at=7&mode=${mode}${more}`);
+  await page.goto(`${STORY}?at=7&mode=${mode}${more}`);
   const stage = page.locator("main.stage");
   for (let press = 0; press < 4 && (await stage.getAttribute("data-status")) !== "done"; press++) {
     await page.keyboard.press("ArrowRight");
@@ -132,13 +133,11 @@ test("on the wall the Results button opens the same questions", async ({ page })
 });
 
 test("a Dutch demo asks in Dutch", async ({ page }) => {
-  await page.route("**/speed-to-lead/demo.json", async (route) => {
-    const demo = await (await route.fetch()).json();
+  await story(page, (demo) => {
     demo.lang = "nl";
     demo.results.roi.currency = "EUR";
     demo.results.roi.inputs[0].ask = "Hoeveel berichten komen er per maand na sluitingstijd binnen?";
     demo.results.roi.inputs[0].note = "Tel een gemiddelde maand";
-    await route.fulfill({ json: demo });
   });
   const slide = await watched(page);
   await slide.getByRole("button", { name: "Reken het uit voor je eigen bedrijf" }).click();
@@ -330,10 +329,8 @@ test("on a phone the monthly figure is in view when the slide opens, above the n
 });
 
 test("a phone has no strip title, so a slide without a title of its own takes the demo's", async ({ page }) => {
-  await page.route("**/speed-to-lead/demo.json", async (route) => {
-    const demo = await (await route.fetch()).json();
+  await story(page, (demo) => {
     delete demo.results.title;
-    await route.fulfill({ json: demo });
   });
   await page.goto(`${END}explainer`);
   const heading = page.locator("[data-results]").getByRole("heading");
@@ -344,10 +341,8 @@ test("a phone has no strip title, so a slide without a title of its own takes th
 
 test("the monthly figure says what it counts: extra, saved, or the demo's own words", async ({ page }) => {
   let change = (roi: Record<string, unknown>) => void (roi.label = "booked back a month");
-  await page.route("**/speed-to-lead/demo.json", async (route) => {
-    const demo = await (await route.fetch()).json();
+  await story(page, (demo) => {
     change(demo.results.roi);
-    await route.fulfill({ json: demo });
   });
   await page.goto(`${END}explainer`);
   const slide = page.locator("[data-results]");
@@ -396,11 +391,9 @@ test("clients who keep paying count every month again", async ({ page }) => {
 });
 
 test("a Dutch demo gets a Dutch slide, with money written the Dutch way", async ({ page }) => {
-  await page.route("**/speed-to-lead/demo.json", async (route) => {
-    const demo = await (await route.fetch()).json();
+  await story(page, (demo) => {
     demo.lang = "nl";
     demo.results.roi.currency = "EUR";
-    await route.fulfill({ json: demo });
   });
   await page.goto(`${END}explainer`);
   const slide = page.locator("[data-results]");

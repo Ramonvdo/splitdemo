@@ -1,6 +1,10 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { READY, settle, spills } from "../scripts/lib/spills.ts";
+import { STORY, story } from "./story.ts";
+
+// The examples as they ship: each has to fit and to pass axe. What the player does with keys, clicks and a phone is tested on the story.
+test.beforeEach(async ({ page }) => story(page));
 
 const DEMOS = ["speed-to-lead", "cold-outreach", "intake-to-booking"];
 const SIZES = [
@@ -72,21 +76,19 @@ for (const demo of DEMOS) {
 
 test("on a phone an amount of five digits in euros fits its field in the report", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.route("**/speed-to-lead/demo.json", async (route) => {
-    const demo = await (await route.fetch()).json();
+  await story(page, (demo) => {
     demo.lang = "nl";
     demo.results.roi.currency = "EUR";
     demo.results.roi.inputs[2].value = 12000;
-    await route.fulfill({ json: demo });
   });
-  await page.goto("/speed-to-lead/?mode=explainer&at=end");
+  await page.goto(`${STORY}?mode=explainer&at=end`);
   await page.locator(READY).waitFor();
   await expect(page.locator("[data-input=visit]")).toHaveValue("12000");
   expect(await spills(page)).toEqual([]);
 });
 
 test("every control is reachable and named from the keyboard", async ({ page }) => {
-  await page.goto("/speed-to-lead/?mode=fast");
+  await page.goto(`${STORY}?mode=fast`);
   await page.locator(READY).waitFor();
   const names: string[] = [];
   // The two ways to tell it, four panel labels, the phone's send button and the three transport buttons.
@@ -98,7 +100,7 @@ test("every control is reachable and named from the keyboard", async ({ page }) 
 });
 
 test("a click on a label enlarges that panel, and the same click or Escape brings the wall back", async ({ page }) => {
-  await page.goto("/speed-to-lead/?mode=fast&at=end");
+  await page.goto(`${STORY}?mode=fast&at=end`);
   await page.locator(READY).waitFor();
   const crm = page.locator('[data-panel="crm"]');
   const phone = page.locator('[data-panel="phone"]');
@@ -123,7 +125,7 @@ test("a click on a label enlarges that panel, and the same click or Escape bring
 
 test("on a phone one panel shows at a time, and the tabs follow the action", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/speed-to-lead/?mode=fast");
+  await page.goto(`${STORY}?mode=fast`);
   await page.locator(READY).waitFor();
   const tabs = page.getByRole("tab");
   const shown = page.locator("[data-zoom]");

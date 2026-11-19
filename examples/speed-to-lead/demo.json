@@ -11,22 +11,20 @@
     {
       "id": "flow",
       "type": "workflow",
-      "label": "The automation",
+      "label": "What the system does",
       "config": {
         "nodes": [
           { "id": "text", "label": "New text message", "icon": "message" },
-          { "id": "read", "label": "Reads what they need", "app": "AI", "icon": "sparkle", "after": ["text"] },
-          { "id": "slots", "label": "Checks open slots", "app": "Calendar", "icon": "calendar", "after": ["read"] },
-          { "id": "reply", "label": "Replies by text", "icon": "message", "after": ["slots"] },
-          { "id": "save", "label": "Saves the lead", "app": "CRM", "icon": "users", "after": ["slots"] },
-          { "id": "tell", "label": "Tells the front desk", "icon": "bell", "after": ["reply", "save"] }
+          { "id": "read", "label": "Reads what they need", "icon": "sparkle", "after": ["text"] },
+          { "id": "slots", "label": "Finds open times", "app": "Calendar", "icon": "calendar", "after": ["read"] },
+          { "id": "reply", "label": "Writes the reply", "icon": "message", "after": ["slots"] }
         ]
       }
     },
     {
       "id": "crm",
       "type": "crm",
-      "label": "Patient pipeline",
+      "label": "Your patient list",
       "config": {
         "columns": [
           { "id": "new", "title": "New" },
@@ -44,57 +42,41 @@
     {
       "id": "numbers",
       "type": "kpi",
-      "label": "This week",
+      "label": "Your week",
       "config": {
         "tiles": [
           { "id": "reply", "label": "Time to first reply", "value": "14 h" },
           { "id": "closed", "label": "Booked while closed", "value": "$0" },
           { "id": "booked", "label": "New patients booked", "value": "2" }
-        ],
-        "chart": {
-          "title": "Bookings made per day",
-          "points": [
-            { "label": "Mon", "value": 1 },
-            { "label": "Tue", "value": 1 },
-            { "label": "Wed", "value": 0 }
-          ]
-        }
+        ]
       }
     }
   ],
   "beats": [
     {
-      "say": "9:14 PM. The practice closed at six. Send the text a new patient would.",
+      "say": "A $180 new patient sends this text. Your practice closed at six.",
       "clock": "9:14 PM",
-      "wait": "click",
       "do": [{ "on": "phone", "type": "send", "text": "Hi, Dana Whitfield here. I chipped a tooth. Can I come in this week?" }]
     },
     {
-      "say": "Nobody is at the desk. The text starts the automation anyway.",
-      "do": [{ "on": "flow", "type": "run", "node": "text" }]
-    },
-    {
-      "say": "It reads what the patient needs, the way your front desk would.",
-      "do": [{ "on": "flow", "type": "run", "node": "read", "note": "Chipped tooth, wants this week" }]
-    },
-    {
-      "say": "It looks in your calendar for times that are really open.",
-      "do": [{ "on": "flow", "type": "run", "node": "slots", "note": "Thu 10 AM and Fri 2:30 PM free" }]
-    },
-    {
-      "say": "They get a real answer with real times, 38 seconds later.",
+      "say": "Nobody is at the desk. The system reads it and checks your calendar.",
       "do": [
-        { "on": "flow", "type": "run", "node": "reply" },
-        { "on": "phone", "type": "typing", "after": 300 },
+        { "on": "flow", "type": "run", "node": "text" },
+        { "on": "flow", "type": "run", "node": "read", "note": "Chipped tooth, wants this week" },
+        { "on": "flow", "type": "run", "node": "slots", "note": "Thu 10 AM and Fri 2:30 PM free" },
+        { "on": "flow", "type": "run", "node": "reply", "note": "Offers both times" }
+      ]
+    },
+    {
+      "say": "It answers with real times, 38 seconds later. Nobody typed it.",
+      "do": [
+        { "on": "phone", "type": "typing" },
         { "on": "phone", "type": "receive", "text": "Sorry to hear that, Dana! We can see you Thursday at 10 AM or Friday at 2:30 PM. Which works best?", "after": 1100 }
       ]
     },
     {
-      "say": "The lead is in your pipeline before you have seen it.",
-      "do": [
-        { "on": "flow", "type": "run", "node": "save" },
-        { "on": "crm", "type": "add", "id": "dana", "to": "new", "title": "Dana Whitfield", "subtitle": "Chipped tooth", "tag": "Replied in 38 sec", "tone": "info" }
-      ]
+      "say": "Dana is on your patient list before you have seen her text.",
+      "do": [{ "on": "crm", "type": "add", "id": "dana", "to": "new", "title": "Dana Whitfield", "subtitle": "Chipped tooth", "tag": "Replied in 38 sec", "tone": "info" }]
     },
     {
       "say": "The patient picks a time. No phone tag tomorrow morning.",
@@ -110,11 +92,9 @@
       "say": "You find out in the morning, with the chair already filled.",
       "clock": "7:30 AM",
       "do": [
-        { "on": "flow", "type": "run", "node": "tell", "note": "Summary sent" },
         { "on": "numbers", "type": "set", "tile": "reply", "value": "38 sec", "delta": "was 14 h", "tone": "good" },
         { "on": "numbers", "type": "set", "tile": "closed", "value": "$180", "delta": "was $0", "tone": "good" },
-        { "on": "numbers", "type": "set", "tile": "booked", "value": "3", "delta": "+1 overnight", "tone": "good" },
-        { "on": "numbers", "type": "push", "label": "Wed", "value": 1 }
+        { "on": "numbers", "type": "set", "tile": "booked", "value": "3", "delta": "+1 overnight", "tone": "good" }
       ]
     }
   ],
@@ -125,15 +105,29 @@
   ],
   "results": {
     "title": "What a missed evening text costs",
-    "text": "A new patient who texts after closing books with whoever answers first. This answers in under a minute, every night, and puts the visit in the calendar.",
+    "text": "We estimate 15 more of every 100 evening texts would book: 40 × 15% × $180 = $1,080 a month, $780 after the fee. Example fee: $300 a month, $1,500 once. Reply to my message and I'll set it up.",
     "roi": {
       "currency": "USD",
       "inputs": [
         { "id": "texts", "label": "After-hours texts a month", "ask": "How many texts come in after closing, in a month?", "value": 40 },
-        { "id": "booked", "label": "Share of those that book a visit", "ask": "Of every 100 of those texts, how many book a visit today?", "value": 10, "kind": "percent" },
-        { "id": "visit", "label": "Worth of a first visit", "ask": "What is a first visit worth to you?", "value": 180, "kind": "money" }
+        {
+          "id": "booked",
+          "label": "Share of those that book a visit",
+          "ask": "Of every 100 of those texts, how many book a visit today?",
+          "note": "Our estimate adds 15 in 100: patients you lose today who would now book.",
+          "value": 10,
+          "kind": "percent"
+        },
+        {
+          "id": "visit",
+          "label": "Worth of a first visit",
+          "ask": "What is a first visit worth to you?",
+          "note": "$180 is the first visit only. What a patient spends later comes on top.",
+          "value": 180,
+          "kind": "money"
+        }
       ],
-      "lever": { "input": "booked", "add": 20 },
+      "lever": { "input": "booked", "add": 15 },
       "cost": { "monthly": 300, "once": 1500 }
     }
   }

@@ -1,14 +1,17 @@
 import { expect, test } from "@playwright/test";
+import { STORY, story } from "./story.ts";
 
 // Explainer mode: a step's text alone, then one screen at a time.
-const DEMO = "/speed-to-lead/?mode=explainer";
+const DEMO = `${STORY}?mode=explainer`;
+
+test.beforeEach(async ({ page }) => story(page));
 
 test("a demo opens as the story, and as the wall when its link asks for that", async ({ page }) => {
-  await page.goto("/speed-to-lead/");
+  await page.goto(STORY);
   await expect(page.locator("main.stage")).toHaveAttribute("data-mode", "explainer");
   await expect(page.locator("[data-slate]")).toContainText("A new patient texts after closing time");
   await expect(page.locator("[data-panel]:visible")).toHaveCount(0);
-  await page.goto("/speed-to-lead/?mode=fast");
+  await page.goto(`${STORY}?mode=fast`);
   await expect(page.locator("main.stage")).toHaveAttribute("data-mode", "fast");
   await expect(page.locator("[data-panel]:visible")).toHaveCount(4);
 });
@@ -65,7 +68,7 @@ test("left alone, the screens come one at a time in the order the script names t
   });
   await page.goto(`${DEMO}&autoplay=1`);
   await expect(page.locator("main.stage")).toHaveAttribute("data-done", "true", { timeout: 210_000 });
-  // Read off examples/speed-to-lead/demo.json: each beat's card, then the panel of each action, a panel acted on twice in a row counted once. The slide closes it.
+  // Read off tests/fixtures/dental-story.json: each beat's card, then the panel of each action, a panel acted on twice in a row counted once. The slide closes it.
   expect(await page.evaluate(() => (window as unknown as { seen: string[] }).seen)).toEqual([
     ...["card", "phone"],
     // Three steps of the automation, one a beat: its card, then the automation again.
@@ -105,7 +108,7 @@ test("a step reached along a line stays quiet until the line has been drawn to i
 });
 
 test("on the wall a line has no time to travel: the step lights at once", async ({ page }) => {
-  await page.goto("/speed-to-lead/?mode=fast&at=1");
+  await page.goto(`${STORY}?mode=fast&at=1`);
   await page.locator("main.stage").waitFor();
   await page.keyboard.press("ArrowRight");
   await expect(page.locator('[data-node="read"]')).toHaveAttribute("data-ran", "true");

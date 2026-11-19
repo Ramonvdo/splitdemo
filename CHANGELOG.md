@@ -12,7 +12,9 @@
 - `npm run check` refuses a calculator with no question or with more than four, a lever that is missing or points at no input, `saving` together with `monthly`, and example numbers that show no effect.
 - `npm run shots` pictures the slide's card, each question and the report, on a laptop and a phone, and checks each for cut text.
 - Skill files: how to choose the chain, the lever and what to ask, and a new `benchmarks.md` with sourced numbers per trade and the places where no source exists.
-- The three examples are rewritten to the new block, with lower figures. Speed to lead starts at $1,440 a month where it showed $2,160, because it now asks what the practice books today.
+- The three examples are rewritten to the new block, with lower figures. Speed to lead starts at $1,080 a month where it showed $2,160: it now asks what the practice books today and adds 15 points to that.
+- Speed to lead is told in six steps, after a review of how clear it is to an owner. The first card says what the text is worth and the text sends itself. One card and one diagram cover what the system does, so the reply is on the phone by the seventh picture. The screens are named in the owner's words ("Your patient list", "Your week"), the chart is gone, and the closing card shows the sum behind the monthly figure.
+- The player's browser tests play a story of their own, `tests/fixtures/dental-story.json`, so an example can change without a test changing with it. Each example is still checked for cut text and with axe. The cut-text check now measures after the page's typefaces have loaded.
 
 ## 0.2.1 (2026-11-18)
 

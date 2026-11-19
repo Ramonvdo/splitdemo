@@ -6,9 +6,11 @@ export const READY = "main.stage:not(:has([data-loading]))";
 /**
  * Everything under `root` that does not fit where it is, each with the panel it is in.
  * Hidden monitors count too: they are laid out, only not painted.
+ * It measures once the page's own typefaces are in: text set in the stand-in face is wider, and gets cut where the real one fits.
  */
 export function spills(page: Page, root = "main.stage"): Promise<string[]> {
-  return page.evaluate((root) => {
+  return page.evaluate(async (root) => {
+    await document.fonts.ready;
     const out: string[] = [];
     const doc = document.documentElement;
     const scrolls = doc.scrollWidth > innerWidth || doc.scrollHeight > innerHeight;

@@ -6,6 +6,7 @@ import { expect, test } from "@playwright/test";
 import { checkFile } from "../scripts/lib/load.ts";
 import { ROOT } from "../scripts/lib/workspace.ts";
 import { duration } from "../src/engine/timeline.ts";
+import { STORY_FILE } from "./story.ts";
 import type { Demo, Mode, Timeline } from "../src/engine/types.ts";
 
 // A film takes as long as the demo does, and two at once would fight over the processor.
@@ -40,7 +41,8 @@ function expected(mode: Mode): number {
 test.beforeAll(async () => {
   ws = mkdtempSync(join(tmpdir(), "splitdemo-record-"));
   writeFileSync(join(ws, "config.json"), JSON.stringify({ workspace: ws }));
-  const example = join(ROOT, "examples", "speed-to-lead", "demo.json");
+  // The story has a message the viewer sends, so the film has a press to make for them.
+  const example = STORY_FILE;
   demo = JSON.parse(readFileSync(example, "utf8"));
   // The story's pace asks each panel how long its changes take to read, so the checked timeline is the one to measure against.
   timeline = (await checkFile(example)).timeline!;
