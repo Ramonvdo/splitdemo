@@ -70,6 +70,21 @@ for (const demo of DEMOS) {
   });
 }
 
+test("on a phone an amount of five digits in euros fits its field in the report", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route("**/speed-to-lead/demo.json", async (route) => {
+    const demo = await (await route.fetch()).json();
+    demo.lang = "nl";
+    demo.results.roi.currency = "EUR";
+    demo.results.roi.inputs[2].value = 12000;
+    await route.fulfill({ json: demo });
+  });
+  await page.goto("/speed-to-lead/?mode=explainer&at=end");
+  await page.locator(READY).waitFor();
+  await expect(page.locator("[data-input=visit]")).toHaveValue("12000");
+  expect(await spills(page)).toEqual([]);
+});
+
 test("every control is reachable and named from the keyboard", async ({ page }) => {
   await page.goto("/speed-to-lead/?mode=fast");
   await page.locator(READY).waitFor();

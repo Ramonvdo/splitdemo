@@ -98,7 +98,8 @@ export function Report({ demo, roi, raw, lever, today, system, worked, touched, 
             <thead>
               <tr className="text-meta text-muted">
                 <td />
-                <th scope="col" className="w-[26%] pb-[0.1rem] text-left font-medium">
+                {/* On a phone the column is a third: an amount of five digits has to fit its field. */}
+                <th scope="col" className="w-[26%] pb-[0.1rem] text-left font-medium compact:w-[33%]">
                   {say.today}
                 </th>
                 <th scope="col" className="w-[30%] pb-[0.1rem] pl-[0.6rem] text-left font-medium">
@@ -132,7 +133,7 @@ export function Report({ demo, roi, raw, lever, today, system, worked, touched, 
                         </span>
                       ) : (
                         // The system leaves this number as it is.
-                        <span className="px-[0.6rem] text-lead tabular-nums text-muted">{shown(today[input.id], input.kind, roi.currency, demo.lang)}</span>
+                        <span className="px-[0.6rem] text-lead text-muted">{shown(today[input.id], input.kind, roi.currency, demo.lang)}</span>
                       )}
                     </td>
                   </tr>
