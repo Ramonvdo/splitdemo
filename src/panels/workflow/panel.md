@@ -8,6 +8,6 @@ Pick it when: the viewer should see that a system did the work, step by step, wi
 - Four to six steps. Merge the ones a business owner would not tell apart.
 - `after` draws the lines. Steps that share an `after` stack on top of each other and read as "at the same time". A line turns once, between two columns, so it never runs under a label.
 - A `note` is what the step found: "Urgent, new patient", "Thu 10:00 is free". Viewers read the notes, so give one to every step that decides something.
-- Run one step per beat, in the same beat as what it causes in another panel, with the step first. In explainer mode the viewer watches the line draw from the step before, and two steps in one beat pass too quickly to read. `npm run check` notes it.
+- Run the steps the system does in one go in one beat, in the order they happen. The diagram shows once, and the viewer watches the line draw from step to step and reads each note. What a stretch of one or two steps causes in another panel can come after it in `do`. A longer stretch has its beat to itself. `npm run check` notes a workflow that shows in two or more beats in a row.
 - A step runs only once a step it comes `after` has run.
 - Three steps on top of each other fit only with one-line labels and short notes.

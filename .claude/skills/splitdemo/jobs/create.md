@@ -20,7 +20,7 @@ Run every command from the `app` folder in the settings.
    npm run check -- <slug>
    ```
 
-   Each `problem` starts with its place in the file. Each `note` is a way the viewer gets less from the demo: a screen that shows twice in one step, more than three screens in a step, two workflow steps in one beat, a story past 110 seconds. Act on it. Keep one only when the story needs it that way, and say so in your report.
+   Each `problem` starts with its place in the file. Each `note` is a way the viewer gets less from the demo: a screen that shows twice in one step, more than three screens in a step, the workflow in two steps in a row, a story past 110 seconds. Act on it. Keep one only when the story needs it that way, and say so in your report.
 
 6. **Shoot it** until it exits clean, with no `does not fit` lines:
 

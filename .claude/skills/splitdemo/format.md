@@ -1,6 +1,6 @@
 # demo.json
 
-Three finished demos to match are in the app: `examples/speed-to-lead`, `examples/cold-outreach`, `examples/intake-to-booking`. `npm run check` is the authority on every limit below and says where in the file a demo goes wrong.
+The demo to match is `examples/speed-to-lead` in the app. `examples/cold-outreach` and `examples/intake-to-booking` show other panels at work, in stories written before `story.md`'s rules on step one and the workflow. `npm run check` is the authority on every limit below and says where in the file a demo goes wrong.
 
 ```json
 {
@@ -12,9 +12,8 @@ Three finished demos to match are in the app: `examples/speed-to-lead`, `example
   ],
   "beats": [
     {
-      "say": "A $180 new patient texts at 9:14 PM. You closed at six. Press send.",
+      "say": "A $180 new patient sends this text. Your practice closed at six.",
       "clock": "9:14 PM",
-      "wait": "click",
       "do": [{ "on": "phone", "type": "send", "text": "Hi, I chipped a tooth. Can I come in this week?" }]
     },
     {
@@ -52,7 +51,7 @@ Three finished demos to match are in the app: `examples/speed-to-lead`, `example
 | `panels[].type` | A panel from `src/panels/INDEX.md`. | |
 | `panels[].label` | The small label top left: whose screen or which tool. | 40 characters; about 24 over a tall panel |
 | `panels[].config` | What the screen shows before anything happens. Its shape is the panel's `schema.ts`. | per panel |
-| `beats` | The steps of the story, in order. | 1 to 16; six to nine tell it best |
+| `beats` | The steps of the story, in order. | 1 to 16; five to eight tell it best |
 | `beats[].say` | The caption: the step's card in explainer mode, the line under the wall in both. | 72 characters |
 | `beats[].clock` | The time in the story from this beat on: "21:14", "6:42 PM", "Mon 8 AM", "Day 7". | 8 characters |
 | `beats[].do` | The actions of this beat, in order. Explainer mode shows their screens in this order. | up to 6 |
@@ -136,7 +135,7 @@ On the wall:
 
 ## Pressing
 
-A beat with `"wait": "click"` holds until the viewer presses its first action: the send button on a phone, the submit button on a form. `INDEX.md` marks which actions are pressable. Left alone, the demo presses it after four seconds, so it never stalls. Two such beats at most in a demo, the first where the customer first sends or submits something, which is usually the opening beat. A demo with none is complete: a story that starts on a time, a schedule or an arriving email plays from start to end by itself.
+A demo plays from its first card to the results by itself. `"wait": "click"` is for a demo the user presents live and asks a press for. The beat holds until the viewer presses its first action: the send button on a phone, the submit button on a form. `INDEX.md` marks which actions are pressable. Left alone, the demo presses it after four seconds, so it never stalls. A live demo takes two such beats at most, the first where the customer first sends or submits something.
 
 ## Layout
 

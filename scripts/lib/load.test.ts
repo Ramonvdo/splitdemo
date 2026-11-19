@@ -28,15 +28,8 @@ async function notes(beats: unknown[]): Promise<string[]> {
 }
 
 describe("notes on a story told one screen at a time", () => {
-  it("has none for a story that takes one step at a time", async () => {
-    expect(
-      await notes([
-        { say, wait: "click", do: [send] },
-        { say, do: [run("a")] },
-        { say, do: [run("b")] },
-        { say, do: [run("c"), receive] },
-      ]),
-    ).toEqual([]);
+  it("has none for a story that shows the workflow once", async () => {
+    expect(await notes([{ say, do: [send] }, { say, do: [run("a"), run("b"), run("c")] }, { say, do: [receive] }])).toEqual([]);
   });
 
   it("says when a screen leaves and comes back within a step", async () => {
@@ -46,10 +39,12 @@ describe("notes on a story told one screen at a time", () => {
     ]);
   });
 
-  it("says when a step runs more than one workflow step", async () => {
-    expect(await notes([{ say, do: [send] }, { say, do: [run("a"), run("b")] }])).toEqual([
-      "beats[1]: 2 workflow steps run in this step. One a beat, so its card can say what that step does.",
+  it("says when the workflow shows in steps that follow each other", async () => {
+    expect(await notes([{ say, do: [send] }, { say, do: [run("a")] }, { say, do: [run("b")] }, { say, do: [run("c"), receive] }])).toEqual([
+      "beats[1] to beats[3]: the workflow shows in 3 steps in a row. What the system does in one go belongs in one step: the viewer sees the diagram once and the result sooner.",
     ]);
+    // It comes back after a step without it: the system starts again, and that is a new stretch of work.
+    expect(await notes([{ say, do: [send] }, { say, do: [run("a")] }, { say, do: [receive] }, { say, do: [run("b")] }])).toEqual([]);
   });
 
   it("says when a step shows more than three screens", async () => {
@@ -57,7 +52,6 @@ describe("notes on a story told one screen at a time", () => {
     expect(await notes([{ say, do: [send, run("a"), receive, run("b")] }])).toEqual([
       'beats[0]: "phone" shows twice in this step (phone, flow, phone, flow). A screen that leaves and comes back reads as two things happening: put its changes together, or split the step.',
       "beats[0]: 4 screens in one step. A viewer follows three at most: split the step.",
-      "beats[0]: 2 workflow steps run in this step. One a beat, so its card can say what that step does.",
     ]);
   });
 

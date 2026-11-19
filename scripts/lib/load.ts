@@ -130,8 +130,14 @@ export async function checkDemo(raw: unknown, fresh = false): Promise<Checked> {
     const again = screens.find((on, i) => screens.indexOf(on) < i);
     if (again) notes.push(`beats[${b}]: "${again}" shows twice in this step (${screens.join(", ")}). A screen that leaves and comes back reads as two things happening: put its changes together, or split the step.`);
     if (screens.length > 3) notes.push(`beats[${b}]: ${screens.length} screens in one step. A viewer follows three at most: split the step.`);
-    const runs = beat.do.filter((action) => action.type === "run" && byId.get(action.on)?.name === "workflow").length;
-    if (runs > 1) notes.push(`beats[${b}]: ${runs} workflow steps run in this step. One a beat, so its card can say what that step does.`);
+  });
+  // The workflow in steps that follow each other is one stretch of work told in pieces: the same diagram, again and again.
+  const flows = demo.beats.map((beat) => beat.do.some((action) => byId.get(action.on)?.name === "workflow"));
+  flows.forEach((shows, b) => {
+    if (!shows || flows[b - 1]) return;
+    const end = flows.indexOf(false, b);
+    const last = (end < 0 ? flows.length : end) - 1;
+    if (last > b) notes.push(`beats[${b}] to beats[${last}]: the workflow shows in ${last - b + 1} steps in a row. What the system does in one go belongs in one step: the viewer sees the diagram once and the result sooner.`);
   });
   const seconds = Math.round(duration(timeline, "explainer") / 1000);
   if (seconds > EXPLAINER_MAX_S) notes.push(`explainer: about ${seconds} s. Past ${EXPLAINER_MAX_S} s a viewer stops watching: cut a step, or show less in each.`);

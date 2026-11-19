@@ -1,6 +1,6 @@
 # Film a demo
 
-Plays the demo by itself and films it. The film opens on the title, plays the story step by step, presses what a viewer would press, and holds the results slide for five seconds. A film has nobody to answer the slide's questions, so it ends on the report with the demo's example numbers.
+Plays the demo by itself and films it. The film opens on the title, plays the story step by step, presses the button of a beat that waits for one, and holds the results slide for five seconds. A film has nobody to answer the slide's questions, so it ends on the report with the demo's example numbers.
 
 Needs ffmpeg on the path. Run from the `app` folder:
 

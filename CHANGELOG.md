@@ -14,6 +14,7 @@
 - Skill files: how to choose the chain, the lever and what to ask, and a new `benchmarks.md` with sourced numbers per trade and the places where no source exists.
 - The three examples are rewritten to the new block, with lower figures. Speed to lead starts at $1,080 a month where it showed $2,160: it now asks what the practice books today and adds 15 points to that.
 - Speed to lead is told in six steps, after a review of how clear it is to an owner. The first card says what the text is worth and the text sends itself. One card and one diagram cover what the system does, so the reply is on the phone by the seventh picture. The screens are named in the owner's words ("Your patient list", "Your week"), the chart is gone, and the closing card shows the sum behind the monthly figure.
+- The skill's rules follow that review. A customer's first message sends itself, and a form is filled in and sent in one step. `"wait": "click"` stays for a demo you present live. The workflow runs every step of one stretch of work in a single step, so the diagram shows once and the first reply comes sooner. `npm run check` used to note several workflow steps in one step. It now notes a workflow that shows in two or more steps in a row.
 - The player's browser tests play a story of their own, `tests/fixtures/dental-story.json`, so an example can change without a test changing with it. Each example is still checked for cut text and with axe. The cut-text check now measures after the page's typefaces have loaded.
 
 ## 0.2.1 (2026-11-18)

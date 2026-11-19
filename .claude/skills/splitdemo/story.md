@@ -12,7 +12,7 @@ Write these in the chat first. They are the demo; the JSON only carries them.
 2. **Their customer**: the person the story follows, with a name. "Dana Whitfield, a new patient."
 3. **Before**: what happens today, with its cost as a number. "A text after six waits 14 hours for a reply."
 4. **Trigger**: the one thing that starts the system, at the moment that makes the before hurt. "9:14 PM, a new patient texts. The practice closed at six."
-5. **Steps**: six to nine. The first is the trigger; each one after it is one thing the system does and what the owner gets from it.
+5. **Steps**: five to eight. The first is the trigger. The ones after it are what the system does, once for each stretch of work, and what each person gets from it.
 6. **Outcome**: up to three numbers, each next to what it was.
 7. **Results**: one or two sentences on why this is worth money, then the chain the calculator multiplies, in order, and the one number in it the system changes.
 
@@ -20,13 +20,16 @@ Write these in the chat first. They are the demo; the JSON only carries them.
 
 One step is one beat in the JSON: a caption (`say`) and the changes it brings (`do`).
 
-- **Step one is the trigger.** Its caption opens on the money at stake, what the one customer in the story is worth or what the task costs today, and then says what starts everything: "A $180 new patient texts at 9:14 PM. You closed at six. Press send." or "A $1,800 job starts here: at 6:30 it finds offices that fit." Take the figure from the calculator's chain, so the card and the results slide agree.
-  - A customer who sends or submits something: show their screen (a `phone`, a `form`) and let the viewer press it with `wait: "click"`. Step two then runs the first workflow step, with a caption that hands over: "Nobody is at the desk. The text starts the automation anyway."
-  - A `form` takes two beats, because a press opens its beat: in step one the customer fills it in, in step two the viewer presses the button and the first workflow step runs.
-  - A customer who emails: their mail lands on the owner's `inbox`, a screen with nothing to press. Step one is a `receive` and an `open` there, so the viewer reads the request, and it plays by itself. Step two runs the first workflow step.
-  - A time or a schedule: the caption names the time and the step runs the first workflow step.
-- **One workflow step per beat.** The viewer sees the whole workflow at rest, then the line draws from the step before to this one and it lights up. Its card has said what this step does, so run one, and give the next one its own beat.
-- **The workflow first, then what it caused.** Order the `do` list as the eye should travel: the workflow step, then the app it wrote to. Each screen shows full size, in that order.
+- **Step one is the trigger.** Its caption opens on the money at stake, what the one customer in the story is worth or what the task costs today, and then says what starts everything: "A $180 new patient sends this text. Your practice closed at six." or "A $1,800 job starts here: at 6:30 it finds offices that fit." Take the figure from the calculator's chain, so the card and the results slide agree.
+  - A customer who sends or submits something: show their screen (a `phone`, a `form`) and have them send it in this beat. The caption names who sends it, and the demo plays from the first card to the results by itself, as a link and as a film.
+  - A `form` is one beat: a `fill` for each field, then `submit`.
+  - A customer who emails: their mail lands on the owner's `inbox`. Step one is a `receive` and an `open` there, so the viewer reads the request.
+  - A time or a schedule: the caption names the time, and the beat runs the first stretch of the workflow.
+  - A press is for a demo the user presents live and asks one for. `wait: "click"` holds a beat until the prospect presses its first action, a phone's `send` or a form's `submit`, and its caption ends on the ask: "Press send." A form then takes two beats: its fields in step one, and `submit` opens step two. See "Pressing" in `format.md`.
+- **The workflow shows once for each stretch of work.** A stretch is what the system does in one go, from what starts it to the first thing a person receives: it reads the text, checks the calendar and writes the reply. Run every step of a stretch in one beat. The caption says the stretch in one sentence ("Nobody is at the desk. The system reads it and checks your calendar."), and each step's `note` says what that step found: "Thu 10 AM and Fri 2:30 PM free".
+  - When a customer's message is step one, its stretch is step two and the reply is on their screen by step three.
+  - The beats after a stretch land what it caused, each on the screen of whoever gets it. A stretch of one or two steps can share its beat with what it caused: the workflow steps first in `do`, then the screen it wrote to.
+  - Return to the workflow when the system starts again: the customer answers, a day passes. `check` notes a workflow that shows in two or more beats in a row.
 - **At most three screens in a beat, each once.** Keep all changes to one screen next to each other in `do`. A screen that leaves and comes back reads as two things happening. `check` notes both.
 - **Show what a person receives.** A reply, a follow-up or an alert that exists only as a `note` on a workflow step is a claim. Land it on the screen of whoever gets it: the customer's `phone` or `inbox`, the owner's `inbox`. A `note` is enough for what the system checks or decides: "No duplicate found".
   - The caption of the step where a reply lands says the system wrote it: "It answers with real times, 38 seconds later. Nobody typed it."
@@ -34,7 +37,6 @@ One step is one beat in the JSON: a caption (`say`) and the changes it brings (`
 - **One step, one gain.** The caption says what the moment means for the business, in the owner's words. "Dana is on your patient list before you have seen her text." beats "Webhook creates a CRM record."
   - The owner's words are what they call their customers and their tools, and they go on everything the viewer reads: captions, labels, workflow steps, tiles, the results slide. Where a builder says "lead", "pipeline", "CRM" and "AI", the owner says "a new patient", "your patient list", "your job board" and "it". A workflow step's `app` names a tool the owner knows ("Calendar", "Gmail") or is left out.
 - **Captions** speak to the owner as "you", in the present tense, in 72 characters or fewer. Write whole sentences: the card shows nothing else. Whoever the system tells or hands work to has one name in the whole demo, "you" or "your front desk": the caption, the workflow step and the screen's label all use it.
-- **A beat may be the workflow alone.** "It looks in your calendar for times that are really open." with one workflow step and its `note` is a full step.
 - **Every panel changes.** A screen that stays still for the whole demo looks broken. Give it something to do or leave it out.
 - **End on the gain.** The last beat turns the before numbers into the after numbers, on the screen where the owner reads their numbers. The results slide follows it.
 - **Show time with the clock.** Put `clock` on the beats where the time carries the point: 9:14 PM when the text arrives, 9:16 PM when it is booked. The card shows it next to the step number.
@@ -48,13 +50,13 @@ Read `src/panels/INDEX.md` in the app, then pick by role:
 | Role | Panels | How many |
 | --- | --- | --- |
 | Where the customer is | `phone`, `form`, `inbox` | one; a `form` and their `inbox` when they ask on one and are answered on the other |
-| The system at work | `workflow` | one, in almost every demo: its steps are the spine the story walks along |
+| The system at work | `workflow` | one, in almost every demo: the work nobody sees, shown once for each stretch |
 | Where the owner's work lives | `crm`, `sheet`, `calendar`, `inbox`, `campaign` | one or two |
 | What the owner gains | `kpi` | one, when the gain is a number |
 
 Four panels by default. Use three or two when a fourth would have nothing to do. When four slots are too few, the `kpi` gives up its slot first: the results slide shows the numbers either way, and the last beat can land on the owner's own screen. When the prospect names more screens than four slots hold, keep the customer's screen, the workflow and the screen where the gain shows. Fold each of the others into a workflow step, with its tool in `app` and its result in the step's `note`.
 
-Name the workflow's steps as things the system does, in the owner's words: "Reads the message", "Finds open slots". The viewer reads all of them when the workflow first shows. The workflow needs no step for the trigger. Give it one that names what came in ("New text message", "New quote request") when a customer's message starts the story: it is the step that step two runs, and it shows the message reached the system. A story that starts on a time opens on the first thing the system does ("Finds offices that fit").
+Name the workflow's steps as things the system does, in the owner's words: "Reads the message", "Finds open slots". They are the work nobody sees, what it reads, checks and writes. What that work puts on another screen in the demo shows there. The viewer reads all of the steps when the workflow first shows. The workflow needs no step for the trigger. Give it one that names what came in ("New text message", "New quote request") when a customer's message starts the story: it is where the first stretch starts, and it shows the message reached the system. A story that starts on a time opens on the first thing the system does ("Finds offices that fit").
 
 A label says whose screen it is or which tool it is, in 40 characters or fewer (about 24 over a phone or a form, which stands in a narrow column): "Patient's phone", "Your jobs in ClickUp", "This week". Name the tool the prospect uses when you know it. App names are plain text.
 

@@ -73,8 +73,7 @@ On a call: the switch top left goes between Explainer and Fast. Space plays and 
   ],
   "beats": [
     {
-      "say": "9:14 PM. The practice closed at six. Send the text a new patient would.",
-      "wait": "click",
+      "say": "A $180 new patient sends this text. Your practice closed at six.",
       "do": [{ "on": "phone", "type": "send", "text": "Hi, I chipped a tooth. Can I come in this week?" }]
     },
     {
@@ -98,7 +97,7 @@ On a call: the switch top left goes between Explainer and Fast. Space plays and 
 }
 ```
 
-Each beat is one step: a caption and the actions it brings. In explainer mode the caption is the card, and the actions show one screen at a time in the order they are written. In fast mode they play on the wall while the caption stands under it. Timing follows from the text, so you write no numbers unless you want a pause on the wall. A beat with `"wait": "click"` holds until the viewer presses the button themselves.
+Each beat is one step: a caption and the actions it brings. In explainer mode the caption is the card, and the actions show one screen at a time in the order they are written. In fast mode they play on the wall while the caption stands under it. Timing follows from the text, so you write no numbers unless you want a pause on the wall. A demo plays by itself. When you present one live, a beat with `"wait": "click"` holds until the viewer presses the button themselves.
 
 `results` is optional. The calculator is one chain of numbers that multiply, and a lever: the one number in the chain the system changes. Here 40 texts × 10% booked × $180 is $720 a month today. With 20 points more booked it is $2,160, so the slide starts at $1,440 extra a month. An input with an `ask` is a question the slide puts to the viewer. The rest are your estimates, and the viewer can change every number in the report.
 
