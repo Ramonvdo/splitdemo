@@ -73,14 +73,14 @@ function Question({ demo, roi, input, n, of, value, onType, onLeave, onBack, onN
   return (
     <form
       data-question={input.id}
-      className="mx-auto grid min-h-full max-w-[46rem] animate-fade content-center gap-[1.5rem] p-[2rem] compact:gap-[1.2rem] compact:p-[1.1rem]"
+      className="mx-auto grid min-h-full max-w-[60rem] animate-fade content-center gap-[1.5rem] p-[2rem] compact:gap-[1.2rem] compact:p-[1.1rem]"
       onSubmit={(e) => {
         e.preventDefault();
         onNext();
       }}
     >
       <p className="text-lead font-medium text-stage-muted">{say.of(n + 1, of)}</p>
-      <h2 className="text-balance text-huge font-semibold tracking-[-0.02em]">{input.ask}</h2>
+      <h2 className="max-w-[42rem] text-balance text-huge font-semibold tracking-[-0.02em]">{input.ask}</h2>
       {/* Typing takes the estimate's place: nobody should have to clear the field first. */}
       <div className="max-w-[20rem]">
         <Field input={input} roi={roi} lang={demo.lang} label={input.ask!} large autoFocus onFocus={(e) => e.currentTarget.select()} value={value} onChange={(e) => onType(e.target.value)} onBlur={onLeave} />

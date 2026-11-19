@@ -1,6 +1,6 @@
 # Benchmarks for the calculator
 
-Numbers to fill in a rate the prospect did not state. Read the row for the chain you are building, take the low end, and put the source in the input's `note` (80 characters). Where the table says no source, write your own low guess, leave `note` out, and list it as a guess in your report.
+Numbers to fill in a rate the prospect did not state. Read the row for the chain you are building, take the low end, and put the source in the input's `note` (80 characters). Where the table says no source, write your own low guess, leave `note` out, and list it as a guess in your report. A count or a price (requests a month, what a job is worth, an hourly cost) has no row here: it gets an `ask`, with your low guess in the field.
 
 Gathered November 2026 from the pages linked. Vendor reports count their own customers; every study of reply speed shows what goes together, not what causes what. That is why these fill estimates the owner can change, and never a claim in a caption.
 
@@ -59,4 +59,4 @@ Gathered November 2026 from the pages linked. Vendor reports count their own cus
 
 ## When the trade is not here
 
-Search for a source before you guess, prefer a number counted over a number surveyed, and add the row here with its link once you have used it.
+Search for a source before you guess a rate, and prefer a number counted over a number surveyed. Put the source in the input's `note` and name it in your report, so the user can add the row here.

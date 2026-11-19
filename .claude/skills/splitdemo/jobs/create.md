@@ -30,7 +30,7 @@ Run every command from the `app` folder in the settings.
 
    It writes to `<workspace>/demos/<slug>/shots/`:
 
-   - the story: `explainer-00-start.png`, then per step its card (`explainer-03-0-card.png`) and each screen as the story leaves it (`explainer-03-1-flow.png`);
+   - the story: `explainer-00-start.png`, then per step its card (`explainer-03-0-card.png`) and each screen as the story leaves it (`explainer-03-1-flow.png`). The middle number is the action the picture follows, so it skips where one screen takes several: `explainer-03-4-inbox.png`;
    - the slide at the end, with a calculator: its card (`explainer-NN-0-ask.png`), one picture per question named after its input (`explainer-NN-1-requests.png`), and the report on the example numbers (`explainer-NN-results.png`);
    - the wall: `00-start.png`, one `NN-beat.png` per beat, `NN-end.png`.
 

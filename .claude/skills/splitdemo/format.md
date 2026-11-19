@@ -86,13 +86,13 @@ The example at the top has a whole `results` block. Every part of it is optional
 | --- | --- | --- |
 | `title` | The claim over the numbers. | 60 characters |
 | `text` | Why it is worth money. | 220 characters |
-| `roi.currency` | A currency code: `USD`, `EUR`. | three capitals |
+| `roi.currency` | Any ISO currency code: `USD`, `EUR`, `GBP`. | three capitals |
 | `roi.inputs` | The chain: numbers that multiply in the order written. Each has an `id`, a `label` and a starting `value`. `"kind": "percent"` makes 30 count as 0.30, `"kind": "money"` shows it as money. `min` and `max` bound what can be typed; without `max` that is 100 for a percentage, and otherwise ten times the value or the lever's `to`, whichever is larger. | 2 to 5; label 44 characters |
 | `roi.inputs[].ask` | The question the slide asks for this number. Without one the number is an estimate: passed over by the questions, tagged "estimate" in the report. | 90 characters; 1 to 4 inputs carry one |
 | `roi.inputs[].note` | Where an estimate comes from, shown with its question or its label. | 80 characters |
 | `roi.inputs[].stage` | What this step of the chain yields, for the funnel: "Requests", "Visits", "Jobs". | 16 characters |
 | `roi.lever` | The one input the system changes. `{ "input": "<id>", "add": 20 }` adds to whatever the viewer answers, and a percentage stops at 100. `{ "input": "<id>", "to": 160 }` is the system's own number. | one of `add` and `to` |
-| `roi.times` | A factor on the whole chain, for units: `0.0167` turns minutes into hours, `0.0833` a yearly amount into a monthly one. | |
+| `roi.times` | One factor on the whole chain, for units and fixed constants: `0.0167` turns minutes into hours, `0.0833` a yearly amount into a monthly one. Several multiply into this one number. | |
 | `roi.saving` | `true` when the chain is a cost the lever brings down. | not with `monthly` |
 | `roi.monthly` | `true` when what is won pays again every month, so each month adds to the ones before. | not with `saving` |
 | `roi.label` | Replaces the words under the monthly figure. Left out: "extra a month", "saved a month" with `saving`, "more a month, every month again" with `monthly`. | 28 characters |
@@ -106,7 +106,7 @@ The report draws two charts from the block:
 
 - **Twelve months**, always: what the system adds month by month, after costs, against carrying on as today, with a dashed line for half the effect.
 - **A funnel**, when three or more inputs before the first amount of money carry a `stage`, counted over a year. A first stage ten times the next or more is left out of the drawing and written as a sentence over it. Today's funnel stands over the system's when both start from the same count. When the lever changes the count that goes in, the system's funnel stands alone with today's count under each stage.
-- **Bars** otherwise: a year as the business works today, a year with the system, and what the system costs.
+- **Bars** otherwise: a year as the business works today, a year with the system, and what the system costs, each with its amount and its name under it.
 
 ## Two modes
 

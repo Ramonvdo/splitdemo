@@ -18,14 +18,14 @@ export function Field({ input, roi, lang, label, large, lever, ...rest }: { inpu
       )}
     >
       {input.kind === "money" && <span className="text-muted">{sign(roi.currency, lang)}</span>}
-      <input aria-label={label} inputMode="decimal" autoComplete="off" className={cn("w-full min-w-0 bg-transparent font-semibold tabular-nums outline-none", large ? "h-[4.4rem]" : "h-[2.3rem]")} {...rest} />
+      <input aria-label={label} inputMode="decimal" autoComplete="off" className={cn("w-full min-w-0 bg-transparent font-semibold tabular-nums outline-none selection:bg-tally/30", large ? "h-[4.4rem]" : "h-[2.3rem]")} {...rest} />
       {input.kind === "percent" && <span className="text-muted">%</span>}
     </span>
   );
 }
 
 function Tag({ children }: { children: ReactNode }) {
-  return <span className="rounded-full border border-line bg-window px-[0.5rem] py-[0.05rem] text-meta font-medium text-muted">{children}</span>;
+  return <span className="inline-block rounded-full border border-line bg-window px-[0.5rem] py-[0.05rem] text-meta font-medium text-muted">{children}</span>;
 }
 
 export interface ReportProps {
@@ -53,11 +53,13 @@ export interface ReportProps {
  * The report on a light sheet, because the charts are drawn for a light window. Left: what came of the story and the numbers
  * the sums use, each one open to change. Right: what those numbers come to, and the charts.
  * On a phone the columns become one, in the order a thumb reads it: what came of it, what that is worth, the numbers that change it, the charts.
+ * What came of it is a line per number there, so the first field is on the screen the slide opens on.
  */
 export function Report({ demo, roi, raw, lever, today, system, worked, touched, theirs, still, onType, onLeave, onChange }: ReportProps) {
   const say = words(demo.lang);
   const money = (value: number) => shown(value, "money", roi.currency, demo.lang);
   const share = worked.point && roi.inputs.find((input) => input.id === worked.point!.id);
+  const costs = say.costs(roi.cost?.once ? money(roi.cost.once) : undefined, roi.cost?.monthly ? money(roi.cost.monthly) : undefined);
 
   return (
     <div data-report className="grid min-h-full grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-[2rem] p-[1.8rem] compact:grid-cols-1 compact:gap-[1.3rem] compact:p-[1.1rem]">
@@ -67,18 +69,18 @@ export function Report({ demo, roi, raw, lever, today, system, worked, touched, 
         </p>
         {/* Without a title of its own the slide starts at the numbers; the strip over the wall carries the demo's title. A phone's strip has no room for it, so there the slide says it. */}
         <h2 className={cn("text-balance text-huge font-semibold tracking-[-0.02em]", !demo.results?.title && "hidden compact:block")}>{demo.results?.title ?? demo.title}</h2>
-        <dl className="flex flex-wrap gap-x-[2rem] gap-y-[1rem]" data-outcome>
+        <dl className="flex flex-wrap gap-x-[2rem] gap-y-[1rem] compact:flex-col compact:flex-nowrap compact:gap-y-[0.35rem]" data-outcome>
           {demo.outcome.map((o, i) => (
-            <div key={i} className="flex flex-col-reverse justify-end border-l-2 border-tally pl-[0.8rem]">
-              <dt className="text-body leading-tight text-muted">
+            <div key={i} className="flex flex-col-reverse justify-end border-l-2 border-tally pl-[0.8rem] compact:flex-row-reverse compact:items-baseline compact:gap-x-[0.6rem]">
+              <dt className="text-body leading-tight text-muted compact:min-w-0">
                 {o.label}
                 {o.was && (
-                  <span className="block font-medium text-ink/75">
+                  <span className="block font-medium text-ink/75 compact:inline compact:before:content-[',_']">
                     {say.was} {o.was}
                   </span>
                 )}
               </dt>
-              <dd className="text-outcome font-bold tracking-tight">{o.value}</dd>
+              <dd className="text-outcome font-bold tracking-tight compact:shrink-0 compact:text-big">{o.value}</dd>
             </div>
           ))}
         </dl>
@@ -113,11 +115,13 @@ export function Report({ demo, roi, raw, lever, today, system, worked, touched, 
                 return (
                   <tr key={input.id}>
                     <th scope="row" className="pr-[0.6rem] text-left text-meta font-normal leading-tight text-muted">
-                      <span className="flex flex-wrap items-center gap-x-[0.4rem] gap-y-[0.15rem]">
-                        {input.label}
-                        {!input.ask && !touched.includes(input.id) && <Tag>{say.estimate}</Tag>}
-                      </span>
-                      {input.note && !touched.includes(input.id) && <span className="block text-ink/60">{input.note}</span>}
+                      {input.label}
+                      {/* A number of ours says so under its name, with where it comes from. Typed over, it is theirs. */}
+                      {!touched.includes(input.id) && (!input.ask || input.note) && (
+                        <span className="mt-[0.2rem] block text-ink/60">
+                          {!input.ask && <Tag>{say.estimate}</Tag>} {input.note}
+                        </span>
+                      )}
                     </th>
                     <td>
                       <Field input={input} roi={roi} lang={demo.lang} label={input.label} data-input={input.id} value={raw[input.id]} onChange={(e) => onType(input.id, e.target.value)} onBlur={() => onLeave(input.id)} />
@@ -184,14 +188,16 @@ export function Report({ demo, roi, raw, lever, today, system, worked, touched, 
             </p>
           ) : (
             <>
-              {roi.cost && (
+              {/* The costs the year counts are named here, so the figures above can be checked against each other. */}
+              {costs && (
                 <p data-payback className="font-semibold">
-                  {worked.payback && say.payback(worked.payback)}
+                  {say.payback(costs, worked.payback)}
                 </p>
               )}
+              {/* On the lever the row is the one with the coloured field, so the sentence needs no name for it. */}
               {worked.point && share && (
                 <p data-point className="text-muted">
-                  {say.point(share.label, money(worked.point.year))}
+                  {say.point(money(worked.point.year), share.id === roi.lever.input ? undefined : share.label)}
                 </p>
               )}
             </>

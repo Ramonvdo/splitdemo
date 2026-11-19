@@ -18,7 +18,7 @@ export interface Worked {
   year: number;
   /** The first month the running total is at or above zero. Only when there is a cost, and only within the year. */
   payback?: number;
-  /** What one more point on the chain's last share is worth in a year, with the system running. Not for a saving, and not above 100. */
+  /** What one more point is worth in a year, with the system running: on the share the system changes, or else on the chain's last share. Not for a saving, and not above 100. */
   point?: { id: string; year: number };
 }
 
@@ -46,7 +46,9 @@ export function work(roi: Roi, today: Record<string, number>, lever = target(roi
   const run = (size: number) => added(size).reduce((total, month) => [...total, total[total.length - 1] + month - monthly], [0 - once]);
   const running = run(effect);
   const paid = running.findIndex((total, month) => month > 0 && total >= 0);
-  const share = roi.saving ? undefined : roi.inputs.findLast((input) => input.kind === "percent" && system[input.id] < 100);
+  // The sentence is about the row the viewer is looking at: the lever, when that is a share with room left.
+  const open = (input: RoiInput) => input.kind === "percent" && system[input.id] < 100;
+  const share = roi.saving ? undefined : (roi.inputs.find((input) => input.id === roi.lever.input && open(input)) ?? roi.inputs.findLast(open));
   // A year of one point more: twelve months, or with `monthly` 1 + 2 + ... + 12 of them.
   const more = share && (chain({ ...system, [share.id]: system[share.id] + 1 }) - after) * (roi.monthly ? 78 : 12);
   return {

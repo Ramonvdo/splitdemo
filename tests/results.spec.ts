@@ -166,9 +166,9 @@ test("the report says what came of the story and what the system adds", async ({
   await expect(slide.locator("[data-net]")).toHaveText("$1,140");
   await expect(slide.locator("[data-year]")).toHaveText("$12,180");
   // -1,500, then +1,140 a month: above zero in the second month.
-  await expect(slide.locator("[data-payback]")).toHaveText("Pays for itself in month 2");
-  // One point more is 40 x 0.01 x 180 a month.
-  await expect(slide.locator("[data-point]")).toHaveText('Each extra point on "Share of those that book a visit" is worth $864 a year.');
+  await expect(slide.locator("[data-payback]")).toHaveText("After $1,500 to set up and $300 a month, it pays for itself in month 2.");
+  // One point more is 40 x 0.01 x 180 a month. The system changes that share, so the sentence needs no name for it.
+  await expect(slide.locator("[data-point]")).toHaveText("Each extra point the system adds is worth $864 a year.");
   // The bar leaves what came of it to the slide.
   await expect(page.locator("footer [data-outcome]")).toHaveCount(0);
 });
@@ -208,7 +208,8 @@ test("a chain of two levels gets bars beside it: a year today, a year with the s
   const chart = page.locator("[data-results] figure").nth(1);
   await expect(chart.locator("figcaption")).toHaveText("A year as you work today, and a year with the system");
   // 720 and 2,160 a month, twelve times; 12 x 300 and 1,500 once.
-  await expect(chart.locator("[data-legend] li")).toHaveText(["Today $8,640", "With the system $25,920", "What it costs $5,100"]);
+  await expect(chart.locator("[data-bars] li")).toHaveText(["$8,640 Today", "$25,920 With the system", "$5,100 What it costs"]);
+  await expect(chart.getByRole("img")).toHaveAttribute("aria-label", "A year as you work today, and a year with the system: Today $8,640, With the system $25,920, What it costs $5,100");
   await expect(chart.locator("[data-funnel]")).toHaveCount(0);
 });
 
@@ -220,6 +221,8 @@ test("a chain of three levels is drawn as two funnels, today over the system", a
   await expect(chart.getByRole("img")).toHaveAttribute("aria-label", "From requests to jobs, over a year. Today: Requests 300, Visits 150, Jobs 45. With the system: Requests 300, Visits 210, Jobs 63.");
   await expect(chart.locator("[data-funnel]")).toHaveCount(2);
   await expect(chart.locator("[data-lead]")).toHaveCount(0);
+  // The sentence about one more point is about the row the system changes: 25 x 0.01 x 0.30 x 1,800, twelve months.
+  await expect(page.locator("[data-results] [data-point]")).toHaveText("Each extra point the system adds is worth $1,620 a year.");
   // More requests widen both funnels alike: 40 x 12, of which 240 and 336 visit.
   await page.locator("[data-results]").getByLabel("Quote requests a month", { exact: true }).fill("40");
   await expect(chart.getByRole("img")).toHaveAttribute("aria-label", /Today: Requests 480, Visits 240, Jobs 72\. With the system: Requests 480, Visits 336, Jobs 101\.$/);
@@ -256,7 +259,11 @@ test("the viewer changes a number and the report works it out again", async ({ p
   await system.fill("35");
   await expect(slide.locator("[data-monthly]")).toHaveText("$900");
   await expect(slide.locator("[data-year]")).toHaveText("$5,700");
-  await expect(slide.locator("[data-payback]")).toHaveText("Pays for itself in month 3");
+  await expect(slide.locator("[data-payback]")).toHaveText("After $1,500 to set up and $300 a month, it pays for itself in month 3.");
+  // 5 texts are 5 x 0.10 x 180 = 90 a month, less than the 300 it costs: the year never gets above zero, and the slide says so.
+  await texts.fill("5");
+  await expect(slide.locator("[data-payback]")).toHaveText("After $1,500 to set up and $300 a month, it does not pay for itself in the first year.");
+  await texts.fill("50");
   // They already do better than that: nothing to win, and the slide says so instead of a loss.
   await booked.fill("40");
   await expect(slide.locator("[data-monthly]")).toHaveText("$0");
@@ -380,7 +387,7 @@ test("clients who keep paying count every month again", async ({ page }) => {
   await expect(slide.locator("[data-by12]")).toHaveText("$3,360");
   // 280 x (1 + 2 + ... + 12), less 12 x 450 and 1,500.
   await expect(slide.locator("[data-year]")).toHaveText("$14,940");
-  await expect(slide.locator("[data-payback]")).toHaveText("Pays for itself in month 5");
+  await expect(slide.locator("[data-payback]")).toHaveText("After $1,500 to set up and $450 a month, it pays for itself in month 5.");
   await expect(slide.locator("[data-point]")).toHaveText('Each extra point on "Visits that become a client" is worth $1,248 a year.');
   // The system's number is its own: 160 emails, whatever they send today.
   await slide.getByLabel("Offices emailed a month", { exact: true }).fill("60");
@@ -400,5 +407,5 @@ test("a Dutch demo gets a Dutch slide, with money written the Dutch way", async 
   await expect(slide.getByText("Voorbeeldcijfers")).toBeVisible();
   await expect(slide.getByRole("columnheader")).toHaveText(["Nu", "Met het systeem"]);
   await expect(slide.locator("[data-monthly]")).toHaveText(/^€\s1\.440$/);
-  await expect(slide.locator("[data-payback]")).toHaveText("Terugverdiend in maand 2");
+  await expect(slide.locator("[data-payback]")).toHaveText(/^Na €\s1\.500 eenmalig en €\s300 per maand terugverdiend in maand 2\.$/);
 });

@@ -70,16 +70,16 @@ Pick the one chain of the business the system changes and write it as two to fiv
 
 - **A rate the system improves gets `add`**: points on top of whatever the owner answers. `"add": 20` turns their 50% into 70% and another owner's 35% into 55%.
 - **A number the system sets itself gets `to`**: `"to": 160` when it emails 160 offices a month whatever they email today, `"to": 3` when a task takes 3 minutes with it.
-- **`saving: true`** when the chain is a cost that goes down: minutes of work times an hourly cost. The slide then says "saved a month".
+- **`saving: true`** when the chain is a cost that goes down. Time saved goes in as money: minutes of work × an hourly cost you ask the owner for. The slide then says "saved a month".
 - **`monthly: true`** when what is won pays again every month, like a cleaning contract. Month 12 then counts twelve months of new clients, on the assumption that they stay the year. A job paid once stays without it, and so does an amount paid once a year (that one takes `"times": 0.0833`).
-- **`times`** converts units: `0.0167` turns minutes into hours.
+- **`times`** carries every fixed factor, multiplied into one number: a unit (minutes to hours is `0.0167`) and a constant nobody would change (21 working days a month). Emails a day × minutes each becomes hours a month with `"times": 0.35`. A constant written as an input would show as an "estimate" the owner is invited to change.
 - **One gain per calculator.** A second gain the story shows (a follow-up job, fewer calls, a certain answer on every quote) stays in `outcome`.
 
 ### What to ask
 
-Give `ask` to the numbers an owner knows from memory: how many requests come in, what a job is worth, how many customers they have. Three questions as a rule, four at most. Write each the way you would ask it across a table, and ask a share as "of every 100": "Of every 100 requests, how many end up booking a visit?"
+Give `ask` to the numbers an owner knows from memory: how many requests come in, what a job is worth, how many customers they have. Three questions as a rule, four at most. Write each the way you would ask it across a table, and ask a share as "of every 100": "Of every 100 requests, how many end up booking a visit?" The lever's own input takes an `ask` like any other when the owner knows today's number. Their answer is today, and the report puts the system's number beside it as the estimate.
 
-Every other number is your estimate. It has no `ask`, so the slide passes over it, shows it in the report with an "estimate" tag, and lets the owner change it there. A rate the owner never measured, like the reply rate on cold email they never sent, is always an estimate. An estimate with a source says so in its `note`: "ServiceTitan median close rate: 31 to 38%". Read [benchmarks.md](benchmarks.md) before you fill in a rate: it has the sourced numbers per trade and the places where no source exists.
+Every other number is your estimate. It has no `ask`, so the slide passes over it, shows it in the report with an "estimate" tag, and lets the owner change it there. A rate the owner never measured, like the reply rate on cold email they never sent, is always an estimate. An estimate with a source says so in its `note`, and says where your number sits against it: "ServiceTitan's median close rate is 31 to 38%. We count 30." Read [benchmarks.md](benchmarks.md) before you fill in a rate: it has the sourced numbers per trade and the places where no source exists.
 
 ### Stages
 
@@ -88,10 +88,11 @@ When the chain is a pipeline, give `stage` to its count and to each rate after i
 ### Numbers
 
 - A number the prospect stated goes in as stated.
-- Guess the others low, also when the input states none. The number in a field pulls the owner's answer toward it, and a figure they can raise is believed sooner than a headline they have to talk down.
-- Work the chain by hand, today's and the system's, before you trust the file: 25 × 0.20 × 0.30 × 1,800 = 2,700 extra a month.
-- `roi.cost` only when the user, the one who sends this demo, named their price. A budget in a job post is the prospect's number. With a cost the report shows what is left after it and the month it pays for itself.
-- `next` gives the slide one thing to press. Set it when the settings or the user give a booking page or an address, and say so in your report when the demo has none.
+- Guess the others so the gain comes out low, also when the input states none: a low rate, a small `add`, and for a `to` on a cost the higher number (2 minutes with the system where you hope for 1). The number in a field pulls the owner's answer toward it, and a figure they can raise is believed sooner than a headline they have to talk down.
+- Work the chain by hand, today's and the system's, with `times` as the file has it, before you trust the file: 25 × 0.20 × 0.30 × 1,800 = 2,700 extra a month.
+- An `outcome` number's `was` and the calculator's today describe the same business: "was 6 a year" beside a chain that comes to 6 visits a year today.
+- `roi.cost` only when the user, the one who sends this demo, named their price. A budget in a job post is the prospect's number. With a cost the report shows what is left after it, names the cost, and says in which month the system has paid for itself.
+- `next` gives the slide one thing to press. Set it when the user gives a booking page or an address, and say so in your report when the demo has none.
 
 ## Numbers and names
 

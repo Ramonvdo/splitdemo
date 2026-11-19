@@ -82,9 +82,12 @@ export interface ChartsProps {
   lang?: Lang;
 }
 
+/** The share of a bar's step that stays empty, on both sides of it. */
+const BAR_GAP = 0.3;
+
 /**
  * A year as the business works today next to a year with the system, and what the system costs in that year.
- * The legend names the bars and says what each comes to: three axis labels do not fit under bars this narrow.
+ * Under each bar stands what it comes to and what it is, so no bar is told apart by its colour alone.
  */
 function Year({ roi, worked, say, money, calm }: ChartsProps & { calm: boolean }) {
   // What a month comes to counts twelve times in a year, or with `monthly` 1 + 2 + ... + 12 times.
@@ -96,20 +99,35 @@ function Year({ roi, worked, say, money, calm }: ChartsProps & { calm: boolean }
     { label: say.system, today: 0, system: worked.after * months, cost: 0 },
     ...(cost ? [{ label: say.cost, today: 0, system: 0, cost }] : []),
   ];
-  const ends: End[] = [
-    { label: say.today, value: money(bars[0].today), stroke: "var(--color-muted)", block: true },
-    { label: say.system, value: money(bars[1].system), stroke: "var(--chart-1)", block: true },
-    ...(cost ? [{ label: say.cost, value: money(cost), stroke: COST, block: true }] : []),
+  const ends = [
+    { label: say.today, value: money(bars[0].today) },
+    { label: say.system, value: money(bars[1].system) },
+    ...(cost ? [{ label: say.cost, value: money(cost) }] : []),
   ];
   const title = say.yearly(roi.saving === true);
   return (
-    <Figure title={title} legend={<Legend ends={ends} />} label={`${title}: ${ends.map((end) => `${end.label} ${end.value}`).join(", ")}`}>
-      <BarChart data={bars} xDataKey="label" aspectRatio="auto" className="h-full" margin={{ top: 8, right: 4, bottom: 10, left: 4 }} barGap={0.3} stacked stackGap={0.01} animationDuration={700}>
-        <Grid horizontal numTicksRows={3} />
-        <Bar dataKey="today" fill="var(--color-muted)" lineCap={4} animate={!calm} />
-        <Bar dataKey="system" fill="var(--chart-1)" lineCap={4} animate={!calm} />
-        <Bar dataKey="cost" fill={COST} lineCap={4} animate={!calm} />
-      </BarChart>
+    <Figure title={title} label={`${title}: ${ends.map((end) => `${end.label} ${end.value}`).join(", ")}`}>
+      <div className="flex h-full flex-col gap-[0.3rem] pb-[0.6rem]">
+        <div className="min-h-0 flex-1">
+          {/* Square ends: stacked, the library rounds the last series only, and that on all four corners. */}
+          <BarChart data={bars} xDataKey="label" aspectRatio="auto" className="h-full" margin={{ top: 8, right: 4, bottom: 2, left: 4 }} barGap={BAR_GAP} stacked stackGap={0.01} animationDuration={700}>
+            <Grid horizontal numTicksRows={3} />
+            <Bar dataKey="today" fill="var(--color-muted)" lineCap={0} animate={!calm} />
+            <Bar dataKey="system" fill="var(--chart-1)" lineCap={0} animate={!calm} />
+            <Bar dataKey="cost" fill={COST} lineCap={0} animate={!calm} />
+          </BarChart>
+        </div>
+        {/* The columns are the bars' own: a band scale leaves half a gap outside the first and the last step. */}
+        <div className="px-[4px]">
+          <ul data-bars className="grid text-center text-meta leading-tight text-muted" style={{ gridTemplateColumns: `repeat(${ends.length}, minmax(0, 1fr))`, paddingInline: `${(BAR_GAP * 50) / (ends.length + BAR_GAP)}%` }}>
+            {ends.map((end) => (
+              <li key={end.label}>
+                <b className="block font-semibold text-ink">{end.value}</b> {end.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </Figure>
   );
 }

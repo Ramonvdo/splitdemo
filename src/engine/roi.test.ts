@@ -135,6 +135,17 @@ const intake: Roi = {
 };
 const plumbing = { requests: 25, visit: 50, won: 30, job: 1800 };
 
+it("counts the extra point on the share the system changes, not on a later one", () => {
+  // The lever is the share that books a visit: 1 in 100 more of 25 requests, 3 in 10 become a job of 1,800, twelve months.
+  const point = work(intake, plumbing).point;
+  expect(point?.id).toBe("visit");
+  expect(point?.year).toBeCloseTo(1620, 6);
+  // Twenty of those points are the whole effect: 2,700 a month.
+  expect(point!.year * 20).toBeCloseTo(work(intake, plumbing).effect * 12, 6);
+  // A lever already at 100 in 100 leaves the last share that still has room.
+  expect(work(intake, plumbing, 100).point?.id).toBe("won");
+});
+
 it("lays the chain out as a funnel over a year, today next to the system", () => {
   // 25 x 12 requests; half of them and 7 in 10 of them visit; 3 in 10 visits become a job. Money is not a stage.
   expect(stages(intake, plumbing)).toEqual({
