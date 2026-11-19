@@ -36,7 +36,7 @@ Run every command from the `app` folder in the settings.
 
    It fails when text is cut off or ends in three dots, on a laptop screen or a phone. A state that fails on a phone gets a `-phone.png` picture to look at. Each `does not fit` line ends with the picture that shows it. `on the wall behind it` means a card or the results slide covers that panel in the picture: the text is cut on the wall, so look at the wall picture of the same step. While you iterate on one way of telling it, `--mode explainer` or `--mode fast` shoots that one alone.
 
-7. **Do the cold read** in [../story.md](../story.md) on the story pictures, every one of them. Rewrite the steps that fail it, then repeat from step 5.
+7. **Do the cold read** in [../story.md](../story.md) on the story pictures, every one of them. Rewrite the steps that fail it, then repeat from step 5. After a rewrite the read starts at the first step you changed and runs to the last one, because later screens carry what earlier steps put on them. Read the slide at the end again when `outcome` or `results` changed. Done when a pass finds nothing to rewrite.
 
 8. **Open it.** The dev server plays every demo at `http://localhost:4310/<slug>/` and reloads when its file changes. When nothing answers on port 4310, start `npm run dev` from the app in the background.
 

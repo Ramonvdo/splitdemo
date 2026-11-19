@@ -8,17 +8,17 @@ Three finished demos to match are in the app: `examples/speed-to-lead`, `example
   "title": "A new patient texts after closing time",
   "panels": [
     { "id": "phone", "type": "phone", "label": "Patient's phone", "config": { "contact": "Harbor Dental" } },
-    { "id": "crm", "type": "crm", "label": "Patient pipeline", "config": { "columns": [{ "id": "new", "title": "New" }, { "id": "booked", "title": "Booked" }] } }
+    { "id": "crm", "type": "crm", "label": "Your patient list", "config": { "columns": [{ "id": "new", "title": "New" }, { "id": "booked", "title": "Booked" }] } }
   ],
   "beats": [
     {
-      "say": "9:14 PM. The practice closed at six. Send the text a new patient would.",
+      "say": "A $180 new patient texts at 9:14 PM. You closed at six. Press send.",
       "clock": "9:14 PM",
       "wait": "click",
       "do": [{ "on": "phone", "type": "send", "text": "Hi, I chipped a tooth. Can I come in this week?" }]
     },
     {
-      "say": "The lead is in your pipeline before you have seen it.",
+      "say": "Dana is on your patient list before you have seen her text.",
       "do": [{ "on": "crm", "type": "add", "id": "dana", "to": "new", "title": "Dana Whitfield" }]
     }
   ],
@@ -136,7 +136,7 @@ On the wall:
 
 ## Pressing
 
-A beat with `"wait": "click"` holds until the viewer presses its first action: the send button on a phone, the submit button on a form. `INDEX.md` marks which actions are pressable. Left alone, the demo presses it after four seconds, so it never stalls. One or two such beats in a demo, the first where the customer first sends or submits something. That is usually the opening beat.
+A beat with `"wait": "click"` holds until the viewer presses its first action: the send button on a phone, the submit button on a form. `INDEX.md` marks which actions are pressable. Left alone, the demo presses it after four seconds, so it never stalls. Two such beats at most in a demo, the first where the customer first sends or submits something, which is usually the opening beat. A demo with none is complete: a story that starts on a time, a schedule or an arriving email plays from start to end by itself.
 
 ## Layout
 
