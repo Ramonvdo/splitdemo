@@ -5,10 +5,10 @@
     {
       "id": "leads",
       "type": "sheet",
-      "label": "Lead list, first rows",
+      "label": "Your list of offices",
       "config": {
-        "title": "Office cleaning leads",
-        "tab": "Leads",
+        "title": "Offices to write to",
+        "tab": "Offices",
         "columns": [
           { "id": "company", "title": "Company" },
           { "id": "contact", "title": "Contact" },
@@ -26,14 +26,14 @@
     {
       "id": "flow",
       "type": "workflow",
-      "label": "The automation",
+      "label": "What the system does",
       "config": {
         "nodes": [
           { "id": "find", "label": "Finds offices that fit", "icon": "search" },
-          { "id": "write", "label": "Writes a first line", "app": "AI", "icon": "sparkle", "after": ["find"] },
+          { "id": "write", "label": "Writes a first line", "icon": "sparkle", "after": ["find"] },
           { "id": "send", "label": "Sends from your address", "icon": "mail", "after": ["write"] },
           { "id": "nudge", "label": "Follows up if quiet", "icon": "clock", "after": ["send"] },
-          { "id": "sort", "label": "Reads each reply", "app": "AI", "icon": "sparkle", "after": ["send"] },
+          { "id": "sort", "label": "Reads each reply", "icon": "sparkle", "after": ["send"] },
           { "id": "draft", "label": "Drafts your answer", "icon": "doc", "after": ["sort"] }
         ]
       }
@@ -41,7 +41,7 @@
     {
       "id": "campaign",
       "type": "campaign",
-      "label": "Email campaign",
+      "label": "Your emails to new offices",
       "config": {
         "name": "Office managers in Denver",
         "status": { "text": "Draft" },
@@ -70,50 +70,47 @@
   ],
   "beats": [
     {
-      "say": "Every morning at 6:30, while you are on a job, it finds new offices.",
+      "say": "A $400-a-month client starts here: at 6:30 it finds offices that fit.",
       "clock": "6:30 AM",
       "do": [
         { "on": "flow", "type": "run", "node": "find", "note": "40 offices, 20+ staff" },
-        { "on": "leads", "type": "add", "id": "norwood", "cells": { "company": "Norwood Studio", "contact": "Ines Calloway", "status": "New" } },
-        { "on": "leads", "type": "add", "id": "pike", "cells": { "company": "Pike & Rowe CPA", "contact": "Sam Rowe", "status": "New" } }
+        { "on": "flow", "type": "run", "node": "write", "note": "A first line for each" },
+        { "on": "flow", "type": "run", "node": "send", "note": "Out at 8 from your address" }
       ]
     },
     {
-      "say": "Each one gets a first line about their own office. No template.",
+      "say": "Every email opens on something true about that office.",
       "do": [
-        { "on": "flow", "type": "run", "node": "write", "note": "40 lines written" },
-        { "on": "leads", "type": "set", "row": "norwood", "cells": { "line": "Congrats on the Larimer move", "status": "Ready" } },
-        { "on": "leads", "type": "set", "row": "pike", "cells": { "line": "Tax season gets messy", "status": "Ready" }, "after": 350 }
+        { "on": "leads", "type": "add", "id": "norwood", "cells": { "company": "Norwood Studio", "contact": "Ines Calloway", "line": "Congrats on the Larimer move", "status": "Ready" } },
+        { "on": "leads", "type": "add", "id": "pike", "cells": { "company": "Pike & Rowe CPA", "contact": "Sam Rowe", "line": "Tax season gets messy", "status": "Ready" }, "after": 350 }
       ]
     },
     {
-      "say": "The emails go out from your own address while you work.",
+      "say": "At 8:00 all 40 go out from your own address while you are on a job.",
       "clock": "8:00 AM",
       "do": [
-        { "on": "flow", "type": "run", "node": "send" },
         { "on": "campaign", "type": "status", "text": "Live", "tone": "good" },
         { "on": "campaign", "type": "send", "step": "first", "note": "40 sent" },
         { "on": "campaign", "type": "stat", "stat": "sent", "value": "40", "after": 300 }
       ]
     },
     {
-      "say": "A reply comes in. It is read and sorted before you see it.",
+      "say": "An office writes back. The system reads it and drafts your answer.",
       "clock": "10:42 AM",
       "do": [
         { "on": "flow", "type": "run", "node": "sort", "note": "Interested, wants a quote" },
-        { "on": "inbox", "type": "receive", "id": "ines", "from": "Ines Calloway", "subject": "Re: Your new office", "body": "Good timing. Our cleaner keeps missing the kitchen. Could you come by and give us a quote?", "time": "Mon", "tag": "Interested", "tone": "good", "after": 900 },
-        { "on": "inbox", "type": "open", "mail": "ines", "after": 700 }
+        { "on": "flow", "type": "run", "node": "draft", "note": "Offers Thu 9 AM or Fri 2 PM" }
       ]
     },
     {
-      "say": "The answer is already drafted. It waits for your OK.",
+      "say": "Ines wants a quote. Your answer is already written: you only send it.",
       "do": [
-        { "on": "flow", "type": "run", "node": "draft" },
-        { "on": "inbox", "type": "reply", "mail": "ines", "text": "Happy to, Ines. I can come by Thursday at 9 AM or Friday at 2 PM. Which suits you?", "label": "Drafted for you" }
+        { "on": "inbox", "type": "receive", "id": "ines", "from": "Ines Calloway", "subject": "Re: Your new office", "body": "Good timing. Our cleaner keeps missing the kitchen. Could you come by and give us a quote?", "time": "Mon", "tag": "Interested", "tone": "good" },
+        { "on": "inbox", "type": "reply", "mail": "ines", "text": "Happy to, Ines. I can come by Thursday at 9 AM or Friday at 2 PM. Which suits you?", "label": "Drafted for you", "after": 900 }
       ]
     },
     {
-      "say": "Three days on, the quiet ones get a short nudge. You did nothing.",
+      "say": "Day 4. The offices that stayed quiet get a short follow-up.",
       "clock": "Day 4",
       "do": [
         { "on": "flow", "type": "run", "node": "nudge", "note": "39 had not answered" },
@@ -122,7 +119,7 @@
       ]
     },
     {
-      "say": "The nudge works. Two more offices write back, and you chased nobody.",
+      "say": "The follow-up works. Two more offices write back, and you chased nobody.",
       "clock": "Day 5",
       "do": [
         { "on": "inbox", "type": "receive", "id": "maya", "from": "Maya Ortiz", "subject": "Re: Your 4th floor", "body": "Yes, we could use help up there. Can you visit on Friday?", "time": "Thu", "tag": "Interested", "tone": "good" },

@@ -62,16 +62,14 @@ test("shots of the story are every card, every screen as it is left, and the sli
   // Read off examples/intake-to-booking/demo.json: beat, changes made in it, and the card or the screen in view.
   expect(readdirSync(join(ws, "demos", "fits", "shots")).sort()).toEqual([
     "explainer-00-start.png",
-    ...["explainer-01-0-card.png", "explainer-01-4-form.png"],
-    ...["explainer-02-0-card.png", "explainer-02-1-form.png", "explainer-02-2-flow.png"],
-    ...["explainer-03-0-card.png", "explainer-03-1-flow.png"],
-    ...["explainer-04-0-card.png", "explainer-04-1-flow.png"],
-    ...["explainer-05-0-card.png", "explainer-05-1-flow.png", "explainer-05-2-week.png"],
-    ...["explainer-06-0-card.png", "explainer-06-1-flow.png", "explainer-06-3-mail.png"],
-    ...["explainer-07-0-card.png", "explainer-07-1-flow.png"],
+    ...["explainer-01-0-card.png", "explainer-01-5-form.png"],
+    ...["explainer-02-0-card.png", "explainer-02-5-flow.png"],
+    ...["explainer-03-0-card.png", "explainer-03-2-mail.png"],
+    ...["explainer-04-0-card.png", "explainer-04-1-week.png"],
+    ...["explainer-05-0-card.png", "explainer-05-1-flow.png"],
     // The slide as a viewer walks it: the card that offers to work it out, the three questions the demo asks, the report.
-    ...["explainer-08-0-ask.png", "explainer-08-1-requests.png", "explainer-08-2-visit.png", "explainer-08-3-job.png"],
-    "explainer-08-results.png",
+    ...["explainer-06-0-ask.png", "explainer-06-1-requests.png", "explainer-06-2-visit.png", "explainer-06-3-job.png"],
+    "explainer-06-results.png",
   ]);
 });
 

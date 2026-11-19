@@ -1,6 +1,6 @@
 # demo.json
 
-The demo to match is `examples/speed-to-lead` in the app. `examples/cold-outreach` and `examples/intake-to-booking` show other panels at work, in stories written before `story.md`'s rules on step one and the workflow. `npm run check` is the authority on every limit below and says where in the file a demo goes wrong.
+Three finished demos to match are in the app: `examples/speed-to-lead` starts on a text, `examples/intake-to-booking` on a web form and `examples/cold-outreach` on a schedule. `npm run check` is the authority on every limit below and says where in the file a demo goes wrong.
 
 ```json
 {

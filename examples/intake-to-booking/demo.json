@@ -23,14 +23,14 @@
     {
       "id": "flow",
       "type": "workflow",
-      "label": "The automation",
+      "label": "What the system does",
       "config": {
         "nodes": [
           { "id": "got", "label": "New quote request", "icon": "form" },
-          { "id": "read", "label": "Reads the request", "app": "AI", "icon": "sparkle", "after": ["got"] },
+          { "id": "read", "label": "Reads the request", "icon": "sparkle", "after": ["got"] },
           { "id": "slot", "label": "Finds a free slot", "app": "Calendar", "icon": "calendar", "after": ["read"] },
           { "id": "book", "label": "Books the inspection", "icon": "check", "after": ["slot"] },
-          { "id": "confirm", "label": "Emails the customer", "icon": "mail", "after": ["book"] },
+          { "id": "confirm", "label": "Emails the homeowner", "icon": "mail", "after": ["book"] },
           { "id": "brief", "label": "Briefs your crew", "icon": "bell", "after": ["book"] }
         ]
       }
@@ -60,7 +60,7 @@
     {
       "id": "mail",
       "type": "inbox",
-      "label": "What the customer gets",
+      "label": "What the homeowner gets",
       "config": {
         "title": "Ruth's inbox",
         "mails": [
@@ -73,51 +73,41 @@
   ],
   "beats": [
     {
-      "say": "Sunday evening. A homeowner finds a leak and opens your website.",
+      "say": "A homeowner with a leak sends this: a $1,800 job. Your office is shut.",
       "clock": "8:40 PM",
       "do": [
         { "on": "form", "type": "fill", "field": "name", "value": "Ruth Adeyemi" },
         { "on": "form", "type": "fill", "field": "address", "value": "14 Birch Lane", "after": 700 },
         { "on": "form", "type": "fill", "field": "need", "value": "Repair", "after": 700 },
-        { "on": "form", "type": "fill", "field": "details", "value": "Water coming in after the storm", "after": 700 }
+        { "on": "form", "type": "fill", "field": "details", "value": "Water coming in after the storm", "after": 700 },
+        { "on": "form", "type": "submit", "after": 900 }
       ]
     },
     {
-      "say": "Nobody is in the office. Send the request like they would.",
-      "wait": "click",
+      "say": "The system reads it, checks your crew's week and books a slot.",
       "do": [
-        { "on": "form", "type": "submit" },
-        { "on": "flow", "type": "run", "node": "got" }
+        { "on": "flow", "type": "run", "node": "got" },
+        { "on": "flow", "type": "run", "node": "read", "note": "Active leak, urgent" },
+        { "on": "flow", "type": "run", "node": "slot", "note": "Mon 8:00 AM is free" },
+        { "on": "flow", "type": "run", "node": "book", "note": "Marco, Mon 8 AM" },
+        { "on": "flow", "type": "run", "node": "confirm", "note": "Time sent to Ruth" }
       ]
     },
     {
-      "say": "It is read on the spot: an active leak, so this one is urgent.",
-      "do": [{ "on": "flow", "type": "run", "node": "read", "note": "Active leak, urgent" }]
-    },
-    {
-      "say": "Your crew's week is checked for the first slot that is free.",
-      "clock": "8:41 PM",
-      "do": [{ "on": "flow", "type": "run", "node": "slot", "note": "Mon 8:00 AM is free" }]
-    },
-    {
-      "say": "The inspection is booked. Your crew sees it in their week.",
-      "do": [
-        { "on": "flow", "type": "run", "node": "book" },
-        { "on": "week", "type": "book", "id": "leak", "day": "mon", "time": "08:00", "title": "Leak, 14 Birch Lane", "tone": "info", "after": 400 }
-      ]
-    },
-    {
-      "say": "The homeowner gets a time, not a promise to call back.",
+      "say": "Two minutes later she has a time for Monday. Nobody typed it.",
       "clock": "8:42 PM",
       "do": [
-        { "on": "flow", "type": "run", "node": "confirm" },
         { "on": "mail", "type": "receive", "id": "booked", "from": "Ridgeline Roofing", "subject": "Inspection Monday 8 AM", "body": "Hi Ruth, sorry about the leak. Marco will be at 14 Birch Lane tomorrow, Monday, at 8:00 AM. Reply to change the time.", "time": "8:42 PM" },
         { "on": "mail", "type": "open", "mail": "booked", "after": 900 }
       ]
     },
     {
-      "say": "By Monday morning your crew has the address. Nobody made a call.",
-      "clock": "7:00 AM",
+      "say": "Your crew's week has the visit too. Finding a time took no calls.",
+      "do": [{ "on": "week", "type": "book", "id": "leak", "day": "mon", "time": "08:00", "title": "Leak, 14 Birch Lane", "tone": "info" }]
+    },
+    {
+      "say": "Monday at 7 your crew gets the address and the leak details.",
+      "clock": "Mon 7 AM",
       "do": [{ "on": "flow", "type": "run", "node": "brief", "note": "Address and details sent" }]
     }
   ],
