@@ -17,7 +17,7 @@ import type { Words } from "./words.ts";
 
 function Figure({ title, label, wide, legend, children }: { title: string; label: string; wide?: boolean; legend?: ReactNode; children: ReactNode }) {
   return (
-    <figure className="flex min-h-0 min-w-0 flex-col gap-[0.35rem] rounded-control border border-line px-[0.9rem] pt-[0.7rem] compact:h-[17rem] compact:flex-none" style={{ flex: wide ? 3 : 2 }}>
+    <figure className={`flex min-h-0 min-w-0 flex-col gap-[0.35rem] rounded-control border border-line px-[0.9rem] pt-[0.7rem] compact:h-[19rem] compact:flex-none ${wide ? "flex-[3]" : "flex-[2]"}`}>
       <figcaption className="text-meta font-medium leading-tight">{title}</figcaption>
       {legend}
       <div className="min-h-0 flex-1" role="img" aria-label={label}>

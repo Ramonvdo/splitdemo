@@ -2,7 +2,8 @@
  * npm run shots -- <slug> [--mode explainer|fast]
  *
  * Screenshots of a demo, so it can be judged the way a viewer meets it: by looking.
- * The story (explainer mode): the opening, each step's card, each screen as it is left, and the results slide.
+ * The story (explainer mode): the opening, each step's card, each screen as it is left, and the results slide:
+ * the card that offers to work it out, each question, and the report on the example numbers.
  * The wall (fast mode): the start, one per beat, and the end. Both, unless --mode names one.
  * The wall is shot first, so a text that is cut on the wall is named with a picture of the wall.
  * Prints the files it wrote, then everything that does not fit where it is, on a laptop screen and on a phone.
@@ -75,12 +76,19 @@ try {
     if (still.at === "end") return `explainer-${pad(demo.beats.length + 1)}-results`;
     return `explainer-${pad(still.at + 1)}-${still.n}-${still.n === 0 ? "card" : still.on}`;
   };
+  // A picture has nobody to ask, so the end is the report. The card and the questions before it are opened by their number.
+  const end = `explainer-${pad(demo.beats.length + 1)}`;
+  const asked = (demo.results?.roi?.inputs ?? []).filter((input) => input.ask);
+  const flow = asked.length ? [{ name: `${end}-0-ask`, q: 0 }, ...asked.map((input, i) => ({ name: `${end}-${i + 1}-${input.id}`, q: i + 1 }))] : [];
   const states = modes.flatMap((mode) =>
-    stills(timeline, mode).map((still) => ({
-      name: name(still, mode),
-      query: `&mode=${mode}&at=${still.at}${still.n === undefined ? "" : `&n=${still.n}`}`,
-      covered: mode === "explainer" && (typeof still.at === "string" || still.n === 0),
-    })),
+    stills(timeline, mode).flatMap((still) => [
+      ...(mode === "explainer" && still.at === "end" ? flow.map((step) => ({ name: step.name, query: `&mode=explainer&at=end&q=${step.q}`, covered: true })) : []),
+      {
+        name: name(still, mode),
+        query: `&mode=${mode}&at=${still.at}${still.n === undefined ? "" : `&n=${still.n}`}`,
+        covered: mode === "explainer" && (typeof still.at === "string" || still.n === 0),
+      },
+    ]),
   );
   for (const state of states) {
     await open(state.query, state.name, state.covered);

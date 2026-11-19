@@ -13,6 +13,148 @@ async function withoutResults(page: Page) {
   });
 }
 
+/** The end of the story as a viewer gets there, stepping on from the last step: somebody is watching, so there is somebody to ask. */
+async function watched(page: Page, mode = "explainer", more = "") {
+  await page.goto(`/speed-to-lead/?at=7&mode=${mode}${more}`);
+  const stage = page.locator("main.stage");
+  for (let press = 0; press < 4 && (await stage.getAttribute("data-status")) !== "done"; press++) {
+    await page.keyboard.press("ArrowRight");
+    await page.waitForTimeout(120);
+  }
+  await expect(stage).toHaveAttribute("data-status", "done");
+  return page.locator("[data-results]");
+}
+
+test("the story ends on what came of it and offers to work it out; the questions come one a screen and end on the report", async ({ page }) => {
+  const slide = await watched(page);
+  // The card first: what came of the story, no figures of ours yet, and one way on.
+  await expect(slide.locator("[data-outcome]")).toContainText("38 sec");
+  await expect(slide.locator("[data-monthly]")).toHaveCount(0);
+  await slide.getByRole("button", { name: "Work it out for your business" }).click();
+  // One question, with our estimate already in the field and the field ready to type in.
+  await expect(slide.getByText("1 of 3")).toBeVisible();
+  const texts = slide.getByLabel("How many texts come in after closing, in a month?");
+  await expect(texts).toHaveValue("40");
+  await expect(texts).toBeFocused();
+  await expect(slide.getByText("Not sure? Leave our estimate.")).toBeVisible();
+  await expect(slide.getByRole("textbox")).toHaveCount(1);
+  // Typing takes the estimate's place, and Enter moves on.
+  await page.keyboard.type("60");
+  await page.keyboard.press("Enter");
+  await expect(slide.getByText("2 of 3")).toBeVisible();
+  await expect(slide.getByLabel("Of every 100 of those texts, how many book a visit today?")).toHaveValue("10");
+  await slide.getByRole("button", { name: "Next" }).click();
+  await expect(slide.getByText("3 of 3")).toBeVisible();
+  await expect(slide.getByLabel("What is a first visit worth to you?")).toHaveValue("180");
+  await slide.getByRole("button", { name: "See your ROI" }).click();
+  // 60 texts x 20 points x $180.
+  await expect(slide.locator("[data-monthly]")).toHaveText("$2,160");
+  await expect(slide.getByText("Your numbers")).toBeVisible();
+});
+
+test("going back keeps what was answered, and the report leads back to the questions", async ({ page }) => {
+  const slide = await watched(page);
+  await slide.getByRole("button", { name: "Work it out for your business" }).click();
+  await page.keyboard.type("60");
+  await slide.getByRole("button", { name: "Next" }).click();
+  await page.keyboard.type("25");
+  await slide.getByRole("button", { name: "Back" }).click();
+  await expect(slide.getByLabel("How many texts come in after closing, in a month?")).toHaveValue("60");
+  // Back from the first question is the card again, and the answers are still there after it.
+  await slide.getByRole("button", { name: "Back" }).click();
+  await expect(slide.locator("[data-outcome]")).toContainText("38 sec");
+  await slide.getByRole("button", { name: "Work it out for your business" }).click();
+  await page.keyboard.press("Enter");
+  await expect(slide.getByLabel("Of every 100 of those texts, how many book a visit today?")).toHaveValue("25");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
+  // 60 texts, 25 in 100 book today and 45 with the system: still 20 points, 60 x 0.20 x 180.
+  await expect(slide.locator("[data-monthly]")).toHaveText("$2,160");
+  await expect(slide.getByLabel("Share of those that book a visit, with the system")).toHaveValue("45");
+  await slide.getByRole("button", { name: "Change my answers" }).click();
+  await expect(slide.getByText("1 of 3")).toBeVisible();
+  await expect(slide.getByLabel("How many texts come in after closing, in a month?")).toHaveValue("60");
+});
+
+test("an answer that leaves the system nothing to win gets told so, not a figure", async ({ page }) => {
+  const slide = await watched(page);
+  await slide.getByRole("button", { name: "Work it out for your business" }).click();
+  await page.keyboard.press("Enter");
+  // Every text already books: there are no points left to add.
+  await page.keyboard.type("100");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
+  await expect(slide.locator("[data-monthly]")).toHaveText("$0");
+  await expect(slide.getByText("With these numbers the system has nothing left to win. Change one to see where it does.")).toBeVisible();
+});
+
+test("a picture or a film has nobody to ask: it is the report, and a question opens only when asked for by its number", async ({ page }) => {
+  await page.goto(`${END}explainer`);
+  const slide = page.locator("[data-results]");
+  await expect(slide.locator("[data-monthly]")).toHaveText("$1,440");
+  await expect(slide.getByText("Example numbers")).toBeVisible();
+  await expect(slide.getByRole("button", { name: "Change my answers" })).toHaveCount(0);
+  // The pictures of the flow: the card, a question by its number, the report.
+  await page.goto(`${END}explainer&q=0`);
+  await expect(slide.getByRole("button", { name: "Work it out for your business" })).toBeVisible();
+  await page.goto(`${END}explainer&q=2`);
+  await expect(slide.getByText("2 of 3")).toBeVisible();
+  await page.goto(`${END}explainer&q=report`);
+  await expect(slide.locator("[data-monthly]")).toHaveText("$1,440");
+  // A film runs to the end by itself and lands on the report.
+  await watched(page, "explainer", "&record=1");
+  await expect(slide.locator("[data-monthly]")).toHaveText("$1,440");
+});
+
+test("a link can end on the report straight away, and still offers the questions", async ({ page }) => {
+  const slide = await watched(page, "explainer", "&q=report");
+  await expect(slide.locator("[data-monthly]")).toHaveText("$1,440");
+  await expect(slide.getByText("Example numbers")).toBeVisible();
+  await slide.getByRole("button", { name: "Change my answers" }).click();
+  await expect(slide.getByText("1 of 3")).toBeVisible();
+});
+
+test("on the wall the Results button opens the same questions", async ({ page }) => {
+  await watched(page, "fast");
+  await expect(page.locator("[data-results]")).toHaveCount(0);
+  await page.getByRole("button", { name: "Results" }).click();
+  const slide = page.locator("[data-results]");
+  await slide.getByRole("button", { name: "Work it out for your business" }).click();
+  // A number typed in a question is a number: on the wall the keys 1 to 4 would enlarge a monitor.
+  await page.keyboard.type("12");
+  await expect(slide.getByLabel("How many texts come in after closing, in a month?")).toHaveValue("12");
+  await expect(page.locator("[data-zoom]")).toHaveCount(0);
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
+  // 12 x 0.20 x 180.
+  await expect(slide.locator("[data-monthly]")).toHaveText("$432");
+});
+
+test("a Dutch demo asks in Dutch", async ({ page }) => {
+  await page.route("**/speed-to-lead/demo.json", async (route) => {
+    const demo = await (await route.fetch()).json();
+    demo.lang = "nl";
+    demo.results.roi.currency = "EUR";
+    demo.results.roi.inputs[0].ask = "Hoeveel berichten komen er per maand na sluitingstijd binnen?";
+    demo.results.roi.inputs[0].note = "Tel een gemiddelde maand";
+    await route.fulfill({ json: demo });
+  });
+  const slide = await watched(page);
+  await slide.getByRole("button", { name: "Reken het uit voor je eigen bedrijf" }).click();
+  await expect(slide.getByText("1 van 3")).toBeVisible();
+  await expect(slide.getByLabel("Hoeveel berichten komen er per maand na sluitingstijd binnen?")).toHaveValue("40");
+  // Where an estimate comes from stands under the field.
+  await expect(slide.getByText("Tel een gemiddelde maand")).toBeVisible();
+  await expect(slide.getByText("Weet je het niet precies? Laat onze schatting staan.")).toBeVisible();
+  await expect(slide.getByRole("button", { name: "Terug" })).toBeVisible();
+  await slide.getByRole("button", { name: "Volgende" }).click();
+  await slide.getByRole("button", { name: "Volgende" }).click();
+  await slide.getByRole("button", { name: "Bekijk wat het oplevert" }).click();
+  await expect(slide.getByText("Jouw cijfers")).toBeVisible();
+  await expect(slide.getByRole("button", { name: "Antwoorden aanpassen" })).toBeVisible();
+});
+
 test("the report says what came of the story and what the system adds", async ({ page }) => {
   await page.goto(`${END}explainer`);
   const slide = page.locator("[data-results]");

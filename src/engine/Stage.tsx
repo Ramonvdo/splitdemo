@@ -358,7 +358,7 @@ export function Stage({ ready, flags }: { ready: Ready; flags: Flags }) {
             <Card key={play.pos.beat} tag={w.step(play.pos.beat + 1, timeline.beats.length)} clock={beat.clock} text={beat.say ?? ""} />
           ))}
         {/* A film or a picture has nobody to answer, so it gets the report on the demo's own numbers. */}
-        {results && <Results demo={demo} still={play.still} ask={false} open={flags.q} />}
+        {results && <Results demo={demo} still={play.still} ask={!flags.record && !play.still} open={flags.q} />}
       </div>
       {!bare && <Bar demo={demo} timeline={timeline} play={play} record={flags.record} results={results} onResults={!explainer && demo.results ? () => setSheet((on) => !on) : undefined} />}
     </main>
