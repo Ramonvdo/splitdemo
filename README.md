@@ -119,7 +119,7 @@ Your own demos live outside this repo, in a workspace folder you choose: `<works
 
 ## Sharing
 
-A shared demo gets its own folder under a name like `harbor-dental-x7k2`. There is no index page, a wrong address returns a real 404, and the pages ask search engines to stay out. One prospect's folder holds nothing of another's.
+A shared demo gets its own folder under a name like `harbor-dental-x7k2m9qp`. There is no index page, a wrong address returns a real 404, and the pages ask search engines to stay out. One prospect's folder holds nothing of another's.
 
 Every link has an end date. A demo is shared for 30 days unless you say otherwise, and it drops out at the next publish after that. `npm run share -- --stop <slug>` takes one offline sooner.
 

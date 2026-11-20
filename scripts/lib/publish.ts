@@ -8,7 +8,7 @@ import { READY } from "./spills.ts";
 
 /** One shared demo: where it is served, and until when. */
 export interface Share {
-  /** The folder it is served from: the slug and four characters nobody can guess. */
+  /** The folder it is served from: the slug and eight characters nobody can guess. */
   id: string;
   created: string;
   /** The last day it is shared, as YYYY-MM-DD. */
@@ -47,7 +47,7 @@ function addDays(date: string, days: number): string {
 const ALPHABET = "abcdefghjkmnpqrstuvwxyz23456789";
 
 export function suffix(): string {
-  return Array.from({ length: 4 }, () => ALPHABET[randomInt(ALPHABET.length)]).join("");
+  return Array.from({ length: 8 }, () => ALPHABET[randomInt(ALPHABET.length)]).join("");
 }
 
 /**

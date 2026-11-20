@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { describe as summary, enlist, live, stamp, type Ledger } from "./publish.ts";
+import { describe as summary, enlist, live, stamp, suffix, type Ledger } from "./publish.ts";
 
 const PAGE = `<!doctype html>
 <html lang="en">
@@ -13,6 +13,10 @@ const PAGE = `<!doctype html>
 </html>`;
 
 describe("the ledger of shared demos", () => {
+  it("ends a new link on eight characters that read out loud without a mix-up", () => {
+    for (let i = 0; i < 50; i++) expect(suffix()).toMatch(/^[a-hjkmnp-z2-9]{8}$/);
+  });
+
   it("gives a demo a link nobody can guess from its name, and an end date", () => {
     const ledger = enlist({ demos: {} }, "acme-dental", "2026-11-13", 30, "k3x9");
     expect(ledger.demos).toEqual({ "acme-dental": { id: "acme-dental-k3x9", created: "2026-11-13", expires: "2026-12-13" } });

@@ -1,6 +1,6 @@
 # Share a demo as a link
 
-Publishes the demo to the user's own host under a link nobody can guess: `<slug>-<four random characters>`. There is no list of demos, a wrong link is a real 404, and search engines are told to stay out. Each demo's folder holds only its own data.
+Publishes the demo to the user's own host under a link nobody can guess: `<slug>-<eight random characters>`. A demo shared before 0.3.0 keeps its four. There is no list of demos, a wrong link is a real 404, and search engines are told to stay out. Each demo's folder holds only its own data.
 
 Run every command from the `app` folder. Needs `hosting.provider: "cloudflare"` in the settings; without it, do [onboarding.md](onboarding.md) or use the export at the end of this file.
 

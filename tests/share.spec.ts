@@ -62,7 +62,7 @@ test("a dry run builds what would go online, has the host check it, and publishe
   const out = run("share.ts", ["acme-dental", "--dry-run"]);
 
   expect(out).toContain('Cloudflare Worker "splitdemo-test"');
-  expect(out).toMatch(/acme-dental {2}\/acme-dental-[a-z2-9]{4}\/ {2}until \d{4}-\d{2}-\d{2}/);
+  expect(out).toMatch(/acme-dental {2}\/acme-dental-[a-hjkmnp-z2-9]{8}\/ {2}until \d{4}-\d{2}-\d{2}/);
   expect(out).toContain("birch-roofing  /birch-roofing-abcd/  until 2999-01-01");
   expect(out).toContain("old-one: no longer shared, it ended on 2020-01-31");
   expect(out).toContain("Dry run: the host takes this build. Nothing was published and nothing was saved");
@@ -71,7 +71,7 @@ test("a dry run builds what would go online, has the host check it, and publishe
   // Exactly the demos still shared, each in its own folder, and no page that lists them.
   const top = readdirSync(SITE).sort();
   expect(top.filter((name) => !name.includes("-"))).toEqual(["404.html", "_headers", "robots.txt"]);
-  expect(top.filter((name) => name.includes("-")).map((name) => name.replace(/-[a-z2-9]{4}$/, ""))).toEqual(["acme-dental", "birch-roofing"]);
+  expect(top.filter((name) => name.includes("-")).map((name) => name.replace(/-[a-z2-9]+$/, ""))).toEqual(["acme-dental", "birch-roofing"]);
   expect(readFileSync(join(SITE, "_headers"), "utf8")).toContain("X-Robots-Tag: noindex, nofollow");
 });
 
@@ -116,7 +116,7 @@ test("asked to share, it saves the link and waits for a yes before anything goes
   expect(out).toContain("Nothing is published yet. Run this again with --yes to publish it.");
   expect(out).not.toContain("Published:");
   const id = ledger().demos["acme-dental"].id;
-  expect(id).toMatch(/^acme-dental-[a-z2-9]{4}$/);
+  expect(id).toMatch(/^acme-dental-[a-hjkmnp-z2-9]{8}$/);
   expect(out).toContain(`/${id}/`);
 
   // Asked again, the demo keeps its link.
