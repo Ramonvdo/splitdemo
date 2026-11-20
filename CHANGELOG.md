@@ -17,6 +17,7 @@
 - The skill's rules follow that review. A customer's first message sends itself, and a form is filled in and sent in one step. `"wait": "click"` stays for a demo you present live. The workflow runs every step of one stretch of work in a single step, so the diagram shows once and the first reply comes sooner. `npm run check` used to note several workflow steps in one step. It now notes a workflow that shows in two or more steps in a row.
 - The other two examples follow the same rules and name their screens and steps in the owner's words, without "AI". Intake to booking fills in and sends its form in the first step and shows the workflow once, in five steps. Cold outreach shows it three times, once each for the morning's emails, a reply and the follow-up on day 4, in seven steps.
 - A new share link ends on eight random characters instead of four, so it cannot be found by trying names. A link shared earlier keeps its name.
+- The local server that tests, shots and films play from now closes at once, even while a browser still holds a connection it never used. On Node 22 it used to wait for that connection, which made a share test time out on CI now and then.
 - The player's browser tests play a story of their own, `tests/fixtures/dental-story.json`, so an example can change without a test changing with it. Each example is still checked for cut text and with axe. The cut-text check now measures after the page's typefaces have loaded.
 
 ## 0.2.1 (2026-11-18)

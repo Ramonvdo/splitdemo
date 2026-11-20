@@ -68,7 +68,12 @@ export function serveDir(dir: string, headers: Record<string, string> = {}): Pro
       if (!address || typeof address === "string") return reject(new Error("the local server did not get a port"));
       resolve({
         url: `http://127.0.0.1:${address.port}`,
-        close: () => new Promise((done) => server.close(() => done())),
+        // A browser keeps spare connections it may never use, and on Node 22 close() waits for those too.
+        close: () =>
+          new Promise((done) => {
+            server.close(() => done());
+            server.closeAllConnections();
+          }),
       });
     });
   });
